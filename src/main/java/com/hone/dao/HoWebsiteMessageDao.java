@@ -1,6 +1,7 @@
 package com.hone.dao;
 
 import com.hone.entity.HoWebsiteMessage;
+import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
 /**

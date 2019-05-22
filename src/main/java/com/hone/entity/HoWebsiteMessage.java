@@ -3,6 +3,7 @@ package com.hone.entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
@@ -10,23 +11,24 @@ import java.io.Serializable;
  */
 
 @Table(name = "ho_website_message")
-public class HoWebsiteMessage implements Serializable{
+public class HoWebsiteMessage  extends BaseEntity  implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(generator = "UUID")
-    private String id;
-
     private String message;
+    private String phoneNo;
 
-    public String getId() {
-        return id;
+    @Transient
+    private String comments;
+
+    public String getComments() {
+        return comments;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setComments(String comments) {
+        this.comments = comments;
     }
+
 
     public String getMessage() {
         return message;
@@ -34,5 +36,13 @@ public class HoWebsiteMessage implements Serializable{
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 }

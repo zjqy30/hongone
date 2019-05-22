@@ -26,7 +26,7 @@ public class ApiInterceptor implements HandlerInterceptor {
         long beginTime = System.currentTimeMillis();
         startTimeThreadLocal.set(beginTime);
 
-        logger.info("开始计时：{}"+ DateUtils.getNowDateTime()+" URL:{}"+request.getRequestURI());
+        logger.info("开始计时：{ "+DateUtils.getNowDateTime()+" } URL:{ "+ request.getRequestURI()+" }");
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 
@@ -41,6 +41,6 @@ public class ApiInterceptor implements HandlerInterceptor {
         long beginTime = startTimeThreadLocal.get();
         long endTime = System.currentTimeMillis();
 
-        logger.info("计时结束：{} "+endTime+" 耗时：{}"+((endTime-beginTime)));
+        logger.info("计时结束：{ "+DateUtils.getNowDateTime()+" }  耗时：{ "+ ((endTime-beginTime))+" }ms");
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoWebsiteMessageDao">
+
+    <resultMap id="hoWebsiteMessageResultMap" type="com.hone.entity.HoWebsiteMessage">
+        <id column="id" property="id"/> 
+        <result column="message" property="message"/> 
+        <result column="createDate" property="createDate"/> 
+        <result column="updateDate" property="updateDate"/> 
+        <result column="enableFlag" property="enableFlag"/> 
+        <result column="phoneNo" property="phoneNo"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoWebsiteMessageColumns">
+        a.id AS "id",
+        a.message AS "message",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag",
+        a.phone_no AS "phoneNo"
+    </sql>
+
+    <sql id="hoWebsiteMessageJoins">
+        
+    </sql>
+
+
+</mapper>

@@ -1,4 +1,4 @@
-package com.hone.dao;
+package com.hone.entity;
 
 import tk.mybatis.mapper.common.Mapper;
 import tk.mybatis.mapper.common.MySqlMapper;

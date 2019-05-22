@@ -2,9 +2,18 @@ package com.hone.system.utils;
 
 import com.github.qcloudsms.SmsMultiSender;
 import com.github.qcloudsms.SmsMultiSenderResult;
+import com.hone.entity.HoSmsRecords;
+import com.hone.pc.www.controller.HoWebsiteMessageController;
+import com.hone.service.HoSmsRecordsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -15,12 +24,18 @@ import org.springframework.stereotype.Component;
 @PropertySource(value = {"classpath:application.properties"})
 public class SmsUtils {
 
+    private static Logger logger= LoggerFactory.getLogger(SmsUtils.class);
+
+
     @Value("${tencent.sms.appid}")
     private  Integer appid;
     @Value("${tencent.sms.appkey}")
     private  String appkey;
     @Value("${tencent.sms.smsSign}")
     private  String smsSign;
+
+    @Autowired
+    private HoSmsRecordsService smsRecordsService;
 
 
     /**
@@ -31,16 +46,36 @@ public class SmsUtils {
      * @return true/false 发送成功/失败
      */
     public  boolean sendSms(String[] params,String[] phoneNumbers,int templateId){
+        boolean flag=true;
         try {
             SmsMultiSender msender = new SmsMultiSender(appid, appkey);
             SmsMultiSenderResult result =  msender.sendWithParam("86", phoneNumbers,
                     templateId, params, smsSign, "", "");  // 签名参数未提供或者为空时，会使用默认签名发送短信
             System.out.println(result);
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            logger.error("短信验证码error:",e);
+            flag=false;
         }
-        return  true;
+
+        if(flag){
+            //更新之前验证码为失效
+            smsRecordsService.delByPhoneNo(phoneNumbers[0]);
+
+            //验证码发送成功
+            HoSmsRecords smsRecords=new HoSmsRecords();
+            smsRecords.setCode(params[0]);
+            smsRecords.setPhoneNo(phoneNumbers[0]);
+            smsRecords.preInsert();
+            //过期时间
+            Date createDate=smsRecords.getCreateDate();
+            Calendar calendar=Calendar.getInstance();
+            calendar.setTime(createDate);
+            calendar.add(Calendar.MINUTE,3);
+            smsRecords.setExpireDate(calendar.getTime());
+            smsRecordsService.save(smsRecords);
+        }
+
+        return  flag;
     }
 
 

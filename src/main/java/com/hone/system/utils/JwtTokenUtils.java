@@ -13,8 +13,6 @@ import java.util.Map;
 /**
  * jwtToken 工具类
  *
- * Created by panzhangbao on 2018/6/6 17:33
- * Copyright ©2018  panzhangbao All rights reserved.
  **/
 public class JwtTokenUtils {
 

@@ -17,22 +17,22 @@ public class JsonResult implements Serializable{
 
     public void globalSuccess(){
         errorCode="0";
-        msg="操作成功";
+        this.msg="操作成功";
     }
 
     public void globalSuccess(String msg){
         errorCode="0";
-        msg=msg;
+        this.msg=msg;
     }
 
     public void globalError(String msg){
         errorCode="1";
-        msg=msg;
+        this.msg=msg;
     }
 
     public void globalError(){
         errorCode="1";
-        msg="系统异常";
+        this.msg="系统异常";
     }
 
     public String getErrorCode() {
