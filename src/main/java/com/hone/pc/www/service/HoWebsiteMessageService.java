@@ -1,10 +1,13 @@
 package com.hone.pc.www.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.hone.dao.HoSmsRecordsDao;
 import com.hone.dao.HoWebsiteMessageDao;
 import com.hone.entity.HoSmsRecords;
 import com.hone.entity.HoWebsiteMessage;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,10 +29,16 @@ public class HoWebsiteMessageService {
     @Autowired
     private HoSmsRecordsDao smsRecordsDao;
 
-    public List<HoWebsiteMessage> list() {
+    public Page list() {
 
-       return hoWebsiteMessageDao.selectAll();
+       PageHelper.startPage(1,2,true);
+       HoWebsiteMessage hoWebsiteMessage=new HoWebsiteMessage();
+       hoWebsiteMessage.setEnableFlag("1");
+       List<HoWebsiteMessage> websiteMessageList= hoWebsiteMessageDao.select(hoWebsiteMessage);
+       PageInfo<HoWebsiteMessage> pageInfo=new PageInfo<>(websiteMessageList);
+       Page<HoWebsiteMessage> page=new Page<>(pageInfo);
 
+       return page;
     }
 
     public JsonResult save(Map<String, String> params) {

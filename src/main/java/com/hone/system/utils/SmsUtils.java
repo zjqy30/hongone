@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import sun.security.provider.MD5;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -33,6 +34,8 @@ public class SmsUtils {
     private  String appkey;
     @Value("${tencent.sms.smsSign}")
     private  String smsSign;
+    @Value("${hone.sms.sign}")
+    private  String honeSmsSign;
 
     @Autowired
     private HoSmsRecordsService smsRecordsService;
@@ -79,10 +82,27 @@ public class SmsUtils {
     }
 
 
+    /**
+     * 生成验证码签名
+     * @param phoneNo
+     * @return
+     */
+    public  String makeSmsSign(String phoneNo){
+        //签名校验
+        String str= DateUtils.formatDateToString(new Date(),"yyyy-MM-dd")+":"+phoneNo+":"+honeSmsSign;
+        System.out.println("原字符："+str);
+        try {
+            str=MD5Util.Md5DirectEncryption(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return str ;
+    }
+
+
     public  void main(String[] args){
-//        String[] params=new String[]{"1234"};
-//        String[] phoneNumbers=new String[]{"18261732399"};
-//        boolean flag=sendSms(params,phoneNumbers,290650);
+        String str=makeSmsSign("18261732399");
+        System.out.println(str);
     }
 
 
@@ -108,5 +128,13 @@ public class SmsUtils {
 
     public void setSmsSign(String smsSign) {
         this.smsSign = smsSign;
+    }
+
+    public String getHoneSmsSign() {
+        return honeSmsSign;
+    }
+
+    public void setHoneSmsSign(String honeSmsSign) {
+        this.honeSmsSign = honeSmsSign;
     }
 }

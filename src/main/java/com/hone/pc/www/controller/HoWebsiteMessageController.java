@@ -5,8 +5,7 @@ import com.hone.entity.HoSmsRecords;
 import com.hone.entity.HoWebsiteMessage;
 import com.hone.pc.www.service.HoWebsiteMessageService;
 import com.hone.service.HoSmsRecordsService;
-import com.hone.system.utils.JsonResult;
-import com.hone.system.utils.SmsUtils;
+import com.hone.system.utils.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -43,16 +43,12 @@ public class HoWebsiteMessageController {
         logger.info("===message.list======");
         logger.info("-----------");
 
-        String[] params_=new String[]{"1234"};
-        String[] phoneNumbers=new String[]{"18261732399"};
-        smsUtils.sendSms(params_,phoneNumbers,290650);
-
         JsonResult jsonResult=new JsonResult();
 
-        List<HoWebsiteMessage> messageList= websiteMessageService.list();
+        Page page= websiteMessageService.list();
 
         jsonResult.globalSuccess();
-        jsonResult.getData().put("messageList",messageList);
+        jsonResult.getData().put("page",page);
 
         return jsonResult;
     }
@@ -65,13 +61,18 @@ public class HoWebsiteMessageController {
 
         try {
             String phoneNo=params.get("phoneNo");
-            if(StringUtils.isEmpty(phoneNo)){
-                jsonResult.globalError("手机号不能为空");
-                return jsonResult;
-            }
+            String smsSign=params.get("smsSign");
+            ParamsUtil.checkParamIfNull(params,new String[]{"phoneNo","smsSign"});
 
             if(!StringUtils.isNumeric(phoneNo)||phoneNo.length()!=11){
                 jsonResult.globalError("手机号格式不正确");
+                return jsonResult;
+            }
+
+            //校验签名
+            String makeSmsSign=smsUtils.makeSmsSign(phoneNo);
+            if(!makeSmsSign.equals(smsSign)){
+                jsonResult.globalError("签名不正确");
                 return jsonResult;
             }
 
@@ -86,11 +87,11 @@ public class HoWebsiteMessageController {
                 jsonResult.globalError("验证码发送失败");
                 return jsonResult;
             }
+            jsonResult.globalSuccess();
         }catch (Exception e){
             logger.error("发送网站短信验证码error",e);
+            jsonResult.globalError(e.getMessage());
         }
-
-        jsonResult.globalSuccess();
         return jsonResult;
     }
 
@@ -103,9 +104,11 @@ public class HoWebsiteMessageController {
             jsonResult=websiteMessageService.save(params);
         }catch (Exception e){
             logger.error("网站留言error",e);
+            jsonResult.globalError(e.getMessage());
         }
 
         return jsonResult;
     }
+
 
 }

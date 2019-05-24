@@ -1,5 +1,7 @@
 package com.hone.system.utils;
 
+import com.github.pagehelper.PageInfo;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,14 @@ public class Page<T> implements Serializable{
         this.totalCount = totalCount;
         this.list = list;
     }
+
+    public Page(PageInfo<T> pageInfo) {
+        this.pageNumer = pageInfo.getPageNum();
+        this.pageSize = pageInfo.getPageSize();
+        this.totalCount = Math.toIntExact(pageInfo.getTotal());
+        this.list = pageInfo.getList();
+    }
+
 
     public static long getSerialVersionUID() {
         return serialVersionUID;

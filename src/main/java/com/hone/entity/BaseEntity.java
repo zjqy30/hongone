@@ -1,5 +1,6 @@
 package com.hone.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hone.system.utils.IdUtils;
 
 import javax.persistence.GeneratedValue;
@@ -15,7 +16,9 @@ public class BaseEntity {
     @GeneratedValue(generator = "UUID")
     private String id;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;//创建时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateDate;//更新时间
     private String enableFlag;//有效位 1 有效 0 无效
 
