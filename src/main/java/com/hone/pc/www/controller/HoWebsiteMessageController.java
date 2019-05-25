@@ -5,6 +5,7 @@ import com.hone.entity.HoSmsRecords;
 import com.hone.entity.HoWebsiteMessage;
 import com.hone.pc.www.service.HoWebsiteMessageService;
 import com.hone.service.HoSmsRecordsService;
+import com.hone.service.HoTokenService;
 import com.hone.system.utils.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +37,9 @@ public class HoWebsiteMessageController {
     @Autowired
     private SmsUtils smsUtils;
 
+    @Autowired
+    private HoTokenService hoTokenService;
+
 
     @RequestMapping("/list")
     public JsonResult list(@RequestBody Map<String,String> params){
@@ -44,6 +48,13 @@ public class HoWebsiteMessageController {
         logger.info("-----------");
 
         JsonResult jsonResult=new JsonResult();
+
+        if(hoTokenService.checkToken(params)){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+
+        System.out.println(params);
 
         Page page= websiteMessageService.list();
 

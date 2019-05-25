@@ -30,6 +30,11 @@ public class JsonResult implements Serializable{
         this.msg=msg;
     }
 
+    public void loginExpire(){
+        errorCode="2";
+        this.msg="登录过期";
+    }
+
     public void globalError(){
         errorCode="1";
         this.msg="系统异常";

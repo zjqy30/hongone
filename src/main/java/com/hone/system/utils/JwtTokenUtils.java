@@ -5,6 +5,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -17,7 +20,8 @@ import java.util.Map;
 public class JwtTokenUtils {
 
     private static  String jwtTokenSecret = "ans8euf98eu89fjfioehjfo";
-    private static  String expireDays="1";
+    private static  int expireDays=3;
+
 
     /**
      * JWT生成Token.
@@ -36,9 +40,8 @@ public class JwtTokenUtils {
         String token = JWT.create().withHeader(map)
                 .withClaim("userID", userID)
                 .withIssuedAt(new Date())
-                .withExpiresAt(DateUtils.formatStringToDate("2019-05-20 10:32:00"))
+                .withExpiresAt(DateUtils.formatStringToDate(DateUtils.getOneDaysDate(expireDays)))
                 .sign(Algorithm.HMAC256(jwtTokenSecret));
-
         return token;
     }
 
@@ -49,7 +52,7 @@ public class JwtTokenUtils {
      * @return
      * @throws Exception
      */
-    private static Map<String, Claim> verifyToken(String token) {
+    public static Map<String, Claim> verifyToken(String token) {
         DecodedJWT jwt;
         try {
             jwt = JWT.require(Algorithm.HMAC256(jwtTokenSecret)).build().verify(token);
@@ -76,32 +79,29 @@ public class JwtTokenUtils {
         return userIDClaim.asString();
     }
 
+    /**
+     * 根据claims获取userID
+     *
+     * @param claims
+     * @return userID
+     */
+    public static String getUserID(Map<String, Claim> claims) {
+        Claim userIDClaim = claims.get("userID");
+        if (null == userIDClaim || StringUtils.isEmpty(userIDClaim.asString())) {
+            // token 校验失败, 抛出Token验证非法异常
+            return null;
+        }
+        return userIDClaim.asString();
+    }
+
 
     public static void main(String[] args){
-
-
-//        try {
-//            String token=createToken("123456");
-//            System.out.println(token);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-
-        String token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NTgzMTk1MjAsInVzZXJJRCI6IjEyMzQ1NiIsImlhdCI6MTU1ODMxOTQ4M30.wjCFc7_vIiTbDHCLiS0IYuZnzIe7YlFOcXSSQrwngCY";
-
-        Map<String, Claim> claims = verifyToken(token);
-
-        if (null == claims) {
-            // token 校验失败, 抛出Token验证非法异常
-            System.out.println("token已经过期");
-            return;
+        try {
+            String token=createToken("1001");
+            System.out.println(token);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-
-        Claim userIDClaim = claims.get("userID");
-
-        System.out.println(userIDClaim.asString());
-
     }
 
 }
