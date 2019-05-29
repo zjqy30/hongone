@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoUserTagDao">
+
+    <resultMap id="hoUserTagResultMap" type="com.hone.entity.HoUserTag">
+        <id column="id" property="id"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="dict_id" property="dictId"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoUserTagColumns">
+        a.id AS "id",
+        a.user_id AS "userId",
+        a.dict_id AS "dictId"
+    </sql>
+
+    <sql id="hoUserTagJoins">
+        
+    </sql>
+
+
+</mapper>

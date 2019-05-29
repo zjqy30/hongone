@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.hoApplyWithdrawDao">
+
+    <resultMap id="hoApplyWithdrawResultMap" type="com.hone.entity.HoApplyWithdraw">
+        <id column="id" property="id"/> 
+        <result column="draw_amount" property="drawAmount"/> 
+        <result column="draw_fee" property="drawFee"/> 
+        <result column="crad_bank" property="cradBank"/> 
+        <result column="user_name" property="userName"/> 
+        <result column="crad_number" property="cradNumber"/> 
+        <result column="status" property="status"/> 
+        <result column="transfer_imgs" property="transferImgs"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoApplyWithdrawColumns">
+        a.id AS "id",
+        a.draw_amount AS "drawAmount",
+        a.draw_fee AS "drawFee",
+        a.crad_bank AS "cradBank",
+        a.user_name AS "userName",
+        a.crad_number AS "cradNumber",
+        a.status AS "status",
+        a.transfer_imgs AS "transferImgs",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoApplyWithdrawJoins">
+        
+    </sql>
+
+
+</mapper>

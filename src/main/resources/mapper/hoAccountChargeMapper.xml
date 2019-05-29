@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.hoAccountChargeDao">
+
+    <resultMap id="hoAccountChargeResultMap" type="com.hone.entity.HoAccountCharge">
+        <id column="id" property="id"/> 
+        <result column="offer_id" property="offerId"/> 
+        <result column="out_trade_no" property="outTradeNo"/> 
+        <result column="total_fee" property="totalFee"/> 
+        <result column="charge_type" property="chargeType"/> 
+        <result column="charge_status" property="chargeStatus"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoAccountChargeColumns">
+        a.id AS "id",
+        a.offer_id AS "offerId",
+        a.out_trade_no AS "outTradeNo",
+        a.total_fee AS "totalFee",
+        a.charge_type AS "chargeType",
+        a.charge_status AS "chargeStatus",
+        a.user_id AS "userId",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoAccountChargeJoins">
+        
+    </sql>
+
+
+</mapper>

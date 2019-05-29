@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoOffersDao">
+
+    <resultMap id="hoOffersResultMap" type="com.hone.entity.HoOffers">
+        <id column="id" property="id"/> 
+        <result column="fans_num" property="fansNum"/> 
+        <result column="gender" property="gender"/> 
+        <result column="imgs" property="imgs"/> 
+        <result column="shop_plate" property="shopPlate"/> 
+        <result column="title" property="title"/> 
+        <result column="user_plate" property="userPlate"/> 
+        <result column="price" property="price"/> 
+        <result column="remarks" property="remarks"/> 
+        <result column="status" property="status"/> 
+        <result column="offer_template_id" property="offerTemplateId"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoOffersColumns">
+        a.id AS "id",
+        a.fans_num AS "fansNum",
+        a.gender AS "gender",
+        a.imgs AS "imgs",
+        a.shop_plate AS "shopPlate",
+        a.title AS "title",
+        a.user_plate AS "userPlate",
+        a.price AS "price",
+        a.remarks AS "remarks",
+        a.status AS "status",
+        a.offer_template_id AS "offerTemplateId",
+        a.user_id AS "userId",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoOffersJoins">
+        
+    </sql>
+
+
+</mapper>

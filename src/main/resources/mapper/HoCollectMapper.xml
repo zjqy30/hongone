@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoCollectDao">
+
+    <resultMap id="hoCollectResultMap" type="com.hone.entity.HoCollect">
+        <id column="id" property="id"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="object_id" property="objectId"/> 
+        <result column="collect_type" property="collectType"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoCollectColumns">
+        a.id AS "id",
+        a.user_id AS "userId",
+        a.object_id AS "objectId",
+        a.collect_type AS "collectType",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoCollectJoins">
+        
+    </sql>
+
+
+</mapper>

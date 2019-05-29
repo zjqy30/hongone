@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoWxFormidDao">
+
+    <resultMap id="hoWxFormidResultMap" type="com.hone.entity.HoWxFormid">
+        <id column="id" property="id"/> 
+        <result column="form_id" property="formId"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="open_id" property="openId"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="expire_date" property="expireDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoWxFormidColumns">
+        a.id AS "id",
+        a.form_id AS "formId",
+        a.user_id AS "userId",
+        a.open_id AS "openId",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.expire_date AS "expireDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoWxFormidJoins">
+        
+    </sql>
+
+
+</mapper>
