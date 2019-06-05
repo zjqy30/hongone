@@ -3,23 +3,32 @@
 <mapper namespace="com.hone.dao.HoBannersDao">
 
     <resultMap id="hoBannersResultMap" type="com.hone.entity.HoBanners">
-        <id column="id" property="id"/> 
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
         <result column="imgs" property="imgs"/> 
         <result column="pages" property="pages"/> 
-        <result column="sort" property="sort"/> 
+        <result column="sort" property="sort"/>
+        <result column="type" property="type"/>
+        <result column="content" property="content"/>
+        <result column="h5_url" property="h5Url"/>
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
-        <result column="enable_flag" property="enableFlag"/> 
+        <result column="enable_flag" property="enableFlag"/>
+    </resultMap>
 
-        
-        
+    <resultMap type="com.hone.entity.HoBanners" id="HoBannersResult" autoMapping="true">
+        <result column="content" property="content"   typeHandler="com.hone.system.utils.ConvertBlobTypeHandler"/>
     </resultMap>
 
     <sql id="hoBannersColumns">
         a.id AS "id",
+        a.title AS "title",
         a.imgs AS "imgs",
         a.pages AS "pages",
         a.sort AS "sort",
+        a.type AS "type",
+        a.content AS "content",
+        a.h5_url AS "h5Url",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"
@@ -28,6 +37,11 @@
     <sql id="hoBannersJoins">
         
     </sql>
+
+
+    <select id="findByPages" resultMap="HoBannersResult">
+        SELECT <include refid="hoBannersColumns"></include> from ho_banners a where a.pages=#{pages} and a.enable_flag='1' order by a.sort
+    </select>
 
 
 </mapper>

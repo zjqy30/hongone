@@ -8,13 +8,17 @@ import java.io.Serializable;
  * Date  2019-05-28
  * banner图管理
  */
-@Table(name = "HoBanners")
+@Table(name = "ho_banners")
 public class HoBanners extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String imgs;//banner图片
     private String pages;//所在页面
     private String sort;//排序
+    private String type;//类型
+    private String content;//内容
+    private String h5Url;//h5链接
+    private String title;//标题
 
 
     public HoBanners() {
@@ -46,4 +50,35 @@ public class HoBanners extends BaseEntity implements Serializable {
     }
 
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getH5Url() {
+        return h5Url;
+    }
+
+    public void setH5Url(String h5Url) {
+        this.h5Url = h5Url;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

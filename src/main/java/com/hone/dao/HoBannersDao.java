@@ -3,6 +3,9 @@ package com.hone.dao;
 import com.hone.entity.HoBanners;
 import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * Author lijia
@@ -12,4 +15,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface HoBannersDao extends TkBaseMapper<HoBanners> {
 
 
+    List<HoBanners> findByPages(@Param("pages") String pages);
 }

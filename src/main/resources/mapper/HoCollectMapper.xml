@@ -30,4 +30,16 @@
     </sql>
 
 
+    <select id="listForApi" resultType="com.hone.entity.HoCollect">
+        select
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        <include refid="hoCollectColumns"/>
+        from ho_collect a
+        left join ho_user_basic b on a.object_id = b.id
+        where a.enable_flag='1' and a.user_id=#{userId}
+        order by a.create_date desc
+    </select>
+
+
 </mapper>

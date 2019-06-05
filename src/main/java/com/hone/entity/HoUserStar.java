@@ -1,6 +1,7 @@
 package com.hone.entity;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
@@ -8,7 +9,7 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 网红扩展信息
  */
-@Table(name = "HoUserStar")
+@Table(name = "ho_user_star")
 public class HoUserStar extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -17,9 +18,15 @@ public class HoUserStar extends BaseEntity implements Serializable {
     private String personalImgs;//私人照
     private int thumbUpNums;//点赞数
     private int workNums;//作品数
-    private String platform;//平台
-    private String platformIconid;//平台图标ID
+    private String platformUserId;//平台用户ID
     private String platformId;//平台ID
+    private String platformImgs;//平台截图
+
+
+    @Transient
+    private String platformName;
+    @Transient
+    private String tags;
 
 
     public HoUserStar() {
@@ -66,20 +73,13 @@ public class HoUserStar extends BaseEntity implements Serializable {
         return workNums;
     }
 
-    public void setPlatform(String platform) {
-        this.platform = platform;
+
+    public String getPlatformUserId() {
+        return platformUserId;
     }
 
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatformIconid(String platformIconid) {
-        this.platformIconid = platformIconid;
-    }
-
-    public String getPlatformIconid() {
-        return platformIconid;
+    public void setPlatformUserId(String platformUserId) {
+        this.platformUserId = platformUserId;
     }
 
     public void setPlatformId(String platformId) {
@@ -90,5 +90,27 @@ public class HoUserStar extends BaseEntity implements Serializable {
         return platformId;
     }
 
+    public String getPlatformImgs() {
+        return platformImgs;
+    }
 
+    public void setPlatformImgs(String platformImgs) {
+        this.platformImgs = platformImgs;
+    }
+
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
 }

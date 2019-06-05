@@ -55,5 +55,45 @@
         
     </sql>
 
+    <update id="updateLogin">
+        update ho_user_basic set
+        wx_name=#{wxName},
+        avatar_url=#{avatarUrl},
+        country=#{country},
+        gender=#{gender},
+        update_date=#{updateDate}
+        where id=#{id}
+    </update>
+
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoUserBasic" statementType="STATEMENT">
+        select <include refid="hoUserBasicColumns"></include> FROM ho_user_basic a  where a.${propertyName} = '${value}'
+    </select>
+
+
+    <select id="starSelfInfo" resultType="com.hone.applet.repo.HoUserStarSelfInfo">
+        select
+        a.id as 'id',
+        a.open_id as 'openId',
+        b.platform_id as 'platFormId',
+        d.dict_value  as 'platFormName',
+        b.fans_nums as 'fansNums',
+        a.age as 'age',
+        b.thumb_up_nums as 'thumbUpNums',
+        b.work_nums as 'workNums',
+        a.has_shop as 'hasShop',
+        b.personal_imgs as 'personalImgs',
+        b.platform_imgs as 'platformImgs',
+        z.tagIds as 'tagIds'
+
+        from ho_user_basic a
+        left join ho_user_star b on a.id=b.user_id
+        left join ho_dict d on d.id=b.platform_id
+        left join (
+        select user_id as 'userId',GROUP_CONCAT(dict_id) as 'tagIds'
+        from ho_user_tag where user_id=#{userId} group by user_id
+        )z on z.userId=a.id
+        where a.id=#{userId} and a.open_id=#{openId}
+    </select>
+
 
 </mapper>

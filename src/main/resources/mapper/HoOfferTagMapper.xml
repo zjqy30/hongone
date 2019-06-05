@@ -21,5 +21,12 @@
         
     </sql>
 
+    <select id="findStringByOfferId" resultType="java.lang.String">
+       select GROUP_CONCAT(b.dict_value)
+       from ho_offer_tag  a
+       left join ho_dict b on b.id=a.dict_id
+       where offer_id=#{offerId}
+    </select>
+
 
 </mapper>

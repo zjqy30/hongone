@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * Date  2019-05-28
  * 提现申请记录
  */
-@Table(name = "HoApplyWithdraw")
+@Table(name = "ho_apply_withdraw")
 public class HoApplyWithdraw extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

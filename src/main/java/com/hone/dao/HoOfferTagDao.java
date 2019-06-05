@@ -3,6 +3,7 @@ package com.hone.dao;
 import com.hone.entity.HoOfferTag;
 import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Author lijia
@@ -12,4 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface HoOfferTagDao extends TkBaseMapper<HoOfferTag> {
 
 
+    //根据offerId 获取拼接后的 tag
+    String findStringByOfferId(@Param("offerId") String offerId);
 }

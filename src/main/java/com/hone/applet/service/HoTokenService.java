@@ -1,4 +1,4 @@
-package com.hone.service;
+package com.hone.applet.service;
 
 import com.auth0.jwt.interfaces.Claim;
 import com.hone.dao.HoTokenDao;
@@ -7,6 +7,7 @@ import com.hone.system.utils.JwtTokenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Map;
  */
 
 @Service
+@Transactional
 public class HoTokenService {
 
     @Autowired

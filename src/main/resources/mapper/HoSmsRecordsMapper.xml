@@ -30,8 +30,6 @@
     </sql>
 
 
-
-
     <update id="verifyCode">
         update ho_sms_records set enable_flag='0'
         where phone_no=#{phoneNo} and code=#{code} and enable_flag='1' and expire_date &gt; now()

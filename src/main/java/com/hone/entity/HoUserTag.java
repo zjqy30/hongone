@@ -1,6 +1,7 @@
 package com.hone.entity;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
@@ -8,12 +9,15 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 网红用户技能
  */
-@Table(name = "HoUserTag")
+@Table(name = "ho_user_tag")
 public class HoUserTag extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String userId;
     private String dictId;//字典表ID
+
+    @Transient
+    private String dictValue;
 
 
     public HoUserTag() {
@@ -36,4 +40,11 @@ public class HoUserTag extends BaseEntity implements Serializable {
         return dictId;
     }
 
+    public String getDictValue() {
+        return dictValue;
+    }
+
+    public void setDictValue(String dictValue) {
+        this.dictValue = dictValue;
+    }
 }

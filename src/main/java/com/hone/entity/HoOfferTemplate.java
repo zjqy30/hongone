@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 需求模板
  */
-@Table(name = "HoOfferTemplate")
+@Table(name = "ho_offer_template")
 public class HoOfferTemplate extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

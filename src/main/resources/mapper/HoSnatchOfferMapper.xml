@@ -30,4 +30,9 @@
     </sql>
 
 
+    <select id="findByOfferIdAndUserId" resultType="com.hone.entity.HoSnatchOffer">
+        select <include refid="hoSnatchOfferColumns"/> from ho_snatch_offer a where a.offer_id=#{offerId} and a.user_id=#{userId} and a.enable_flag='1'
+    </select>
+
+
 </mapper>

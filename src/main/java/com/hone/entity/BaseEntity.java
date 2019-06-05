@@ -2,6 +2,7 @@ package com.hone.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hone.system.utils.IdUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -55,7 +56,9 @@ public class BaseEntity {
     }
 
     public void preInsert(){
-        this.id= IdUtils.uuid();
+        if(StringUtils.isEmpty(this.id)){
+            this.id= IdUtils.uuid();
+        }
         Date now=new Date();
         this.createDate=now;
         this.updateDate=now;

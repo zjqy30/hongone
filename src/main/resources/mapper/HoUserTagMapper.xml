@@ -5,21 +5,31 @@
     <resultMap id="hoUserTagResultMap" type="com.hone.entity.HoUserTag">
         <id column="id" property="id"/> 
         <result column="user_id" property="userId"/> 
-        <result column="dict_id" property="dictId"/> 
-
-        
-        
+        <result column="dict_id" property="dictId"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="enable_flag" property="enableFlag"/>
     </resultMap>
 
     <sql id="hoUserTagColumns">
         a.id AS "id",
         a.user_id AS "userId",
-        a.dict_id AS "dictId"
+        a.dict_id AS "dictId",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
     </sql>
 
     <sql id="hoUserTagJoins">
         
     </sql>
+
+    <select id="findListByUserId" resultType="com.hone.entity.HoUserTag">
+      select <include refid="hoUserTagColumns"></include>,b.dict_value as 'dictValue'
+      from ho_user_tag a
+      left join ho_dict b on b.id=a.dict_id
+      where a.enable_flag='1' and a.user_id=#{userId}
+    </select>
 
 
 </mapper>

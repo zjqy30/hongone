@@ -8,9 +8,9 @@
         <result column="fans_nums" property="fansNums"/> 
         <result column="personal_imgs" property="personalImgs"/> 
         <result column="thumb_up_nums" property="thumbUpNums"/> 
-        <result column="work_nums" property="workNums"/> 
-        <result column="platform" property="platform"/> 
-        <result column="platform_iconid" property="platformIconid"/> 
+        <result column="work_nums" property="workNums"/>
+        <result column="platform_imgs" property="platformImgs"/>
+        <result column="platform_user_id" property="platformUserId"/>
         <result column="platform_id" property="platformId"/> 
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
@@ -27,8 +27,8 @@
         a.personal_imgs AS "personalImgs",
         a.thumb_up_nums AS "thumbUpNums",
         a.work_nums AS "workNums",
-        a.platform AS "platform",
-        a.platform_iconid AS "platformIconid",
+        a.platform_imgs AS "platformImgs",
+        a.platform_user_id AS "platformUserId",
         a.platform_id AS "platformId",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
@@ -38,6 +38,36 @@
     <sql id="hoUserStarJoins">
         
     </sql>
+
+
+    <select id="listByStar" resultType="com.hone.applet.repo.HoUserStarListRepo">
+      select
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        b.id as 'userId',
+        a.fans_nums as 'fansNum',
+        d.dict_value as 'platName'
+      from ho_user_star a
+      left join ho_user_basic b on a.user_id=b.id
+      left join ho_dict d on d.dict_type='platType' and d.id=a.platform_id
+      where 1=1
+      <if test="platformId!=null and platformId!=''">
+         and a.platform_id=#{platformId}
+      </if>
+      <if test="tagList!=null and tagList.size > 0">
+          AND b.id in
+          (
+          select DISTINCT(user_id) as 'userId'
+           from ho_user_tag where  1=1 and dict_id in
+          <foreach collection="tagList" item="tagId" open="(" separator="," close=")">#{tagId}</foreach>
+          )
+      </if>
+        order  by  b.create_date desc
+    </select>
+
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoUserStar" statementType="STATEMENT">
+        select <include refid="hoUserStarColumns"></include> FROM ho_user_star a  where a.${propertyName} = '${value}'
+    </select>
 
 
 </mapper>

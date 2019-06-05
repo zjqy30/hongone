@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * Date  2019-05-28
  * 平台交易流水，只记录交易成功
  */
-@Table(name = "HoPayFlow")
+@Table(name = "ho_pay_flow")
 public class HoPayFlow extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

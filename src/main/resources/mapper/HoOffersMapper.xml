@@ -46,4 +46,87 @@
     </sql>
 
 
+    <select id="listForApiNoTag" resultType="com.hone.applet.repo.HoOffersListRepo">
+        select
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        a.title as 'offerTitle',
+        a.imgs as 'offerPic',
+        a.fans_num as 'fanNums',
+        a.price as 'price',
+        a.id as 'id',
+        c.offersTag as 'tag'
+        from ho_offers a
+        left join ho_user_basic b on a.user_id = b.id
+        left join (
+        select
+        a.offer_id as 'offerId',
+        GROUP_CONCAT(b.dict_value) as 'offersTag',
+        GROUP_CONCAT(b.id) as 'offersTagId'
+        from ho_offer_tag a
+        left join  ho_dict b on b.id =a.dict_id
+        group by a.offer_id
+        ) c on c.offerId=a.id
+        where
+        1=1
+        and a.status='3'
+        order by a.create_date desc
+    </select>
+
+
+    <select id="listForApiTag" resultType="com.hone.applet.repo.HoOffersListRepo">
+
+       select
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        a.title as 'offerTitle',
+        a.imgs as 'offerPic',
+        a.fans_num as 'fanNums',
+        a.price as 'price',
+        a.id as 'id',
+        c.offersTag as 'tag'
+        from ho_offers a
+        left join ho_user_basic b on a.user_id = b.id
+        left join (
+        select
+        a.offer_id as 'offerId',
+        GROUP_CONCAT(b.dict_value) as 'offersTag',
+        GROUP_CONCAT(b.id) as 'offersTagId'
+        from ho_offer_tag a
+        left join  ho_dict b on b.id =a.dict_id
+        group by a.offer_id
+        ) c on c.offerId=a.id
+        where
+        1=1
+        and  a.status='3'
+		and  a.id in
+		(select DISTINCT(offer_id) as 'offerId' from ho_offer_tag
+		where
+        1=1
+        <if test="tagList != null and tagList.size > 0">
+            AND dict_id in
+            <foreach collection="tagList" item="tagId" open="(" separator="," close=")">#{tagId}</foreach>
+        </if>
+		)
+        order by a.create_date desc
+
+    </select>
+
+    <select id="detailsById" resultType="com.hone.applet.repo.HoOfferInfoRepo">
+        select
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        a.shop_plate as 'shopPlate',
+        a.user_plate as 'starPlate',
+        a.fans_num as 'fanNums',
+        a.title as 'offerTitle',
+        a.remarks as 'remarks',
+        a.imgs as 'offerPic',
+        a.status as 'status'
+        from ho_offers a
+        left join ho_user_basic b on a.user_id=b.id
+        where a.id=#{id}
+    </select>
+
+
 </mapper>

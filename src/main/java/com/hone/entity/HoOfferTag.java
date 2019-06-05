@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 需求-标签中间表
  */
-@Table(name = "HoOfferTag")
+@Table(name = "ho_offer_tag")
 public class HoOfferTag extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

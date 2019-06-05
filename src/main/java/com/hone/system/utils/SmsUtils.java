@@ -3,15 +3,13 @@ package com.hone.system.utils;
 import com.github.qcloudsms.SmsMultiSender;
 import com.github.qcloudsms.SmsMultiSenderResult;
 import com.hone.entity.HoSmsRecords;
-import com.hone.pc.www.controller.HoWebsiteMessageController;
-import com.hone.service.HoSmsRecordsService;
+import com.hone.applet.service.HoSmsRecordsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import sun.security.provider.MD5;
 
 import java.util.Calendar;
 import java.util.Date;

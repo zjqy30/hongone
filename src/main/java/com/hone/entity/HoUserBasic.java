@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 用户基本信息
  */
-@Table(name = "HoUserBasic")
+@Table(name = "ho_user_basic")
 public class HoUserBasic extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -24,10 +24,10 @@ public class HoUserBasic extends BaseEntity implements Serializable {
     private String hasShop;//是否开店
     private String idCardNumber;//身份证号码
     private String encryptedData;//微信私密信息，解密后可获取手机号
-    private String gender;//用户性别
+    private String gender;//用户性别 1：男、2：女
     private String avatarUrl;//微信头像
     private String country;//所在城市
-    private int age;//年龄
+    private Integer age;//年龄
 
 
     public HoUserBasic() {
@@ -154,13 +154,11 @@ public class HoUserBasic extends BaseEntity implements Serializable {
         return country;
     }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 }

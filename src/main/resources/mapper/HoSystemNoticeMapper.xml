@@ -26,4 +26,9 @@
     </sql>
 
 
+    <select id="list" resultType="com.hone.entity.HoSystemNotice">
+      select <include refid="hoSystemNoticeColumns"></include> from ho_system_notice a  where a.enable_flag='1' order by a.create_date desc
+    </select>
+
+
 </mapper>

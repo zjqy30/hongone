@@ -23,6 +23,11 @@ public class ApiInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
+        //跨域
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Credentials", "true");
+        response.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type,token");
+
         long beginTime = System.currentTimeMillis();
         startTimeThreadLocal.set(beginTime);
 

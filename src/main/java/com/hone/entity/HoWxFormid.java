@@ -12,7 +12,7 @@ import java.sql.Timestamp;
  * Date  2019-05-28
  * 微信模板消息
  */
-@Table(name = "HoWxFormid")
+@Table(name = "ho_wx_formid")
 public class HoWxFormid extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

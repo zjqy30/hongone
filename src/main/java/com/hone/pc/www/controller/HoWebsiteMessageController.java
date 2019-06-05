@@ -1,11 +1,7 @@
 package com.hone.pc.www.controller;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.hone.entity.HoSmsRecords;
-import com.hone.entity.HoWebsiteMessage;
 import com.hone.pc.www.service.HoWebsiteMessageService;
-import com.hone.service.HoSmsRecordsService;
-import com.hone.service.HoTokenService;
+import com.hone.applet.service.HoTokenService;
 import com.hone.system.utils.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 /**
  * Created by Lijia on 2019/5/20.

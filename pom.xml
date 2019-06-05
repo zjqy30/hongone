@@ -53,11 +53,12 @@
 		</dependency>
 
 		<!--springboot热部署-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-devtools</artifactId>-->
+			<!--<optional>true</optional>-->
+		<!--</dependency>-->
+
 
 		<!--阿里巴巴连接池-->
 		<dependency>
@@ -110,9 +111,9 @@
 			<version>1.0.6</version>
 		</dependency>
 
+
+
 	</dependencies>
-
-
 	<build>
 		<!--打成war包的名字-->
 		<finalName>hone</finalName>
@@ -120,9 +121,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<fork>true</fork>
-				</configuration>
 			</plugin>
 		</plugins>
 	</build>
