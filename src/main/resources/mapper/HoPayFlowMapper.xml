@@ -35,5 +35,15 @@
         
     </sql>
 
+    <select id="findByOfferIdAndType" resultType="com.hone.entity.HoPayFlow">
+      select <include refid="hoPayFlowColumns"/> from ho_pay_flow a
+        where a.offer_id=#{offerId} and a.trans_type=#{type}
+    </select>
+
+    <select id="findByOutTradeNo" resultType="com.hone.entity.HoPayFlow">
+        select <include refid="hoPayFlowColumns"/> from ho_pay_flow a
+        where a.out_trade_no=#{outTradeNo}
+    </select>
+
 
 </mapper>

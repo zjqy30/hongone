@@ -42,6 +42,21 @@ public class HoApplyWithdrawController {
     }
 
 
+    @RequestMapping("/apply")
+    public JsonResult apply(@RequestBody Map<String,String> params){
+        logger.info("申请提现");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoApplyWithdrawService.apply(params);
+        }catch (Exception e){
+            logger.error("申请提现",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
 
 
 }

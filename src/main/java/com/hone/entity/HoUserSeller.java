@@ -15,6 +15,7 @@ public class HoUserSeller extends BaseEntity implements Serializable {
     private String userId;
     private String businessLicense;//营业证书
     private String industryId;//所属行业 对应 dictId
+    private String certLicense;//授权证书
 
 
     public HoUserSeller() {
@@ -45,4 +46,11 @@ public class HoUserSeller extends BaseEntity implements Serializable {
         return industryId;
     }
 
+    public String getCertLicense() {
+        return certLicense;
+    }
+
+    public void setCertLicense(String certLicense) {
+        this.certLicense = certLicense;
+    }
 }

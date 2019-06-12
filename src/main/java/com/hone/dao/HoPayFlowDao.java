@@ -3,6 +3,7 @@ package com.hone.dao;
 import com.hone.entity.HoPayFlow;
 import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Author lijia
@@ -12,4 +13,7 @@ import org.apache.ibatis.annotations.Mapper;
 public interface HoPayFlowDao extends TkBaseMapper<HoPayFlow> {
 
 
+    HoPayFlow findByOfferIdAndType(@Param("offerId") String offerId, @Param("type") String type);
+
+    HoPayFlow findByOutTradeNo(@Param("outTradeNo") String outTradeNo);
 }

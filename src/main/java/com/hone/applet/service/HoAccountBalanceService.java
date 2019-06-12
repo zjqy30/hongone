@@ -5,6 +5,7 @@ import com.hone.dao.HoAccountBalanceDao;
 import com.hone.entity.HoAccountBalance;
 import com.hone.entity.HoApplyWithdraw;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.ParamsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,28 @@ public class HoAccountBalanceService {
     }
 
 
+    /**
+     * 账户余额
+     * @param params
+     * @return
+     */
+    public JsonResult accoutBalance(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
 
+        String userId=params.get("userId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId"});
+
+        HoAccountBalance hoAccountBalance=hoAccountBalanceDao.findUniqueByProperty("user_id",userId);
+        if(hoAccountBalance==null){
+            hoAccountBalance=new HoAccountBalance();
+            hoAccountBalance.setAvaiableBalance("0");
+            hoAccountBalance.setUserId(userId);
+            hoAccountBalance.preInsert();
+            hoAccountBalanceDao.insert(hoAccountBalance);
+        }
+        jsonResult.getData().put("accountBalance",hoAccountBalance);
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
 }

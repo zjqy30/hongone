@@ -2,6 +2,8 @@ package com.hone.dao;
 
 import com.hone.applet.repo.HoOfferInfoRepo;
 import com.hone.applet.repo.HoOffersListRepo;
+import com.hone.applet.repo.HoSellerOfferListRepo;
+import com.hone.applet.repo.HoStarSnatchOfferRepo;
 import com.hone.entity.HoOffers;
 import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -23,4 +25,8 @@ public interface HoOffersDao extends TkBaseMapper<HoOffers> {
     List<HoOffersListRepo> listForApiTag(@Param("tagList") List<String> tagList);
 
     HoOfferInfoRepo detailsById(@Param("id") String id);
+
+    List<HoStarSnatchOfferRepo> starSnatchList(@Param("starUserId") String starUserId, @Param("type") String type);
+
+    List<HoSellerOfferListRepo> sellerOfferList(@Param("userId") String userId,@Param("type") String type);
 }

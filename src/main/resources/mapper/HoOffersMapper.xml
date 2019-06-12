@@ -129,4 +129,69 @@
     </select>
 
 
+    <select id="starSnatchList" resultType="com.hone.applet.repo.HoStarSnatchOfferRepo">
+         select
+         a.id as 'id',
+         c.avatar_url as 'headPic',
+         c.wx_name as 'wxName',
+         a.title as 'title',
+         a.fans_num as 'fansNum',
+         z.tags as 'tags'
+         from ho_offers a
+         left join ho_snatch_offer b on a.id=b.offer_id
+         left join ho_user_basic c on c.id=a.user_id
+         left join
+         (
+         select a.offer_id as 'offerId' ,GROUP_CONCAT(b.dict_value) as 'tags'
+         from ho_offer_tag a left join ho_dict b on a.dict_id=b.id group by a.offer_id
+         ) z on z.offerId=a.id
+         where b.user_id=#{starUserId}
+        <if test="type!=null and type=='2'.toString()">
+                  <!--进行中-->
+            and a.status='LK'
+        </if>
+        <if test="type!=null and type=='3'.toString()">
+                 <!--已完成-->
+            and a.status in ('FN','CO')
+        </if>
+         order by b.create_date desc
+    </select>
+
+
+
+    <select id="sellerOfferList" resultType="com.hone.applet.repo.HoSellerOfferListRepo">
+        select
+        a.id as 'id',
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        a.imgs as 'pic',
+        a.fans_num as 'fansNum',
+        c.title as 'title',
+        z.tags as 'tags',
+        <if test="type!=null and (type=='LK'.toString() or type=='FN'.toString())">
+            b.phone_no as 'phoneNo',
+            b.id as 'starIds',
+        </if>
+        a.status as 'status'
+        from ho_offers a
+        <if test="type!=null and (type=='CR'.toString() or type=='AP'.toString())">
+            left join ho_user_basic b on a.user_id=b.id
+        </if>
+        <if test="type!=null and (type=='LK'.toString() or type=='FN'.toString())">
+            left join ho_snatch_offer d on d.offer_id = a.id and d.if_select='1'
+            left join ho_user_basic b on b.id=d.user_id
+        </if>
+        left join ho_offer_template c on c.id=a.offer_template_id
+        left join
+         (
+         select a.offer_id as 'offerId' ,GROUP_CONCAT(b.dict_value) as 'tags'
+         from ho_offer_tag a left join ho_dict b on a.dict_id=b.id group by a.offer_id
+         ) z on z.offerId=a.id
+        where
+        a.user_id=#{userId}
+        and a.status=#{type}
+        order by a.create_date desc
+    </select>
+
+
 </mapper>

@@ -28,6 +28,23 @@ public class DateUtils {
         return new SimpleDateFormat(format).format(date);
     }
 
+
+    /**
+     * 获取当前时间 格式为 yyyy-MM-dd
+     * @return
+     */
+    public static  String YYYYMMDD(){
+        return new SimpleDateFormat("yyyyMMdd").format(new Date());
+    }
+
+    /**
+     * 获取当前时间 格式为 yyyy-MM
+     * @return
+     */
+    public static  String YYYYMM(){
+        return new SimpleDateFormat("yyyyMM").format(new Date());
+    }
+
     /**
      *  日期转字符串
      *

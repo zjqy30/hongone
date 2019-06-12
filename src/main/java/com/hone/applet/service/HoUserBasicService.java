@@ -45,6 +45,9 @@ public class HoUserBasicService {
     private HoUserSellerDao hoUserSellerDao;
     @Autowired
     private HoDictDao hoDictDao;
+    @Autowired
+    private HoSmsRecordsDao hoSmsRecordsDao;
+
 
 
     public HoUserBasic findByOpenId(String openid) {
@@ -104,6 +107,9 @@ public class HoUserBasicService {
             hoUserBasicDao.insert(hoUserBasic);
         }
         jsonResult.getData().put("userId", hoUserBasic.getId());
+        jsonResult.getData().put("openid", hoUserBasic.getOpenId());
+        jsonResult.getData().put("userType", hoUserBasic.getUserType());
+        jsonResult.getData().put("ifApproved", hoUserBasic.getIfApproved());
         jsonResult.globalSuccess();
         return jsonResult;
     }
@@ -128,20 +134,32 @@ public class HoUserBasicService {
         String workNums = params.get("workNums");
         String hasShop = params.get("hasShop");
         String abilityIds = params.get("abilityIds");
+        String inviteCode=params.get("inviteCode");
         String personalImgs = params.get("personalImgs");
         String idCardPic = params.get("idCardPic");
         String idCardUpPic = params.get("idCardUpPic");
         String idCardDownPic = params.get("idCardDownPic");
         String idCardNumber = params.get("idCardNumber");
         String openid = params.get("openid");
+        String userId = params.get("userId");
 
-        String strings[] = new String[]{"platFormImgs", "openid", "platFormId", "platFormUserId", "fanNums", "age", "thumpUpNums", "workNums", "hasShop", "abilityIds", "personalImgs", "idCardPic", "idCardUpPic", "idCardDownPic", "idCardNumber"};
+        String strings[] = new String[]{"userId","platFormImgs", "openid", "platFormId", "platFormUserId", "fanNums", "age", "thumpUpNums", "workNums", "hasShop", "abilityIds", "personalImgs", "idCardPic", "idCardUpPic", "idCardDownPic", "idCardNumber"};
         ParamsUtil.checkParamIfNull(params, strings);
 
         //查询用户
         HoUserBasic hoUserBasic = findByOpenId(openid);
-        if (hoUserBasic == null) {
+        if (hoUserBasic == null||!hoUserBasic.getId().equals(userId)) {
             jsonResult.globalError("用户不存在");
+            return jsonResult;
+        }
+
+        if(Double.valueOf(hoUserBasic.getIfApproved())==1){
+            jsonResult.globalError("用户已审核");
+            return jsonResult;
+        }
+
+        if(Double.valueOf(hoUserBasic.getIfApproved())==0){
+            jsonResult.globalError("用户正在审核");
             return jsonResult;
         }
 
@@ -167,6 +185,15 @@ public class HoUserBasicService {
         hoUserBasic.setIdCardUpPic(idCardUpPic);
         hoUserBasic.setIdCardNumber(idCardNumber);
         hoUserBasic.setAge(Integer.parseInt(age));
+        //邀请码
+        if (StringUtils.isNotEmpty(inviteCode)) {
+            HoMarketer hoMarketer = new HoMarketer();
+            hoMarketer.setUserCode(inviteCode);
+            hoMarketer = hoMarketerDao.selectOne(hoMarketer);
+            if (hoMarketer.getId() != null) {
+                hoUserBasic.setMarketerId(hoMarketer.getId());
+            }
+        }
         hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
 
         //保存网红技能
@@ -522,6 +549,137 @@ public class HoUserBasicService {
                 hoUserTagDao.insert(tag);
             }
         }
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 绑定手机号
+     * @param params
+     * @return
+     */
+    public JsonResult bindPhone(Map<String, String> params) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+
+        String phoneNo=params.get("phoneNo");
+        String code=params.get("code");
+        String userId=params.get("userId");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId","code","phoneNo"});
+
+        int result=hoSmsRecordsDao.verifyCode(phoneNo,code);
+        if(result<0){
+            jsonResult.globalError("验证码错误或失效");
+            return jsonResult;
+        }
+
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
+        if(hoUserBasic==null){
+            jsonResult.globalError("用户不存在");
+            return jsonResult;
+        }
+
+        hoUserBasic.setPhoneNo(phoneNo);
+        hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 查看是否绑定手机号
+     * @param params
+     * @return
+     */
+    public JsonResult ifBindPhone(Map<String, String> params) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+
+        String userId=params.get("userId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId"});
+        String ifBindPhone="1";
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
+        if(hoUserBasic==null){
+            jsonResult.globalError("用户不存在");
+            return jsonResult;
+        }
+        if(StringUtils.isEmpty(hoUserBasic.getPhoneNo())){
+            ifBindPhone="0";
+        }
+
+        jsonResult.getData().put("ifBindPhone",ifBindPhone);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 商家用户申请认证
+     * @param params
+     * @return
+     */
+    public JsonResult sellerApplyApproved(Map<String, String> params) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+
+        String idCardNumber=params.get("idCardNumber");
+        String inviteCode=params.get("inviteCode");
+        String industryId=params.get("industryId");
+        String idCardPic = params.get("idCardPic");
+        String idCardUpPic = params.get("idCardUpPic");
+        String idCardDownPic = params.get("idCardDownPic");
+        String businessLicense=params.get("businessLicense");
+        String certLicense=params.get("certLicense");
+        String userId=params.get("userId");
+        String openId=params.get("openid");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"openid","userId","idCardDownPic","idCardUpPic","idCardPic","industryId","idCardNumber"});
+
+        //查询用户
+        HoUserBasic hoUserBasic = findByOpenId(openId);
+        if (hoUserBasic == null||!hoUserBasic.getId().equals(userId)) {
+            jsonResult.globalError("用户不存在");
+            return jsonResult;
+        }
+
+        if(Double.valueOf(hoUserBasic.getIfApproved())==1){
+            jsonResult.globalError("用户已审核");
+            return jsonResult;
+        }
+
+        if(Double.valueOf(hoUserBasic.getIfApproved())==0){
+            jsonResult.globalError("用户正在审核");
+            return jsonResult;
+        }
+
+        //更新 hoUserBasic
+        hoUserBasic.setUserType("2");
+        hoUserBasic.setIfApproved("0");
+        hoUserBasic.setIdCardDownPic(idCardDownPic);
+        hoUserBasic.setIdCardPic(idCardPic);
+        hoUserBasic.setIdCardDownPic(idCardDownPic);
+        hoUserBasic.setIdCardUpPic(idCardUpPic);
+        hoUserBasic.setIdCardNumber(idCardNumber);
+        //邀请码
+        if (StringUtils.isNotEmpty(inviteCode)) {
+            HoMarketer hoMarketer = new HoMarketer();
+            hoMarketer.setUserCode(inviteCode);
+            hoMarketer = hoMarketerDao.selectOne(hoMarketer);
+            if (hoMarketer.getId() != null) {
+                hoUserBasic.setMarketerId(hoMarketer.getId());
+            }
+        }
+        hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
+
+        //插入 HoUserSeller
+        HoUserSeller hoUserSeller=new HoUserSeller();
+        hoUserSeller.setIndustryId(industryId);
+        hoUserSeller.setBusinessLicense(businessLicense);
+        hoUserSeller.setUserId(userId);
+        hoUserSeller.setCertLicense(certLicense);
+        hoUserSeller.preInsert();
+        hoUserSellerDao.insert(hoUserSeller);
 
         jsonResult.globalSuccess();
         return jsonResult;

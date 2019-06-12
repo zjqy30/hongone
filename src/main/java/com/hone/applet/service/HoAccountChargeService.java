@@ -6,6 +6,8 @@ import com.hone.dao.HoAccountChargeDao;
 import com.hone.entity.HoAccountBalance;
 import com.hone.entity.HoAccountCharge;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.Page;
+import com.hone.system.utils.ParamsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,5 +79,25 @@ public class HoAccountChargeService {
     }
 
 
+    /**
+     * 账户变动记录
+     * @param params
+     * @return
+     */
+    public JsonResult list(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
 
+        Integer pageNumber=Integer.parseInt(params.get("pageNumber"));
+        Integer pageSize=Integer.parseInt(params.get("pageSize"));
+        String userId=params.get("userId");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"pageSize","pageNumber","userId"});
+
+        List<HoAccountCharge> chargeList=hoAccountChargeDao.listForApi(userId);
+        Page<HoAccountCharge> page=new Page<>(pageNumber,pageSize,chargeList);
+
+        jsonResult.getData().put("pageData",page);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
 }

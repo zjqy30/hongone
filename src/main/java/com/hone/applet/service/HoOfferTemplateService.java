@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -59,4 +60,17 @@ public class HoOfferTemplateService {
         return jsonResult;
     }
 
+
+    /**
+     * 模板列表
+     * @param params
+     * @return
+     */
+    public JsonResult list(Map<String, String> params) {
+        JsonResult jsonResult=new JsonResult();
+        List<HoOfferTemplate> templateList=hoOfferTemplateDao.listAll();
+        jsonResult.getData().put("templateList",templateList);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
 }

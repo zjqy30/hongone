@@ -32,4 +32,9 @@
     </sql>
 
 
+    <select id="listAll" resultType="com.hone.entity.HoOfferTemplate">
+        SELECT <include refid="hoOfferTemplateColumns"/> from ho_offer_template a where a.enable_flag='1' order by a.update_date desc
+    </select>
+
+
 </mapper>

@@ -36,4 +36,9 @@
     </sql>
 
 
+    <select id="listForApi" resultType="com.hone.entity.HoAccountCharge">
+        select <include refid="hoAccountChargeColumns"/> from ho_account_charge a   where a.user_id=#{userId} order by a.create_date desc
+    </select>
+
+
 </mapper>

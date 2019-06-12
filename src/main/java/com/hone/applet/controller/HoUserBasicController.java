@@ -175,4 +175,51 @@ public class HoUserBasicController {
     }
 
 
+    @RequestMapping("/bindPhone")
+    public JsonResult bindPhone(@RequestBody Map<String,String> params){
+        logger.info("绑定手机号");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoUserBasicService.bindPhone(params);
+        }catch (Exception e){
+            logger.error("绑定手机号",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+
+    @RequestMapping("/ifBindPhone")
+    public JsonResult ifBindPhone(@RequestBody Map<String,String> params){
+        logger.info("查看是否绑定手机号");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoUserBasicService.ifBindPhone(params);
+        }catch (Exception e){
+            logger.error("查看是否绑定手机号",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+
+    @RequestMapping("/seller/applyApproved")
+    public JsonResult sellerApplyApproved(@RequestBody Map<String,String> params){
+        logger.info("商家用户申请认证");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoUserBasicService.sellerApplyApproved(params);
+        }catch (Exception e){
+            logger.error("商家用户申请认证",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
 }

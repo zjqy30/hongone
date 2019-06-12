@@ -58,4 +58,13 @@ public class WxController {
         return jsonResult;
     }
 
+    public static void main(String[] args){
+        System.out.println(String.format("www:%s:com","baidu"));//www.baidu.com
+        System.out.println(String.format("www:%c:com",'a'));//www.a.com
+        System.out.println(String.format("%+d",5));//+5
+        System.out.println(String.format("%d",10/3));//3
+        System.out.println(String.format("%03d",5));//005
+        System.out.println(String.format("%,f",100000.0));//100,000.000000
+    }
+
 }

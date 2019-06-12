@@ -2,10 +2,15 @@ package com.hone.applet.service;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.hone.dao.HoAccountBalanceDao;
+import com.hone.dao.HoAccountChargeDao;
 import com.hone.dao.HoApplyWithdrawDao;
+import com.hone.entity.HoAccountBalance;
+import com.hone.entity.HoAccountCharge;
 import com.hone.entity.HoApplyWithdraw;
 import com.hone.entity.HoUserBasic;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.ParamsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +33,10 @@ public class HoApplyWithdrawService {
 
     @Autowired
     private HoApplyWithdrawDao hoApplyWithdrawDao;
+    @Autowired
+    private HoAccountBalanceDao hoAccountBalanceDao;
+    @Autowired
+    private HoAccountChargeDao hoAccountChargeDao;
 
     public JsonResult initData(Map<String, String> params) throws Exception {
         JsonResult jsonResult=new JsonResult();
@@ -61,6 +70,69 @@ public class HoApplyWithdrawService {
         }
 
         bufferedReader.close();
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+    /**
+     * 申请提现
+     * @param params
+     * @return
+     */
+    public JsonResult apply(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String receiver=params.get("receiver");
+        String cardNo=params.get("cardNo");
+        String bankName=params.get("bankName");
+        String drawAmount=params.get("drawAmount");
+        String userId=params.get("userId");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId","drawAmount","bankName","cardNo","receiver"});
+
+        if(Double.valueOf(drawAmount)<100){
+            jsonResult.globalError("提现余额至少100");
+            return jsonResult;
+        }
+
+
+        HoAccountBalance hoAccountBalance=hoAccountBalanceDao.findUniqueByProperty("user_id",userId);
+        if(hoAccountBalance==null){
+            hoAccountBalance=new HoAccountBalance();
+            hoAccountBalance.setAvaiableBalance("0");
+            hoAccountBalance.setUserId(userId);
+            hoAccountBalance.preInsert();
+            hoAccountBalanceDao.insert(hoAccountBalance);
+        }
+        if(Double.valueOf(drawAmount)>Double.valueOf(hoAccountBalance.getAvaiableBalance())){
+            jsonResult.globalError("提现余额有误");
+            return jsonResult;
+        }
+        //插入提现记录
+        HoApplyWithdraw hoApplyWithdraw=new HoApplyWithdraw();
+        hoApplyWithdraw.setUserName(receiver);
+        hoApplyWithdraw.setCradNumber(cardNo);
+        hoApplyWithdraw.setCradBank(bankName);
+        hoApplyWithdraw.setStatus("0");
+        hoApplyWithdraw.setDrawFee(new BigDecimal(Double.valueOf(drawAmount)*0.01));
+        hoApplyWithdraw.setDrawAmount(new BigDecimal(drawAmount).subtract(hoApplyWithdraw.getDrawFee()));
+        hoApplyWithdraw.preInsert();
+        hoApplyWithdrawDao.insert(hoApplyWithdraw);
+
+        //更新账户余额
+        Double balance= Double.valueOf(hoAccountBalance.getAvaiableBalance())-Double.valueOf(drawAmount);
+        hoAccountBalance.setAvaiableBalance(balance.toString());
+        hoAccountBalanceDao.updateByPrimaryKeySelective(hoAccountBalance);
+
+        //插入账户交易记录
+        HoAccountCharge hoAccountCharge=new HoAccountCharge();
+        hoAccountCharge.setUserId(userId);
+        hoAccountCharge.setTotalFee(new BigDecimal(drawAmount));
+        hoAccountCharge.setChargeType("DR");
+        hoAccountCharge.setChargeStatus("2");//待审核
+        hoAccountCharge.preInsert();
+        hoAccountChargeDao.insert(hoAccountCharge);
 
         jsonResult.globalSuccess();
         return jsonResult;

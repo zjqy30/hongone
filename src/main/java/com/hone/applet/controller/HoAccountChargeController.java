@@ -42,6 +42,23 @@ public class HoAccountChargeController {
     }
 
 
+    @RequestMapping("/list")
+    public JsonResult list(@RequestBody Map<String,String> params){
+        logger.info("账户变动记录");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoAccountChargeService.list(params);
+        }catch (Exception e){
+            logger.error("账户变动记录",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+
+
 
 
 }

@@ -28,4 +28,8 @@
     </sql>
 
 
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoAccountBalance" statementType="STATEMENT">
+        select <include refid="hoAccountBalanceColumns"></include> FROM ho_account_balance a  where a.${propertyName} = '${value}'
+    </select>
+
 </mapper>

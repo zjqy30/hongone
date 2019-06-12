@@ -34,5 +34,14 @@
         select <include refid="hoSnatchOfferColumns"/> from ho_snatch_offer a where a.offer_id=#{offerId} and a.user_id=#{userId} and a.enable_flag='1'
     </select>
 
+    <select id="findByOfferId" resultType="com.hone.entity.HoSnatchOffer">
+        select <include refid="hoSnatchOfferColumns"/> from ho_snatch_offer a where a.offer_id=#{offerId}  and a.enable_flag='1'
+    </select>
+
+    <select id="findByOfferIdSelect" resultType="com.hone.entity.HoSnatchOffer">
+        select <include refid="hoSnatchOfferColumns"/> from ho_snatch_offer a
+        where a.offer_id=#{offerId}  and a.enable_flag='1' and a.if_select='1'
+    </select>
+
 
 </mapper>

@@ -43,6 +43,20 @@ public class HoAccountBalanceController {
     }
 
 
+    @RequestMapping("/findByUser")
+    public JsonResult accoutBalance(@RequestBody Map<String,String> params){
+        logger.info("账户余额");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoAccountBalanceService.accoutBalance(params);
+        }catch (Exception e){
+            logger.error("账户余额",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 
 
 }

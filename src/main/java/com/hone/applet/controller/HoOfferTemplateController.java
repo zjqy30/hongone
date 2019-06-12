@@ -41,6 +41,20 @@ public class HoOfferTemplateController {
         return jsonResult;
     }
 
+    @RequestMapping("/list")
+    public JsonResult list(@RequestBody Map<String,String> params){
+        logger.info("模板列表");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoOfferTemplateService.list(params);
+        }catch (Exception e){
+            logger.error("模板列表",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 
 
 

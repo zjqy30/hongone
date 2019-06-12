@@ -4,21 +4,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.hone.applet.repo.HoOfferInfoRepo;
 import com.hone.applet.repo.HoOffersListRepo;
-import com.hone.dao.HoOfferTagDao;
-import com.hone.dao.HoOffersDao;
-import com.hone.dao.HoSnatchOfferDao;
-import com.hone.entity.HoOffers;
-import com.hone.entity.HoSnatchOffer;
+import com.hone.applet.repo.HoSellerOfferListRepo;
+import com.hone.applet.repo.HoStarSnatchOfferRepo;
+import com.hone.dao.*;
+import com.hone.entity.*;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
+import com.hone.system.utils.wxpay.OutTradeNoUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.PortableInterceptor.HOLDING;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +41,16 @@ public class HoOffersService {
     private HoOfferTagDao hoOfferTagDao;
     @Autowired
     private HoSnatchOfferDao hoSnatchOfferDao;
+    @Autowired
+    private HoUserBasicDao hoUserBasicDao;
+    @Autowired
+    private HoOfferTemplateDao hoOfferTemplateDao;
+    @Autowired
+    private HoWxPayService hoWxPayService;
+    @Autowired
+    private HoPayFlowDao hoPayFlowDao;
+    @Autowired
+    private HoAccountChargeDao hoAccountChargeDao;
 
 
     public JsonResult initData(Map<String, String> params) throws Exception {
@@ -190,6 +203,12 @@ public class HoOffersService {
             return jsonResult;
         }
 
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
+        if(hoUserBasic==null||hoUserBasic.getUserType().equals("2")){
+            jsonResult.globalError("当前用户不可抢单");
+            return jsonResult;
+        }
+
         //插入数据
         hoSnatchOffer=new HoSnatchOffer();
         hoSnatchOffer.setUserId(userId);
@@ -228,5 +247,304 @@ public class HoOffersService {
     }
 
 
+    /**
+     * 网红抢单记录
+     * @param params
+     * @return
+     */
+    public JsonResult starSnatchList(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
 
+        Integer pageNumber=Integer.parseInt(params.get("pageNumber"));
+        Integer pageSize=Integer.parseInt(params.get("pageSize"));
+        String userId=params.get("userId");
+        String type=params.get("type");
+        ParamsUtil.checkParamIfNull(params,new String[]{"pageSize","pageNumber","type","userId"});
+
+        PageHelper.startPage(pageNumber,pageSize,false);
+        List<HoStarSnatchOfferRepo> offerList=hoOffersDao.starSnatchList(userId,type);
+        Page<HoStarSnatchOfferRepo> page=new Page<>(pageNumber,pageSize,offerList);
+
+        jsonResult.getData().put("pageData",page);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 发布需求
+     * @param params
+     * @return
+     */
+    public JsonResult relase(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String plateFormId=params.get("plateFormId");
+        String fansNum=params.get("fansNum");
+        String shopPlateForm=params.get("shopPlateForm");
+        String templateId=params.get("templateId");
+        String price=params.get("price");
+        String remarks=params.get("remarks");
+        String tags=params.get("tags");
+        String pics=params.get("pics");
+        String userId=params.get("userId");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{});
+
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
+        if(hoUserBasic==null||!hoUserBasic.getUserType().equals("2")||!hoUserBasic.getIfApproved().equals("1")){
+            jsonResult.globalError("当前用户不可发布需求");
+            return jsonResult;
+        }
+
+        HoOfferTemplate hoOfferTemplate=hoOfferTemplateDao.selectByPrimaryKey(templateId);
+
+        //插入 HoOffers
+        HoOffers hoOffers=new HoOffers();
+        hoOffers.setUserPlate(plateFormId);
+        hoOffers.setUserId(userId);
+        hoOffers.setTitle(hoOfferTemplate.getTitle());
+        hoOffers.setStatus("CR");
+        hoOffers.setShopPlate(shopPlateForm);
+        hoOffers.setRemarks(remarks);
+        hoOffers.setPrice(Integer.parseInt(price));
+        hoOffers.setOfferTemplateId(templateId);
+        hoOffers.setImgs(pics);
+        hoOffers.setFansNum(Integer.parseInt(fansNum));
+        hoOffers.preInsert();
+        hoOffersDao.insert(hoOffers);
+
+        //插入 HoOfferTag
+        if(StringUtils.isNotEmpty(tags)){
+            for(String tag:tags.split(",")){
+                HoOfferTag hoOfferTag=new HoOfferTag();
+                hoOfferTag.setDictId(tag);
+                hoOfferTag.setOfferId(hoOffers.getId());
+                hoOfferTag.preInsert();
+                hoOfferTagDao.insert(hoOfferTag);
+            }
+        }
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 商家查看自己需求列表
+     * @param params
+     * @return
+     */
+    public JsonResult sellerOfferList(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        Integer pageNumber=Integer.parseInt(params.get("pageNumber"));
+        Integer pageSize=Integer.parseInt(params.get("pageSize"));
+        String userId=params.get("userId");
+        String type=params.get("type");
+        ParamsUtil.checkParamIfNull(params,new String[]{"pageSize","pageNumber","type","userId"});
+
+
+        PageHelper.startPage(pageNumber,pageSize,false);
+        List<HoSellerOfferListRepo> offerListRepos=hoOffersDao.sellerOfferList(userId,type);
+        //抢单人数和抢单网红ID
+        if(type.equals("AP")&&!CollectionUtils.isEmpty(offerListRepos)){
+            for(HoSellerOfferListRepo hoSellerOfferListRepo:offerListRepos){
+                List<HoSnatchOffer> snatchOfferList=hoSnatchOfferDao.findByOfferId(hoSellerOfferListRepo.getId());
+                if(CollectionUtils.isEmpty(snatchOfferList)){
+                    hoSellerOfferListRepo.setSnatchNums("0");
+                }else {
+                    hoSellerOfferListRepo.setSnatchNums(snatchOfferList.size()+"");
+                    for(HoSnatchOffer snatchOffer:snatchOfferList){
+                        hoSellerOfferListRepo.getStarIds().add(snatchOffer.getUserId());
+                    }
+                }
+            }
+        }
+        //锁单网红基本信息
+        if(type.equals("LK")&&!CollectionUtils.isEmpty(offerListRepos)){
+            for(HoSellerOfferListRepo hoSellerOfferListRepo:offerListRepos){
+                List<HoSnatchOffer> snatchOfferList=hoSnatchOfferDao.findByOfferId(hoSellerOfferListRepo.getId());
+                if(!CollectionUtils.isEmpty(snatchOfferList)){
+                    hoSellerOfferListRepo.setSnatchNums(snatchOfferList.size()+"");
+                    for(HoSnatchOffer snatchOffer:snatchOfferList){
+                        if(snatchOffer.getIfSelect().equals("1")){
+                            hoSellerOfferListRepo.getStarIds().add(snatchOffer.getUserId());
+                        }
+                    }
+                }
+            }
+        }
+
+        Page<HoSellerOfferListRepo> page=new Page<>(pageNumber,pageSize,offerListRepos);
+        jsonResult.getData().put("pageData",page);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 申请退款
+     * @param params
+     * @return
+     */
+    public JsonResult applyRefund(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String offerId=params.get("offerId");
+        String userId=params.get("userId");
+        String openid=params.get("openid");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"openid","userId","offerId"});
+
+        //校验当前订单信息是否可以退款
+        HoOffers hoOffers=hoOffersDao.selectByPrimaryKey(offerId);
+        if(hoOffers==null||!hoOffers.getUserId().equals(userId)){
+            jsonResult.globalError("当前订单信息有误");
+            return jsonResult;
+        }
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
+        if(hoUserBasic==null||!hoUserBasic.getOpenId().equals(openid)){
+            jsonResult.globalError("当前用户信息有误");
+            return jsonResult;
+        }
+        if(!hoOffers.getStatus().equals("PY")){
+            jsonResult.globalError("当前订单不能申请退款");
+            return jsonResult;
+        }
+
+        //获取交易流水
+        HoPayFlow hoPayFlow=hoPayFlowDao.findByOfferIdAndType(offerId,"PY");
+        if(hoPayFlow==null){
+            jsonResult.globalError("当前交易流水不存在");
+            return jsonResult;
+        }
+        String outRefundNo= OutTradeNoUtil.outTradeNo("2");
+
+        //直接退款
+        String tradeResult=hoWxPayService.wechatPayRefundForApplet(hoPayFlow.getOutTradeNo(),outRefundNo,String.valueOf(hoPayFlow.getTotalFee()),String.valueOf(hoPayFlow.getTotalFee()));
+        if(tradeResult.equals("SUCCESS")){
+            hoOffers.setStatus("RA");
+            hoOffers.setUpdateDate(new Date());
+            hoOffersDao.updateByPrimaryKeySelective(hoOffers);
+            HoPayFlow hoPayFlow2=hoPayFlowDao.findByOfferIdAndType(offerId,"RA");
+            if(hoPayFlow2==null){
+                hoPayFlow2=new HoPayFlow();
+                //插入交易流水
+                hoPayFlow2.setStatus("1");
+                hoPayFlow2.setOutTradeNo(outRefundNo);
+                hoPayFlow2.setOfferId(offerId);
+                hoPayFlow2.setTransType("RA");
+                hoPayFlow2.setTotalFee(hoPayFlow.getTotalFee());
+                hoPayFlow2.setUserId(hoPayFlow.getUserId());
+                hoPayFlow2.preInsert();
+                hoPayFlowDao.insert(hoPayFlow2);
+            }
+        }else {
+            jsonResult.globalError("退款失败");
+            return jsonResult;
+        }
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 商家确认订单完成
+     * @param params
+     * @return
+     */
+    public JsonResult confirmFN(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String offerId=params.get("offerId");
+        String userId=params.get("userId");
+        String openid=params.get("openid");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"openid","userId","offerId"});
+        HoOffers hoOffers=hoOffersDao.selectByPrimaryKey(offerId);
+        if(hoOffers==null||!hoOffers.getUserId().equals(userId)){
+            jsonResult.globalError("当前订单信息有误");
+            return jsonResult;
+        }
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
+        if(hoUserBasic==null||!hoUserBasic.getOpenId().equals(openid)){
+            jsonResult.globalError("当前用户信息有误");
+            return jsonResult;
+        }
+        if(!hoOffers.getStatus().equals("LK")){
+            jsonResult.globalError("当前订单状态有误");
+            return jsonResult;
+        }
+
+        //获取网红ID
+        HoSnatchOffer hoSnatchOffer=hoSnatchOfferDao.findByOfferIdSelect(offerId);
+        if(hoSnatchOffer==null){
+            jsonResult.globalError("当前订单未锁定网红");
+            return jsonResult;
+        }
+
+        //更新需求状态
+        hoOffers.setStatus("FN");
+        hoOffers.setUpdateDate(new Date());
+        hoOffersDao.updateByPrimaryKeySelective(hoOffers);
+
+        //插入网红账户变动记录
+        HoAccountCharge hoAccountCharge=new HoAccountCharge();
+        hoAccountCharge.setOfferId(offerId);
+        hoAccountCharge.setUserId(hoSnatchOffer.getUserId());
+        hoAccountCharge.setTotalFee(new BigDecimal(hoOffers.getPrice()));
+        hoAccountCharge.setChargeType("SR");
+        hoAccountCharge.setChargeStatus("1");
+        hoAccountChargeDao.insert(hoAccountCharge);
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+    /**
+     * 商家锁单
+     * @param params
+     * @return
+     */
+    public JsonResult lock(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String offerId=params.get("offerId");
+        String userId=params.get("userId");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId","offerId"});
+
+        HoOffers hoOffers=hoOffersDao.selectByPrimaryKey(offerId);
+        if(hoOffers==null||!hoOffers.getStatus().equals("AP")){
+            jsonResult.globalError("当前订单信息有误");
+            return jsonResult;
+        }
+
+        boolean ifExist=false;
+        //遍历抢单用户
+        List<HoSnatchOffer> snatchOfferList= hoSnatchOfferDao.findByOfferId(offerId);
+        if(!CollectionUtils.isEmpty(snatchOfferList)){
+            for(HoSnatchOffer snatchOffer:snatchOfferList){
+                if(snatchOffer.getUserId().equals(userId)){
+                    snatchOffer.setIfSelect("1");
+                    snatchOffer.setUpdateDate(new Date());
+                    hoSnatchOfferDao.updateByPrimaryKeySelective(snatchOffer);
+                    ifExist=true;
+                }
+            }
+        }else {
+            jsonResult.globalError("当前订单无人抢单");
+            return jsonResult;
+        }
+        //确认抢单用户是否存在
+        if(ifExist==false){
+            jsonResult.globalError("锁单用户没有参与抢单");
+            return jsonResult;
+        }
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
 }

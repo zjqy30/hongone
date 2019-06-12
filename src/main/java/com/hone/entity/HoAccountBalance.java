@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 用户账户余额
  */
-@Table(name = "HoAccountBalance")
+@Table(name = "ho_account_balance")
 public class HoAccountBalance extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
