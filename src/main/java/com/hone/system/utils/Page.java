@@ -15,7 +15,7 @@ public class Page<T> implements Serializable{
 
     private Integer pageNumer=1;
     private Integer pageSize=10;
-    private Integer totalCount;
+    private Long totalCount;
 
     private List<T> list=new ArrayList<>();
 
@@ -28,7 +28,7 @@ public class Page<T> implements Serializable{
     public Page() {
     }
 
-    public Page(Integer pageNumer, Integer pageSize, Integer totalCount, List<T> list) {
+    public Page(Integer pageNumer, Integer pageSize, Long totalCount, List<T> list) {
         this.pageNumer = pageNumer;
         this.pageSize = pageSize;
         this.totalCount = totalCount;
@@ -38,7 +38,7 @@ public class Page<T> implements Serializable{
     public Page(PageInfo<T> pageInfo) {
         this.pageNumer = pageInfo.getPageNum();
         this.pageSize = pageInfo.getPageSize();
-        this.totalCount = Math.toIntExact(pageInfo.getTotal());
+        this.totalCount =pageInfo.getTotal();
         this.list = pageInfo.getList();
     }
 
@@ -63,11 +63,11 @@ public class Page<T> implements Serializable{
         this.pageSize = pageSize;
     }
 
-    public Integer getTotalCount() {
+    public Long getTotalCount() {
         return totalCount;
     }
 
-    public void setTotalCount(Integer totalCount) {
+    public void setTotalCount(Long totalCount) {
         this.totalCount = totalCount;
     }
 

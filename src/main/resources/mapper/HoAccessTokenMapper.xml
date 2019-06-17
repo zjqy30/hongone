@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoAccessTokenDao">
+
+    <resultMap id="hoAccessTokenResultMap" type="com.hone.entity.HoAccessToken">
+        <id column="id" property="id"/> 
+        <result column="access_token" property="accessToken"/> 
+        <result column="expire_date" property="expireDate"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoAccessTokenColumns">
+        a.id AS "id",
+        a.access_token AS "accessToken",
+        a.expire_date AS "expireDate",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoAccessTokenJoins">
+        
+    </sql>
+
+
+
+    <delete id="deleteAll">
+        DELETE  from ho_access_token
+    </delete>
+
+    <select id="findLast" resultType="com.hone.entity.HoAccessToken">
+      SELECT <include refid="hoAccessTokenColumns"/> from ho_access_token a
+    </select>
+
+
+</mapper>

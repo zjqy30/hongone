@@ -18,4 +18,8 @@ public interface HoDictDao extends TkBaseMapper<HoDict> {
     HoDict selectByTypeAndValue(@Param("type") String label, @Param("value")  String value);
 
     List<HoDict> listByType(@Param("type") String type);
+
+    String findIndustryStr(@Param("id") String industryId);
+
+    List<HoDict> sellerTagList(@Param("type") String type);
 }

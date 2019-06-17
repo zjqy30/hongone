@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 系统通知
  */
-@Table(name = "HoSystemNotice")
+@Table(name = "ho_system_notice")
 public class HoSystemNotice extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 

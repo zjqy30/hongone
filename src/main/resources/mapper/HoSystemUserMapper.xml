@@ -6,7 +6,8 @@
         <id column="id" property="id"/> 
         <result column="username" property="username"/> 
         <result column="password" property="password"/> 
-        <result column="role_id" property="roleId"/> 
+        <result column="role_id" property="roleId"/>
+        <result column="head_pic" property="headPic"/>
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
         <result column="enable_flag" property="enableFlag"/> 
@@ -20,6 +21,7 @@
         a.username AS "username",
         a.password AS "password",
         a.role_id AS "roleId",
+        a.head_pic AS "headPic",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"
@@ -28,6 +30,11 @@
     <sql id="hoSystemUserJoins">
         
     </sql>
+
+
+    <select id="findByUserNameAndPass" resultType="com.hone.entity.HoSystemUser">
+        SELECT <include refid="hoSystemUserColumns"/> from ho_system_user a where a.username=#{userName} and a.password=#{passWord} and a.enable_flag='1'
+    </select>
 
 
 </mapper>

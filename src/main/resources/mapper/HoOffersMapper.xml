@@ -12,7 +12,8 @@
         <result column="user_plate" property="userPlate"/> 
         <result column="price" property="price"/> 
         <result column="remarks" property="remarks"/> 
-        <result column="status" property="status"/> 
+        <result column="status" property="status"/>
+        <result column="order_no" property="orderNo"/>
         <result column="offer_template_id" property="offerTemplateId"/> 
         <result column="user_id" property="userId"/> 
         <result column="create_date" property="createDate"/> 
@@ -34,6 +35,7 @@
         a.price AS "price",
         a.remarks AS "remarks",
         a.status AS "status",
+        a.order_no AS "orderNo",
         a.offer_template_id AS "offerTemplateId",
         a.user_id AS "userId",
         a.create_date AS "createDate",
@@ -117,7 +119,7 @@
         b.wx_name as 'wxName',
         b.avatar_url as 'headPic',
         a.shop_plate as 'shopPlate',
-        a.user_plate as 'starPlate',
+        d.dict_value as 'starPlate',
         a.fans_num as 'fanNums',
         a.title as 'offerTitle',
         a.remarks as 'remarks',
@@ -125,6 +127,7 @@
         a.status as 'status'
         from ho_offers a
         left join ho_user_basic b on a.user_id=b.id
+        left join ho_dict d on d.id=a.user_plate
         where a.id=#{id}
     </select>
 
@@ -191,6 +194,42 @@
         a.user_id=#{userId}
         and a.status=#{type}
         order by a.create_date desc
+    </select>
+
+
+    <select id="listForBackend" resultType="com.hone.pc.backend.repo.OfferListRepo">
+        select
+            a.id as 'id',
+            b.wx_name as 'wxName',
+            b.phone_no as 'sellerPhone',
+            b.avatar_url as 'headPic',
+            d.dict_value as 'platName',
+            a.title as 'title',
+            a.price as 'price',
+            a.remarks as 'infos',
+            a.create_date as 'createDate',
+            a.imgs as 'pics',
+            a.order_no as 'orderNo',
+            a.fans_num as 'fansNums',
+            temp.tags as 'tags'
+
+            from  ho_offers a
+            left join ho_user_basic b on a.user_id=b.id
+            left join ho_dict d on d.id=a.user_plate
+            left join (
+            select offer_id,GROUP_CONCAT(d.dict_value) as 'tags' from ho_offer_tag a
+            left join ho_dict d on d.id=a.dict_id
+            group by offer_id
+            )temp on temp.offer_id=a.id
+            where 1=1
+            <if test="type!=null and type!=''">
+                and a.status=#{type}
+            </if>
+            <if test="wxName!=null and wxName!=''">
+                and b.wx_name like concat('%',#{wxName},'%')
+            </if>
+            order by a.create_date desc
+
     </select>
 
 

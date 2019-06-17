@@ -6,6 +6,7 @@ import com.hone.applet.repo.HoSellerOfferListRepo;
 import com.hone.applet.repo.HoStarSnatchOfferRepo;
 import com.hone.entity.HoOffers;
 import com.hone.entity.TkBaseMapper;
+import com.hone.pc.backend.repo.OfferListRepo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,4 +30,6 @@ public interface HoOffersDao extends TkBaseMapper<HoOffers> {
     List<HoStarSnatchOfferRepo> starSnatchList(@Param("starUserId") String starUserId, @Param("type") String type);
 
     List<HoSellerOfferListRepo> sellerOfferList(@Param("userId") String userId,@Param("type") String type);
+
+    List<OfferListRepo> listForBackend(@Param("type") String type,@Param("wxName") String wxName);
 }

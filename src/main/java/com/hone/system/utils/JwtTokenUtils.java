@@ -20,7 +20,7 @@ import java.util.Map;
 public class JwtTokenUtils {
 
     private static  String jwtTokenSecret = "ans8euf98eu89fjfioehjfo";
-    private static  int expireDays=3;
+    private static  int expireHours=1;
 
 
     /**
@@ -40,7 +40,7 @@ public class JwtTokenUtils {
         String token = JWT.create().withHeader(map)
                 .withClaim("userID", userID)
                 .withIssuedAt(new Date())
-                .withExpiresAt(DateUtils.formatStringToDate(DateUtils.getOneDaysDate(expireDays)))
+                .withExpiresAt(DateUtils.formatStringToDate(DateUtils.getDelayHoursDate(1)))
                 .sign(Algorithm.HMAC256(jwtTokenSecret));
         return token;
     }
@@ -71,6 +71,9 @@ public class JwtTokenUtils {
      */
     public static String getUserID(String token) {
         Map<String, Claim> claims = verifyToken(token);
+        if(claims==null){
+            return null;
+        }
         Claim userIDClaim = claims.get("userID");
         if (null == userIDClaim || StringUtils.isEmpty(userIDClaim.asString())) {
             // token 校验失败, 抛出Token验证非法异常
@@ -95,10 +98,32 @@ public class JwtTokenUtils {
     }
 
 
+    /**
+     * 校验用户token
+     * @param params
+     * @return  true 校验通过
+     */
+    public static boolean checkToken( Map<String,String> params){
+        String token =params.get("token");
+        if(StringUtils.isEmpty(token)){
+            return false;
+        }
+        String userId=getUserID(token);
+        if(StringUtils.isEmpty(userId)){
+            return false;
+        }
+        params.put("userId",userId);
+        return true;
+    }
+
+
     public static void main(String[] args){
         try {
             String token=createToken("1001");
             System.out.println(token);
+
+            String userId=getUserID(token+"1");
+            System.out.println(userId);
         } catch (Exception e) {
             e.printStackTrace();
         }

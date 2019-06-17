@@ -209,6 +209,11 @@ public class HoOffersService {
             return jsonResult;
         }
 
+        if(!hoUserBasic.getIfApproved().equals("1")){
+            jsonResult.globalError("请先申请认证");
+            return jsonResult;
+        }
+
         //插入数据
         hoSnatchOffer=new HoSnatchOffer();
         hoSnatchOffer.setUserId(userId);
@@ -292,8 +297,12 @@ public class HoOffersService {
         ParamsUtil.checkParamIfNull(params,new String[]{});
 
         HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(userId);
-        if(hoUserBasic==null||!hoUserBasic.getUserType().equals("2")||!hoUserBasic.getIfApproved().equals("1")){
+        if(hoUserBasic==null||!hoUserBasic.getUserType().equals("2")){
             jsonResult.globalError("当前用户不可发布需求");
+            return jsonResult;
+        }
+        if(!hoUserBasic.getIfApproved().equals("1")){
+            jsonResult.globalError("请先申请认证");
             return jsonResult;
         }
 
@@ -419,31 +428,36 @@ public class HoOffersService {
             jsonResult.globalError("当前交易流水不存在");
             return jsonResult;
         }
-        String outRefundNo= OutTradeNoUtil.outTradeNo("2");
+
+        hoOffers.setStatus("RA");
+        hoOffers.setUpdateDate(new Date());
+        hoOffersDao.updateByPrimaryKeySelective(hoOffers);
+
+ //       String outRefundNo= OutTradeNoUtil.outTradeNo("2");
 
         //直接退款
-        String tradeResult=hoWxPayService.wechatPayRefundForApplet(hoPayFlow.getOutTradeNo(),outRefundNo,String.valueOf(hoPayFlow.getTotalFee()),String.valueOf(hoPayFlow.getTotalFee()));
-        if(tradeResult.equals("SUCCESS")){
-            hoOffers.setStatus("RA");
-            hoOffers.setUpdateDate(new Date());
-            hoOffersDao.updateByPrimaryKeySelective(hoOffers);
-            HoPayFlow hoPayFlow2=hoPayFlowDao.findByOfferIdAndType(offerId,"RA");
-            if(hoPayFlow2==null){
-                hoPayFlow2=new HoPayFlow();
-                //插入交易流水
-                hoPayFlow2.setStatus("1");
-                hoPayFlow2.setOutTradeNo(outRefundNo);
-                hoPayFlow2.setOfferId(offerId);
-                hoPayFlow2.setTransType("RA");
-                hoPayFlow2.setTotalFee(hoPayFlow.getTotalFee());
-                hoPayFlow2.setUserId(hoPayFlow.getUserId());
-                hoPayFlow2.preInsert();
-                hoPayFlowDao.insert(hoPayFlow2);
-            }
-        }else {
-            jsonResult.globalError("退款失败");
-            return jsonResult;
-        }
+//        String tradeResult=hoWxPayService.wechatPayRefundForApplet(hoPayFlow.getOutTradeNo(),outRefundNo,String.valueOf(hoPayFlow.getTotalFee()),String.valueOf(hoPayFlow.getTotalFee()));
+//        if(tradeResult.equals("SUCCESS")){
+//            hoOffers.setStatus("RA");
+//            hoOffers.setUpdateDate(new Date());
+//            hoOffersDao.updateByPrimaryKeySelective(hoOffers);
+//            HoPayFlow hoPayFlow2=hoPayFlowDao.findByOfferIdAndType(offerId,"RA");
+//            if(hoPayFlow2==null){
+//                hoPayFlow2=new HoPayFlow();
+//                //插入交易流水
+//                hoPayFlow2.setStatus("1");
+//                hoPayFlow2.setOutTradeNo(outRefundNo);
+//                hoPayFlow2.setOfferId(offerId);
+//                hoPayFlow2.setTransType("RA");
+//                hoPayFlow2.setTotalFee(hoPayFlow.getTotalFee());
+//                hoPayFlow2.setUserId(hoPayFlow.getUserId());
+//                hoPayFlow2.preInsert();
+//                hoPayFlowDao.insert(hoPayFlow2);
+//            }
+//        }else {
+//            jsonResult.globalError("退款失败");
+//            return jsonResult;
+//        }
 
         jsonResult.globalSuccess();
         return jsonResult;

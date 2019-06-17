@@ -60,7 +60,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 创建公钥私钥</p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param keyPath 存储目录
 	 * @author jie.xu  2017年3月29日 下午2:18:47
 	 */
@@ -125,7 +125,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 用公钥加密数据(返回经过base64转码后的字符串)</p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param data 需要加密的明文
 	 * @param publicKey 公钥
 	 * @author jie.xu  2017年3月29日 下午12:00:58
@@ -143,7 +143,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 用私钥加密数据(返回经过base64转码后的字符串)</p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param data 要加密的数据
 	 * @param privateKey 私钥
 	 * @return
@@ -161,7 +161,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 用私钥解密数据(返回明文字符串)</p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param base64Data 经过公钥加密并且转换为base64的字符串
 	 * @param privateKey 私钥
 	 * @author jie.xu  2017年3月29日 下午12:02:30
@@ -179,7 +179,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 用公钥解密数据(返回明文字符串)</p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param base64Data 经过公钥加密并且转换为base64的字符串
 	 * @param publicKey 公钥
 	 * @return
@@ -199,7 +199,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 用私钥对信息生成数字签名(返回签名后并用base64转码后的字符串) </p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param data 要签名的数据
 	 * @param privateKey 私钥
 	 * @return
@@ -217,7 +217,7 @@ public class RSAUtil {
 	/**
 	 * 
 	 * <p>Title: 校验数字签名 </p>
-	 * <p>Description: TODO</p>
+	 * <p>Description:  
 	 * @param data 需要校验的数据
 	 * @param publicKey 公钥
 	 * @param sign 签名
@@ -280,7 +280,7 @@ abstract class Rsa {
 	 * Title: 生成公私钥
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @return
@@ -310,7 +310,7 @@ abstract class Rsa {
 	 * Title: 用私钥对信息生成数字签名
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param data
@@ -336,7 +336,7 @@ abstract class Rsa {
 	 * Title: 校验数字签名
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param data
@@ -364,7 +364,7 @@ abstract class Rsa {
 	 * Title: 根据私钥解密数据
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param encryptedData
@@ -410,7 +410,7 @@ abstract class Rsa {
 	 * Title: 根据公钥解密数据
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param encryptedData
@@ -456,7 +456,7 @@ abstract class Rsa {
 	 * Title: 根据公钥加密数据
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param data
@@ -500,7 +500,7 @@ abstract class Rsa {
 	 * Title: 根据私钥加密数据
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param data
@@ -544,7 +544,7 @@ abstract class Rsa {
 	 * Title: 获取私钥(私钥数据都已经用base64转换成字符串)
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param keyMap
@@ -562,7 +562,7 @@ abstract class Rsa {
 	 * Title: 获取公钥(公钥数据都已经用base64转换成字符串)
 	 * </p>
 	 * <p>
-	 * Description: TODO
+	 * Description:   
 	 * </p>
 	 * 
 	 * @param keyMap

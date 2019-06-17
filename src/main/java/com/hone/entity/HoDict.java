@@ -15,6 +15,7 @@ public class HoDict extends BaseEntity implements Serializable {
     private String dictDesc;
     private String dictSort;
     private String pid;
+    private String dictPic;
 
 
     public HoDict() {
@@ -60,4 +61,11 @@ public class HoDict extends BaseEntity implements Serializable {
         return pid;
     }
 
+    public String getDictPic() {
+        return dictPic;
+    }
+
+    public void setDictPic(String dictPic) {
+        this.dictPic = dictPic;
+    }
 }

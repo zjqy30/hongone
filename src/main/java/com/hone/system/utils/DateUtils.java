@@ -146,6 +146,24 @@ public class DateUtils {
     }
 
     /**
+     *  获取未来几个小时后的日期
+     *
+     * @param delayHours   小时
+     * @return
+     */
+    public static String getDelayHoursDate(Integer delayHours) {
+        if (delayHours == null) {
+            delayHours=0;
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR,delayHours);
+        Date today = calendar.getTime();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return format.format(today);
+    }
+
+    /**
      * 设置超时截至时间
      * @param expireTime    截至时间（单位：秒）
      * @return

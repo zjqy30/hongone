@@ -30,4 +30,18 @@
     </sql>
 
 
+
+    <select id="findListBackend" resultType="com.hone.entity.HoMarketer">
+      SELECT <include refid="hoMarketerColumns"/> from ho_marketer a where a.enable_flag='1' order by a.create_date desc
+    </select>
+
+    <select id="countInviteNums" resultType="java.lang.String">
+      select count(1) as 'nums' from ho_user_basic a where a.marketer_id=#{marketerId} and a.if_approved='1'
+    </select>
+
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoMarketer" statementType="STATEMENT">
+        select <include refid="hoMarketerColumns"></include> FROM ho_marketer a  where a.${propertyName} = '${value}'
+    </select>
+
+
 </mapper>

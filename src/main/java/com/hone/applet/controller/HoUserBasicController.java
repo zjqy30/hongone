@@ -9,6 +9,7 @@ import com.hone.entity.HoUserBasic;
 import com.hone.system.utils.HttpUtils;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.ParamsUtil;
+import com.hone.system.utils.QRUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,4 +223,21 @@ public class HoUserBasicController {
         return jsonResult;
     }
 
+
+    @RequestMapping("/qrcode")
+    public JsonResult qrcode(@RequestBody Map<String,String> params){
+        logger.info("qrcode");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            String str=QRUtil.createImage("hello");
+            jsonResult.getData().put("base64String",str);
+            jsonResult.globalSuccess();
+        }catch (Exception e){
+            logger.error("qrcode",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 }

@@ -69,5 +69,99 @@
         select <include refid="hoUserStarColumns"></include> FROM ho_user_star a  where a.${propertyName} = '${value}'
     </select>
 
+    <select id="listByStarBackend" resultType="com.hone.pc.backend.repo.StarUserListRepo">
+        select b.avatar_url as 'headPic',
+        b.id as 'id',
+        b.wx_name as 'wxName',
+        b.gender as 'sex',
+        a.create_date as 'createDate',
+        a.fans_nums as 'fansNums',
+        d.dict_value as 'platName'
+        from ho_user_star a
+        left join ho_user_basic b on a.user_id=b.id
+        left join ho_dict d on d.id=a.platform_id
+        <where>
+            a.enable_flag='1'
+            and b.enable_flag='1'
+            <if test="platName!=null and platName!=''">
+                and d.dict_value like concat('%',#{platName},'%')
+            </if>
+            <if test="wxName!=null and wxName!=''">
+                and b.wx_name like concat('%',#{wxName},'%')
+            </if>
+            <if test="sex!=null and sex!=''">
+                and sex=#{sex}
+            </if>
+        </where>
+          order by ${orderBy}
+    </select>
+
+    <select id="starInfoBackend" resultType="com.hone.pc.backend.repo.StarUserInfoRepo">
+        select b.id as 'id',
+        b.wx_name as 'wxName',
+        b.gender as 'sex',
+        b.age as 'age',
+        b.has_shop as 'hasShop',
+        d.dict_value as 'platFormName',
+        a.platform_id as 'platFormId',
+        b.if_approved as 'status',
+        a.fans_nums as 'fansNums',
+        m.market_name as 'marketer',
+        a.create_date as 'createDate',
+        b.country as 'country',
+        b.phone_no as 'phoneNo',
+        b.id_card_pic as 'idCardPic',
+        b.id_card_up_pic as 'idCardUpPic',
+        b.id_card_down_pic as 'idCardDownPic',
+        b.id_card_number as 'idCardNumber',
+        a.platform_imgs as 'platformImgs',
+        a.personal_imgs as 'personalImgs'
+        from ho_user_star a
+        left join ho_user_basic b on b.id=a.user_id
+        left join ho_dict d on d.id=a.platform_id
+        left join ho_marketer m on m.id=b.marketer_id
+        where b.id=#{userId} and b.enable_flag='1' and a.enable_flag='1'
+    </select>
+
+
+    <select id="starApproveList" resultType="com.hone.pc.backend.repo.StarUserInfoRepo">
+        select b.id as 'id',
+        b.wx_name as 'wxName',
+        b.gender as 'sex',
+        b.age as 'age',
+        b.has_shop as 'hasShop',
+        d.dict_value as 'platFormName',
+        a.platform_id as 'platFormId',
+        b.if_approved as 'status',
+        a.fans_nums as 'fansNums',
+        m.market_name as 'marketer',
+        a.create_date as 'createDate',
+        b.country as 'country',
+        b.phone_no as 'phoneNo',
+        b.id_card_pic as 'idCardPic',
+        b.id_card_up_pic as 'idCardUpPic',
+        b.id_card_down_pic as 'idCardDownPic',
+        b.id_card_number as 'idCardNumber',
+        a.platform_imgs as 'platformImgs',
+        a.personal_imgs as 'personalImgs'
+        from ho_user_star a
+        left join ho_user_basic b on b.id=a.user_id
+        left join ho_dict d on d.id=a.platform_id
+        left join ho_marketer m on m.id=b.marketer_id
+        where
+        b.if_approved='0'
+        and b.enable_flag='1'
+        and a.enable_flag='1'
+        ORDER by a.create_date desc
+    </select>
+
+
+    <select id="findPlatName" resultType="java.lang.String">
+        select  d.dict_value
+        from ho_user_star a
+        left join ho_dict d on d.id=a.platform_id
+        where a.user_id=#{userId}
+    </select>
+
 
 </mapper>

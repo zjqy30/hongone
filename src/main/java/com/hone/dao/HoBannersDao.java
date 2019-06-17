@@ -16,4 +16,6 @@ public interface HoBannersDao extends TkBaseMapper<HoBanners> {
 
 
     List<HoBanners> findByPages(@Param("pages") String pages);
+
+    List<HoBanners> findAll();
 }

@@ -2,6 +2,7 @@ package com.hone.dao;
 
 import com.hone.entity.HoSnatchOffer;
 import com.hone.entity.TkBaseMapper;
+import com.hone.pc.backend.repo.InviteUserListRepo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,4 +21,8 @@ public interface HoSnatchOfferDao extends TkBaseMapper<HoSnatchOffer> {
     List<HoSnatchOffer> findByOfferId(@Param("offerId") String offerId);
 
     HoSnatchOffer findByOfferIdSelect(@Param("offerId")String offerId);
+
+    List<InviteUserListRepo> snatchListForBackend(@Param("offerId") String offerId);
+
+    int deleteByOfferId(@Param("offerId") String offerId);
 }

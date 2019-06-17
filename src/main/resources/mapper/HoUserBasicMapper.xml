@@ -96,4 +96,16 @@
     </select>
 
 
+
+    <select id="inviteUserListBackend" resultType="com.hone.pc.backend.repo.InviteUserListRepo">
+        select
+        a.id as 'id',
+        a.avatar_url as 'headPic',
+        a.wx_name as 'wxName',
+        a.user_type as 'type'
+        from ho_user_basic a
+        where a.marketer_id=#{marketerId} and a.if_approved='1' order by a.create_date desc
+    </select>
+
+
 </mapper>

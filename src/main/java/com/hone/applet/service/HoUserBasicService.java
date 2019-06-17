@@ -658,7 +658,6 @@ public class HoUserBasicService {
         hoUserBasic.setIfApproved("0");
         hoUserBasic.setIdCardDownPic(idCardDownPic);
         hoUserBasic.setIdCardPic(idCardPic);
-        hoUserBasic.setIdCardDownPic(idCardDownPic);
         hoUserBasic.setIdCardUpPic(idCardUpPic);
         hoUserBasic.setIdCardNumber(idCardNumber);
         //邀请码

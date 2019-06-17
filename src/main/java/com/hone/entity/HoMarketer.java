@@ -1,6 +1,7 @@
 package com.hone.entity;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
@@ -15,6 +16,11 @@ public class HoMarketer extends BaseEntity implements Serializable {
     private String marketName;//用户名
     private String openId;
     private String userCode;//用户编码->邀请码
+    private String qrcodeUrl;//二维码地址
+
+
+    @Transient
+    private String inviteNums;//邀请人数
 
 
     public HoMarketer() {
@@ -45,5 +51,19 @@ public class HoMarketer extends BaseEntity implements Serializable {
         return userCode;
     }
 
+    public String getQrcodeUrl() {
+        return qrcodeUrl;
+    }
 
+    public void setQrcodeUrl(String qrcodeUrl) {
+        this.qrcodeUrl = qrcodeUrl;
+    }
+
+    public String getInviteNums() {
+        return inviteNums;
+    }
+
+    public void setInviteNums(String inviteNums) {
+        this.inviteNums = inviteNums;
+    }
 }

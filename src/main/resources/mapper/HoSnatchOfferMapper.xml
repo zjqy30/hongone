@@ -44,4 +44,26 @@
     </select>
 
 
+    <select id="snatchListForBackend" resultType="com.hone.pc.backend.repo.InviteUserListRepo">
+        select
+        b.id as 'id',
+        '1' as 'type',
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        d.dict_value as 'platName',
+        c.fans_nums as 'fansNums',
+        b.gender as 'sex'
+        from ho_snatch_offer a
+        left join ho_user_basic b on b.id=a.user_id
+        left join ho_user_star c on c.user_id=a.user_id
+        left join ho_dict d on d.id=c.platform_id
+        where a.offer_id=#{offerId} order by a.create_date desc
+    </select>
+
+
+    <delete id="deleteByOfferId">
+        delete from ho_snatch_offer where offer_id=#{offerId}
+    </delete>
+
+
 </mapper>

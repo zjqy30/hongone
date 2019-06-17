@@ -15,6 +15,7 @@ public class HoSystemUser extends BaseEntity implements Serializable {
     private String username;//用户名
     private String password;//密码
     private String roleId;
+    private String headPic;//头像
 
 
     public HoSystemUser() {
@@ -45,5 +46,11 @@ public class HoSystemUser extends BaseEntity implements Serializable {
         return roleId;
     }
 
+    public String getHeadPic() {
+        return headPic;
+    }
 
+    public void setHeadPic(String headPic) {
+        this.headPic = headPic;
+    }
 }

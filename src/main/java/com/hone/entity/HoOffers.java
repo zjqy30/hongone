@@ -23,6 +23,7 @@ public class HoOffers extends BaseEntity implements Serializable {
     private String status;//状态
     private String offerTemplateId;
     private String userId;
+    private String orderNo;
 
 
     public HoOffers() {
@@ -117,5 +118,11 @@ public class HoOffers extends BaseEntity implements Serializable {
         return userId;
     }
 
+    public String getOrderNo() {
+        return orderNo;
+    }
 
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
 }

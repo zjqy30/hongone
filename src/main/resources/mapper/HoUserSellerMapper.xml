@@ -23,5 +23,119 @@
         
     </sql>
 
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoUserSeller" statementType="STATEMENT">
+        select <include refid="hoUserSellerColumns"></include> FROM ho_user_seller a  where a.${propertyName} = '${value}'
+    </select>
+
+
+    <select id="sellerApproveList" resultType="com.hone.pc.backend.repo.SellerUserInfoRepo">
+
+       select
+        b.id as 'id',
+        b.wx_name as 'wxName',
+        b.gender as 'sex',
+        b.age as 'age',
+        b.has_shop as 'hasShop',
+        b.if_approved as 'status',
+        a.business_license as 'businessLicense',
+        m.market_name as 'marketer',
+        a.create_date as 'createDate',
+        b.country as 'country',
+        b.phone_no as 'phoneNo',
+        b.id_card_pic as 'idCardPic',
+        b.id_card_up_pic as 'idCardUpPic',
+        b.id_card_down_pic as 'idCardDownPic',
+        b.id_card_number as 'idCardNumber',
+        a.industry_id as 'industryId'
+        from ho_user_seller a
+        left join ho_user_basic b on b.id=a.user_id
+		left join ho_marketer m on m.id=b.marketer_id
+		where
+        b.if_approved='0'
+        and b.enable_flag='1'
+        and a.enable_flag='1'
+        ORDER by a.create_date desc
+
+    </select>
+
+
+    <select id="listBySellerBackend" resultType="com.hone.pc.backend.repo.SellerUserListRepo">
+        select
+        b.avatar_url as 'headPic',
+        b.id as 'id',
+        b.wx_name as 'wxName',
+        b.gender as 'sex',
+        a.create_date as 'createDate',
+        temp.industryName as 'industry'
+        from ho_user_seller a
+        left join ho_user_basic b on a.user_id=b.id
+        left join (
+            select a.id as 'id',CONCAT(c.dict_value,'-',b.dict_value,'-',a.dict_value) as 'industryName'
+            from ho_dict a
+            inner join ho_dict b on a.pid=b.id
+            inner join ho_dict c on c.id=b.pid
+            where a.dict_type='sellerTag' and a.pid!='0' )temp on temp.id=a.industry_id
+
+        <where>
+            a.enable_flag='1'
+            and b.enable_flag='1'
+            and b.if_approved='1'
+            <if test="industry!=null and industry!=''">
+               and temp.industryName like CONCAT("%",#{industry},"%")
+            </if>
+            <if test="wxName!=null and wxName!=''">
+                and b.wx_name like concat('%',#{wxName},'%')
+            </if>
+            <if test="sex!=null and sex!=''">
+                and sex=#{sex}
+            </if>
+        </where>
+        order by ${orderBy}
+    </select>
+
+
+    <select id="sellerInfoBackend" resultType="com.hone.pc.backend.repo.SellerUserInfoRepo">
+         select
+        b.avatar_url as 'headPic',
+        b.id as 'id',
+        b.wx_name as 'wxName',
+        b.gender as 'sex',
+        b.age as 'age',
+        b.has_shop as 'hasShop',
+        a.create_date as 'createDate',
+        temp.industryName as 'industry',
+        b.if_approved as 'status',
+        m.market_name as 'marketer',
+        b.country as 'country',
+        b.phone_no as 'phoneNo',
+        b.id_card_pic as 'idCardPic',
+        b.id_card_up_pic as 'idCardUpPic',
+        b.id_card_down_pic as 'idCardDownPic',
+        b.id_card_number as 'idCardNumber',
+				a.business_license as 'businessLicense'
+        from ho_user_seller a
+        left join ho_user_basic b on a.user_id=b.id
+				left join ho_marketer m on m.id=b.marketer_id
+        left join (
+            select a.id as 'id',CONCAT(c.dict_value,'-',b.dict_value,'-',a.dict_value) as 'industryName'
+            from ho_dict a
+            inner join ho_dict b on a.pid=b.id
+            inner join ho_dict c on c.id=b.pid
+            where a.dict_type='sellerTag' and a.pid!='0' )temp on temp.id=a.industry_id
+        where b.id=#{userId}
+    </select>
+
+
+    <select id="findIndustry" resultType="java.lang.String">
+        select temp.industryName
+        from ho_user_seller a
+        left join (
+        select a.id as 'id',CONCAT(c.dict_value,'-',b.dict_value,'-',a.dict_value) as 'industryName'
+            from ho_dict a
+            inner join ho_dict b on a.pid=b.id
+            inner join ho_dict c on c.id=b.pid
+            where a.dict_type='sellerTag' and a.pid!='0') temp on temp.id=a.industry_id
+        where a.user_id=#{userId}
+    </select>
 
 </mapper>

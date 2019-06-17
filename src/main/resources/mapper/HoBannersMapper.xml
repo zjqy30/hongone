@@ -40,7 +40,12 @@
 
 
     <select id="findByPages" resultMap="HoBannersResult">
-        SELECT <include refid="hoBannersColumns"></include> from ho_banners a where a.pages=#{pages} and a.enable_flag='1' order by a.sort
+        SELECT <include refid="hoBannersColumns"></include> from ho_banners a where a.pages=#{pages} and a.enable_flag='1' order by a.sort desc,a.create_date desc
+    </select>
+
+
+    <select id="findAll" resultMap="HoBannersResult">
+        SELECT <include refid="hoBannersColumns"></include> from ho_banners a order by a.create_date desc
     </select>
 
 

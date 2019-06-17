@@ -417,4 +417,91 @@ public class HoWxPayService {
         return tradeResult;
     }
 
+
+
+    /**
+     * 微信扫码支付
+     *
+     * @param openId
+     * @param payFlowId
+     * @param totalMoney
+     * @param spbillCreateIp
+     * @return
+     * @throws DocumentException
+     */
+    public JsonResult nativeWechatPay(String openId, String payFlowId, String totalMoney, String spbillCreateIp) throws DocumentException {
+        JsonResult jsonResult = new JsonResult();
+
+        String nonce_str = UUIDHexGenerator.generate();//随机字符串
+        double totalFeeTemp = Double.parseDouble(totalMoney) * 100;//订单总金额，单位为分
+        int totalFee = (int) totalFeeTemp;//订单总金额，单位为分
+        PaymentPo paymentPo = new PaymentPo();
+        paymentPo.setAppid(appId);
+        paymentPo.setMch_id(mchId);
+        paymentPo.setNonce_str(nonce_str);
+        paymentPo.setBody(body);
+        paymentPo.setOut_trade_no(payFlowId);
+        paymentPo.setTotal_fee(totalFee + "");
+        paymentPo.setSpbill_create_ip(spbillCreateIp);
+        paymentPo.setNotify_url(notifyUrl);
+        paymentPo.setTrade_type("NATIVE");
+        paymentPo.setOpenid(openId);
+        // 把请求参数打包成数组
+        Map<String, String> sParaTemp = new HashMap();
+        sParaTemp.put("appid", paymentPo.getAppid());
+        sParaTemp.put("mch_id", paymentPo.getMch_id());
+        sParaTemp.put("nonce_str", paymentPo.getNonce_str());
+        sParaTemp.put("body", paymentPo.getBody());
+        sParaTemp.put("out_trade_no", paymentPo.getOut_trade_no());
+        sParaTemp.put("total_fee", paymentPo.getTotal_fee());
+        sParaTemp.put("spbill_create_ip", paymentPo.getSpbill_create_ip());
+        sParaTemp.put("notify_url", paymentPo.getNotify_url());
+        sParaTemp.put("trade_type", paymentPo.getTrade_type());
+        sParaTemp.put("openid", paymentPo.getOpenid());
+        // 除去数组中的空值和签名参数
+        Map<String, String> sPara = WeChatPayUtil.paraFilter(sParaTemp);
+        String prestr = WeChatPayUtil.createLinkString(sPara); // 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+
+        //MD5运算生成签名
+        String mysign = WeChatPayUtil.sign(prestr, "&key="+key, "utf-8").toUpperCase();
+        paymentPo.setSign(mysign);
+        //打包要发送的xml
+        String respXml = MessageUtil.messageToXML(paymentPo);
+        // 打印respXml发现，得到的xml中有“__”不对，应该替换成“_”
+        respXml = respXml.replace("__", "_");
+        String param = respXml;
+        String result = WeChatPayUtil.httpRequest(WeChatPayUrl, "POST", param);
+        // 将解析结果存储在HashMap中
+        Map map = new HashMap();
+        InputStream in = new ByteArrayInputStream(result.getBytes());
+        // 读取输入流
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(in);
+        // 得到xml根元素
+        Element root = document.getRootElement();
+        // 得到根元素的所有子节点
+        @SuppressWarnings("unchecked")
+        List<Element> elementList = root.elements();
+        for (Element element : elementList) {
+            map.put(element.getName(), element.getText());
+        }
+        // 返回信息
+        String return_code = (String) map.get("return_code");//返回状态码
+        String return_msg = (String) map.get("return_msg");//返回信息
+        if (return_code.contains("FAIL")) {
+            jsonResult.globalError(return_msg);
+        }
+        if (return_code.equalsIgnoreCase("SUCCESS")) {
+
+            //获取二维码内容
+            String code_url=map.get("code_url").toString();
+            //把二维码内容转成二维码
+
+            jsonResult.getData().put("map", map);
+            jsonResult.globalSuccess();
+        }
+
+        return jsonResult;
+    }
+
 }
