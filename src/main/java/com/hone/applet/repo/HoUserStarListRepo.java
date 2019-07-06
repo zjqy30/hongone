@@ -12,6 +12,10 @@ public class HoUserStarListRepo {
     private String fansNum;
     private String platName;
     private String userId;
+    private String tags;
+    private String sex;
+    private String thumbUpNums;
+    private String dictPic;
 
     public String getHeadPic() {
         return headPic;
@@ -51,5 +55,37 @@ public class HoUserStarListRepo {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public String getThumbUpNums() {
+        return thumbUpNums;
+    }
+
+    public void setThumbUpNums(String thumbUpNums) {
+        this.thumbUpNums = thumbUpNums;
+    }
+
+    public String getDictPic() {
+        return dictPic;
+    }
+
+    public void setDictPic(String dictPic) {
+        this.dictPic = dictPic;
     }
 }

@@ -86,9 +86,13 @@
         a.fans_num as 'fanNums',
         a.price as 'price',
         a.id as 'id',
-        c.offersTag as 'tag'
+        c.offersTag as 'tag',
+        a.remarks as 'remarks',
+        h.dict_value as 'platName',
+        h.dict_pic as 'platPic'
         from ho_offers a
         left join ho_user_basic b on a.user_id = b.id
+        left join ho_dict h on h.id=a.user_plate
         left join (
         select
         a.offer_id as 'offerId',
@@ -100,18 +104,12 @@
         ) c on c.offerId=a.id
         where
         1=1
-        and  a.status='3'
-		and  a.id in
-		(select DISTINCT(offer_id) as 'offerId' from ho_offer_tag
-		where
-        1=1
-        <if test="tagList != null and tagList.size > 0">
-            AND dict_id in
-            <foreach collection="tagList" item="tagId" open="(" separator="," close=")">#{tagId}</foreach>
+        and  a.status='AP'
+        <if test="platIdsList != null and platIdsList.size > 0">
+            and  a.user_plate in
+            <foreach collection="platIdsList" item="platId" open="(" separator="," close=")">#{platId}</foreach>
         </if>
-		)
-        order by a.create_date desc
-
+        order by ${orderBy}
     </select>
 
     <select id="detailsById" resultType="com.hone.applet.repo.HoOfferInfoRepo">

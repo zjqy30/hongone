@@ -98,8 +98,17 @@ public class SmsUtils {
     }
 
 
-    public  void main(String[] args){
-        String str=makeSmsSign("18261732399");
+    public static void main(String[] args){
+        String phoneNo="18261732399";
+        String honeSmsSign="hongone888";
+        //签名校验
+        String str= DateUtils.formatDateToString(new Date(),"yyyy-MM-dd")+":"+phoneNo+":"+honeSmsSign;
+        System.out.println("原字符："+str);
+        try {
+            str=MD5Util.Md5DirectEncryption(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println(str);
     }
 

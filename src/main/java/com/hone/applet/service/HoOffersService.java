@@ -9,6 +9,7 @@ import com.hone.applet.repo.HoStarSnatchOfferRepo;
 import com.hone.dao.*;
 import com.hone.entity.*;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.NumUtils;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
 import com.hone.system.utils.wxpay.OutTradeNoUtil;
@@ -109,26 +110,45 @@ public class HoOffersService {
 
         Integer pageNumber=Integer.parseInt(params.get("pageNumber"));
         Integer pageSize=Integer.parseInt(params.get("pageSize"));
-        String tag=params.get("tag");
+        String platIds=params.get("platIds");
+        String fansNumsOrderBy=params.get("fansNumsOrderBy");
+        String priceOrderBy=params.get("priceOrderBy");
         ParamsUtil.checkParamIfNull(params,new String[]{"pageNumber","pageSize"});
 
-        List<String> tagList= new ArrayList<>();
-        if(StringUtils.isNotEmpty(tag)){
-            for(String each:tag.split(",")){
-                tagList.add(each);
+        //标签
+        List<String> platIdsList= new ArrayList<>();
+        if(StringUtils.isNotEmpty(platIds)){
+            for(String each:platIds.split(",")){
+                platIdsList.add(each);
             }
-            PageHelper.startPage(pageNumber,pageSize,false);
-            List<HoOffersListRepo> hoOffersRepoList= hoOffersDao.listForApiTag(tagList);
-            Page<HoOffersListRepo> page=new Page<>(pageNumber,pageSize,hoOffersRepoList);
-            jsonResult.getData().put("pageData",page);
-
-        }else {
-            PageHelper.startPage(pageNumber,pageSize,false);
-            List<HoOffersListRepo> hoOffersRepoList= hoOffersDao.listForApiNoTag();
-            Page<HoOffersListRepo> page=new Page<>(pageNumber,pageSize,hoOffersRepoList);
-            jsonResult.getData().put("pageData",page);
-
         }
+
+        //排序
+        String orderBy="";
+        if(StringUtils.isEmpty(fansNumsOrderBy)&&StringUtils.isEmpty(priceOrderBy)){
+            orderBy=" a.create_date desc";
+        }else {
+            if(!StringUtils.isEmpty(fansNumsOrderBy)){
+                orderBy=" a.fans_num "+fansNumsOrderBy;
+            }
+            if(!StringUtils.isEmpty(priceOrderBy)){
+                if(orderBy.contains("fans_num")){
+                    orderBy=orderBy+", a.price " + priceOrderBy;
+                }else {
+                    orderBy=" a.price " + priceOrderBy;
+                }
+            }
+        }
+
+        PageHelper.startPage(pageNumber,pageSize,false);
+        List<HoOffersListRepo> hoOffersRepoList= hoOffersDao.listForApiTag(platIdsList,orderBy);
+        if(!CollectionUtils.isEmpty(hoOffersRepoList)){
+            for(HoOffersListRepo repo:hoOffersRepoList){
+                repo.setFanNums(NumUtils.formatNum(repo.getFanNums(),false));
+            }
+        }
+        Page<HoOffersListRepo> page=new Page<>(pageNumber,pageSize,hoOffersRepoList);
+        jsonResult.getData().put("pageData",page);
 
         jsonResult.globalSuccess();
         return jsonResult;

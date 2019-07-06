@@ -8,16 +8,24 @@ import java.io.Serializable;
  * Date  2019-05-28
  * 用户角色
  */
-@Table(name = "HoSystemRole")
+@Table(name = "ho_system_role")
 public class HoSystemRole extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String roleName;//角色名称
+    private String page;//页面路径
 
 
     public HoSystemRole() {
     }
 
+    public String getPage() {
+        return page;
+    }
+
+    public void setPage(String page) {
+        this.page = page;
+    }
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;

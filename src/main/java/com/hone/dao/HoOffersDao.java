@@ -23,7 +23,7 @@ public interface HoOffersDao extends TkBaseMapper<HoOffers> {
 
     List<HoOffersListRepo> listForApiNoTag();
 
-    List<HoOffersListRepo> listForApiTag(@Param("tagList") List<String> tagList);
+    List<HoOffersListRepo> listForApiTag(@Param("platIdsList") List<String> platIdsList, @Param("orderBy") String orderBy);
 
     HoOfferInfoRepo detailsById(@Param("id") String id);
 

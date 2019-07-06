@@ -66,7 +66,7 @@ public class SuanTaoUtils {
     }
 
     public static void main(String[] args){
-        getDataFromSuanTao(22L,"BanboKitty01");
+        getDataFromSuanTao(22L,"yichan6666");
     }
 
 }

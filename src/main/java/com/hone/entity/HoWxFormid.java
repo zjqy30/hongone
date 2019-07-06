@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Author lijia

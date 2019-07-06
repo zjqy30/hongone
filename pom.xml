@@ -26,13 +26,21 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+
+		<!--打成war包时候请解除注释-->
+		<!-- 去除springboot内嵌tomcat -->
 		<!--<dependency>-->
 			<!--<groupId>org.springframework.boot</groupId>-->
 			<!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
-			<!--&lt;!&ndash;打包的时候可以不用包进去，别的设施会提供。事实上该依赖理论上可以参与编译，测试，运行等周期。-->
-                <!--相当于compile，但是打包阶段做了exclude操作&ndash;&gt;-->
 			<!--<scope>provided</scope>-->
 		<!--</dependency>-->
+		<!--&lt;!&ndash;websocket依赖包&ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>org.apache.tomcat.embed</groupId>-->
+			<!--<artifactId>tomcat-embed-websocket</artifactId>-->
+			<!--<version>8.5.23</version>-->
+		<!--</dependency>-->
+		<!--打成war包时候请解除注释-->
 
 
 		<dependency>
@@ -46,18 +54,6 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!--springboot热部署-->
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-devtools</artifactId>-->
-			<!--<optional>true</optional>-->
-		<!--</dependency>-->
 
 
 		<!--阿里巴巴连接池-->
@@ -146,6 +142,12 @@
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
 			<version>3.2.1</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
 

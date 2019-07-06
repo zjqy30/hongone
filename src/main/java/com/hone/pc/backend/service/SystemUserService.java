@@ -1,6 +1,8 @@
 package com.hone.pc.backend.service;
 
+import com.hone.dao.HoSystemRoleDao;
 import com.hone.dao.HoSystemUserDao;
+import com.hone.entity.HoSystemRole;
 import com.hone.entity.HoSystemUser;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.JwtTokenUtils;
@@ -21,6 +23,8 @@ public class SystemUserService {
 
     @Autowired
     private HoSystemUserDao hoSystemUserDao;
+    @Autowired
+    private HoSystemRoleDao hoSystemRoleDao;
 
 
     /**
@@ -44,12 +48,16 @@ public class SystemUserService {
             return jsonResult;
         }
 
+        HoSystemRole hoSystemRole= hoSystemRoleDao.selectByPrimaryKey(systemUser.getRoleId());
+
         //生成token
         String token=JwtTokenUtils.createToken(systemUser.getId());
 
         systemUser.setPassword("******");
         jsonResult.getData().put("user",systemUser);
         jsonResult.getData().put("token",token);
+        jsonResult.getData().put("role",hoSystemRole.getRoleName());
+        jsonResult.getData().put("page",hoSystemRole.getPage());
         jsonResult.globalSuccess();
         return jsonResult;
     }

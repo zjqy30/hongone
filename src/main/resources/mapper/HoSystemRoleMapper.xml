@@ -3,26 +3,27 @@
 <mapper namespace="com.hone.dao.HoSystemRoleDao">
 
     <resultMap id="hoSystemRoleResultMap" type="com.hone.entity.HoSystemRole">
-        <id column="id" property="id"/> 
-        <result column="role_name" property="roleName"/> 
-        <result column="create_date" property="createDate"/> 
-        <result column="update_date" property="updateDate"/> 
-        <result column="enable_flag" property="enableFlag"/> 
+        <id column="id" property="id"/>
+        <result column="role_name" property="roleName"/>
+        <result column="page" property="page"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="enable_flag" property="enableFlag"/>
 
-        
-        
+
     </resultMap>
 
     <sql id="hoSystemRoleColumns">
         a.id AS "id",
         a.role_name AS "roleName",
+        a.page AS "page",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"
     </sql>
 
     <sql id="hoSystemRoleJoins">
-        
+
     </sql>
 
 

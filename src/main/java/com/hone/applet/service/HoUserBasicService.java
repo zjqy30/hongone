@@ -8,6 +8,7 @@ import com.hone.applet.repo.HoUserStarSelfInfo;
 import com.hone.dao.*;
 import com.hone.entity.*;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.NumUtils;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Lijia on 2019/5/29.
@@ -110,6 +112,7 @@ public class HoUserBasicService {
         jsonResult.getData().put("openid", hoUserBasic.getOpenId());
         jsonResult.getData().put("userType", hoUserBasic.getUserType());
         jsonResult.getData().put("ifApproved", hoUserBasic.getIfApproved());
+        jsonResult.getData().put("phoneNo", hoUserBasic.getPhoneNo());
         jsonResult.globalSuccess();
         return jsonResult;
     }
@@ -384,30 +387,67 @@ public class HoUserBasicService {
 
         String pageNumber = params.get("pageNumber");
         String pageSize = params.get("pageSize");
-        String platType = params.get("platType");
         String tag = params.get("tag");
+        String sex=params.get("sex");
+        String orderBy=params.get("orderBy");
+        String platIds=params.get("platIds");
 
-        ParamsUtil.checkParamIfNull(params, new String[]{"platType", "pageSize", "pageNumber"});
+        ParamsUtil.checkParamIfNull(params, new String[]{ "pageSize", "pageNumber"});
 
-        //查询全部平台
-        if (platType.equals("ALL")) {
-            platType = "";
+        //排序
+        if(StringUtils.isEmpty(orderBy)){
+            orderBy="a.create_date desc";
+        }else {
+            orderBy="a.fans_nums "+orderBy;
         }
+        //标签
         List<String> tagList = new ArrayList<>();
         if (StringUtils.isNotEmpty(tag)) {
             for (String each : tag.split(",")) {
                 tagList.add(each);
             }
         }
+        //平台
+        List<String> platIdList=new ArrayList<>();
+        if (StringUtils.isNotEmpty(platIds)) {
+            for (String each : platIds.split(",")) {
+                platIdList.add(each);
+            }
+        }
 
         PageHelper.startPage(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), false);
-        List<HoUserStarListRepo> userStarRepoList = hoUserStarDao.listByStar(platType, tagList);
+        List<HoUserStarListRepo> userStarRepoList = hoUserStarDao.listByStar( tagList,sex,orderBy,platIdList);
         Page<HoUserStarListRepo> page = new Page<>(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), userStarRepoList);
+        userStarRepoList=page.getList();
+        if(!CollectionUtils.isEmpty(userStarRepoList)){
+            for(HoUserStarListRepo repo:userStarRepoList){
+                repo.setFansNum(NumUtils.formatNum(repo.getFansNum(),false));
+                repo.setThumbUpNums(NumUtils.formatNum(repo.getThumbUpNums(),false));
+                //网红标签
+                repo.setTags(getTagsByStar(repo.getUserId()));
+            }
+        }
         jsonResult.getData().put("pageData", page);
         jsonResult.globalSuccess();
         return jsonResult;
     }
 
+    //获取网红用户对应标签
+    public String getTagsByStar(String userId){
+        //网红标签
+        List<HoUserTag> tagList = hoUserTagDao.findListByUserId(userId);
+        String tags = new String();
+        if (!CollectionUtils.isEmpty(tagList)) {
+            for (int i = 0; i < tagList.size(); i++) {
+                if (i == tagList.size() - 1) {
+                    tags = tags + tagList.get(i).getDictValue();
+                } else {
+                    tags = tags + tagList.get(i).getDictValue() + ",";
+                }
+            }
+        }
+        return tags;
+    }
 
     /**
      * 查看网红用户详情
@@ -440,18 +480,7 @@ public class HoUserBasicService {
             hoUserStar.setPlatformName(hoDict.getDictValue());
 
             //网红标签
-            List<HoUserTag> tagList = hoUserTagDao.findListByUserId(userId);
-            String tags = new String();
-            if (!CollectionUtils.isEmpty(tagList)) {
-                for (int i = 0; i < tagList.size(); i++) {
-                    if (i == tagList.size() - 1) {
-                        tags = tags + tagList.get(i).getDictValue();
-                    } else {
-                        tags = tags + tagList.get(i).getDictValue() + ",";
-                    }
-                }
-            }
-            hoUserStar.setTags(tags);
+            hoUserStar.setTags(getTagsByStar(userId));
             jsonResult.getData().put("userExtraInfo", hoUserStar);
         }
         jsonResult.getData().put("userBasicInfo", hoUserBasic);

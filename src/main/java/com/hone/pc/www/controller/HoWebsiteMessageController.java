@@ -42,12 +42,7 @@ public class HoWebsiteMessageController {
 
         JsonResult jsonResult=new JsonResult();
 
-        if(hoTokenService.checkToken(params)){
-            jsonResult.loginExpire();
-            return jsonResult;
-        }
 
-        System.out.println(params);
 
         Page page= websiteMessageService.list();
 

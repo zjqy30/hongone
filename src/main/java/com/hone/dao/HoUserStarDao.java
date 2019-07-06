@@ -18,7 +18,7 @@ import java.util.List;
 public interface HoUserStarDao extends TkBaseMapper<HoUserStar> {
 
 
-    List<HoUserStarListRepo> listByStar(@Param("platformId") String platType, @Param("tagList") List<String> tag);
+    List<HoUserStarListRepo> listByStar( @Param("tagList") List<String> tag, @Param("sex") String sex, @Param("orderBy") String orderBy, @Param("platIdList") List<String> platIdList);
 
     List<StarUserListRepo> listByStarBackend(@Param("platName")String platName, @Param("sex")String sex, @Param("wxName")String wxName, @Param("orderBy")String orderBy);
 

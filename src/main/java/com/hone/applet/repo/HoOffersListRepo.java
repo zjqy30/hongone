@@ -13,6 +13,25 @@ public class HoOffersListRepo {
     private String tag;
     private String fanNums;
     private String price;
+    private String remarks;
+    private String platPic;
+    private String platName;
+
+    public String getPlatName() {
+        return platName;
+    }
+
+    public void setPlatName(String platName) {
+        this.platName = platName;
+    }
+
+    public String getPlatPic() {
+        return platPic;
+    }
+
+    public void setPlatPic(String platPic) {
+        this.platPic = platPic;
+    }
 
     public String getId() {
         return id;
@@ -76,5 +95,13 @@ public class HoOffersListRepo {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 }
