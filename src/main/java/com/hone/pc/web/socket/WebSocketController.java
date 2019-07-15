@@ -1,7 +1,6 @@
-package com.hone.pc.backend.socket;
+package com.hone.pc.web.socket;
 
 import com.hone.system.utils.JsonResult;
-import com.hone.system.utils.JwtTokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,13 +14,13 @@ import java.util.Map;
  */
 
 @RestController
-@RequestMapping("/websocket")
+@RequestMapping("/websocket/qrcode")
 public class WebSocketController {
 
     @Autowired
     private WebSocketServer webSocketServer;
 
-    @RequestMapping("/send")
+    @RequestMapping("/scan")
     public JsonResult starList(@RequestBody Map<String,String> params){
 
         JsonResult jsonResult=new JsonResult();

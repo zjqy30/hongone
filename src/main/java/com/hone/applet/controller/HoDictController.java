@@ -74,5 +74,20 @@ public class HoDictController {
     }
 
 
+    @RequestMapping("/sellerTagRepo")
+    public JsonResult sellerTagRepo(@RequestBody Map<String,String> params){
+        logger.info("商家内幕");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoDictService.sellerTagRepo(params);
+        }catch (Exception e){
+            logger.error("商家内幕",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
 
 }

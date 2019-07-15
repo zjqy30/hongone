@@ -66,7 +66,7 @@ public class HoCollectService {
         hoCollectQuery.setUserId(userId);
         hoCollectQuery.setObjectId(objectId);
         hoCollectQuery=hoCollectDao.selectOne(hoCollectQuery);
-        if(hoCollectQuery.getId()!=null){
+        if(hoCollectQuery!=null&&hoCollectQuery.getId()!=null){
             jsonResult.globalError("不可重复收藏");
             return jsonResult;
         }

@@ -1,21 +1,27 @@
 package com.hone.system.utils;
 
+import com.hone.applet.controller.HoSuanTaoController;
+import com.hone.system.utils.suantao.SslUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.*;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +32,21 @@ public class HttpUtils {
 
     private static  String CONTENT_TYPE_TEXT_JSON = "text/json";
     private static  String APPLICATION_JSON = "application/json";
+    private static Logger logger= LoggerFactory.getLogger(HttpUtils.class);
+
+    private static CloseableHttpClient httpClient;
+    /**
+     * 信任SSL证书
+     */
+    static {
+        try {
+            SSLContext sslContext = SSLContextBuilder.create().useProtocol(SSLConnectionSocketFactory.SSL).loadTrustMaterial((x, y) -> true).build();
+            RequestConfig config = RequestConfig.custom().setConnectTimeout(5000).setSocketTimeout(5000).build();
+            httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).setSSLContext(sslContext).setSSLHostnameVerifier((x, y) -> true).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     // 发送GET请求
     public static String sendGet(String url, Map<String, String> parameters) {
@@ -260,6 +281,16 @@ public class HttpUtils {
 
 
     public static String postJson(String url, String json) {
+        URL url_ = null;
+        try {
+            url_ = new URL(url);
+            if("https".equalsIgnoreCase(url_.getProtocol())){
+                SslUtils.ignoreSsl();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpPost httppost = new HttpPost(url);
         httppost.addHeader(HTTP.CONTENT_TYPE, APPLICATION_JSON);
@@ -277,12 +308,8 @@ public class HttpUtils {
             } finally {
                 response.close();
             }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error("http发送请求：postJson ",e);
         } finally {
             // 关闭连接,释放资源
             try {

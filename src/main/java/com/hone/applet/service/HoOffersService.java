@@ -47,11 +47,11 @@ public class HoOffersService {
     @Autowired
     private HoOfferTemplateDao hoOfferTemplateDao;
     @Autowired
-    private HoWxPayService hoWxPayService;
-    @Autowired
     private HoPayFlowDao hoPayFlowDao;
     @Autowired
     private HoAccountChargeDao hoAccountChargeDao;
+    @Autowired
+    private HoApplyRefundDao hoApplyRefundDao;
 
 
     public JsonResult initData(Map<String, String> params) throws Exception {
@@ -452,6 +452,11 @@ public class HoOffersService {
         hoOffers.setStatus("RA");
         hoOffers.setUpdateDate(new Date());
         hoOffersDao.updateByPrimaryKeySelective(hoOffers);
+
+        HoApplyRefund applyRefund=new HoApplyRefund();
+        applyRefund.setOfferId(offerId);
+        applyRefund.setUserId(userId);
+        applyRefund.setReason(null);
 
  //       String outRefundNo= OutTradeNoUtil.outTradeNo("2");
 

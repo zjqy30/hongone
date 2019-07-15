@@ -9,7 +9,8 @@
         <result column="crad_bank" property="cradBank"/> 
         <result column="user_name" property="userName"/> 
         <result column="crad_number" property="cradNumber"/> 
-        <result column="status" property="status"/> 
+        <result column="status" property="status"/>
+        <result column="user_id" property="userId"/>
         <result column="transfer_imgs" property="transferImgs"/> 
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
@@ -28,6 +29,7 @@
         a.crad_number AS "cradNumber",
         a.status AS "status",
         a.transfer_imgs AS "transferImgs",
+        a.user_id AS "userId",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"
@@ -36,6 +38,22 @@
     <sql id="hoApplyWithdrawJoins">
         
     </sql>
+
+
+    <select id="listForBackend" resultType="com.hone.pc.backend.repo.ApplyWithDrawListRepo">
+      select
+        a.id as 'id',
+        a.draw_amount AS "drawAmount",
+        a.draw_fee AS "drawFee",
+        a.crad_bank AS "cradBank",
+        a.user_name AS "userName",
+        a.crad_number AS "cradNumber",
+        a.create_date AS "createDate",
+        b.wx_name as 'wxName'
+      from ho_apply_withdraw a
+      left join ho_user_basic b on b.id=a.user_id
+      where a.enable_flag='1' and a.status='CH' order by a.create_date desc
+    </select>
 
 
 </mapper>

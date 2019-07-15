@@ -63,4 +63,13 @@ public class JsonResult implements Serializable{
     public void setData(Map<String, Object> data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "JsonResult{" +
+                "errorCode='" + errorCode + '\'' +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }

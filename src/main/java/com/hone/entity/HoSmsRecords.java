@@ -17,6 +17,7 @@ public class HoSmsRecords extends BaseEntity implements Serializable {
     private String code;
     private String phoneNo;
     private Date expireDate;
+    private String type;
 
 
     public String getCode() {
@@ -42,5 +43,13 @@ public class HoSmsRecords extends BaseEntity implements Serializable {
 
     public void setExpireDate(Date expireDate) {
         this.expireDate = expireDate;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

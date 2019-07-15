@@ -209,7 +209,9 @@
             a.imgs as 'pics',
             a.order_no as 'orderNo',
             a.fans_num as 'fansNums',
+            a.status as 'status',
             temp.tags as 'tags'
+
 
             from  ho_offers a
             left join ho_user_basic b on a.user_id=b.id

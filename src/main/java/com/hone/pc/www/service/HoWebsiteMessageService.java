@@ -55,7 +55,7 @@ public class HoWebsiteMessageService {
         }
 
         //验证验证码有效性
-        int nums=smsRecordsDao.verifyCode(phoneNo,code);
+        int nums=smsRecordsDao.verifyCode(phoneNo,code,"1");
         if(nums==0){
             jsonResult.globalError("验证码失效");
             return jsonResult;

@@ -55,12 +55,13 @@ public class HoWebsiteMessageController {
 
     @RequestMapping("/sendSms")
     public JsonResult sendSms(@RequestBody Map<String,String> params){
-        logger.info("发送网站短信验证码");
+        logger.info("发送短信验证码");
         JsonResult jsonResult=new JsonResult();
 
         try {
             String phoneNo=params.get("phoneNo");
             String smsSign=params.get("smsSign");
+            String type=params.get("type");
             ParamsUtil.checkParamIfNull(params,new String[]{"phoneNo","smsSign"});
 
             if(!StringUtils.isNumeric(phoneNo)||phoneNo.length()!=11){
@@ -80,7 +81,7 @@ public class HoWebsiteMessageController {
 
             String[] params_=new String[]{verifyCode};
             String[] phoneNumbers=new String[]{phoneNo};
-            boolean flag=smsUtils.sendSms(params_,phoneNumbers,290650);
+            boolean flag=smsUtils.sendSms(params_,phoneNumbers,290650,type);
             //验证码发送失败
             if(!flag){
                 jsonResult.globalError("验证码发送失败");
@@ -88,7 +89,7 @@ public class HoWebsiteMessageController {
             }
             jsonResult.globalSuccess();
         }catch (Exception e){
-            logger.error("发送网站短信验证码error",e);
+            logger.error("发送短信验证码error",e);
             jsonResult.globalError(e.getMessage());
         }
         return jsonResult;

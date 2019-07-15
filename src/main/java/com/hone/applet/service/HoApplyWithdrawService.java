@@ -114,7 +114,7 @@ public class HoApplyWithdrawService {
         hoApplyWithdraw.setUserName(receiver);
         hoApplyWithdraw.setCradNumber(cardNo);
         hoApplyWithdraw.setCradBank(bankName);
-        hoApplyWithdraw.setStatus("0");
+        hoApplyWithdraw.setStatus("CH");
         hoApplyWithdraw.setDrawFee(new BigDecimal(Double.valueOf(drawAmount)*0.01));
         hoApplyWithdraw.setDrawAmount(new BigDecimal(drawAmount).subtract(hoApplyWithdraw.getDrawFee()));
         hoApplyWithdraw.preInsert();

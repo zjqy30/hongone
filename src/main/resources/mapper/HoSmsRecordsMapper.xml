@@ -5,7 +5,8 @@
     <resultMap id="hoSmsRecordsResultMap" type="com.hone.entity.HoSmsRecords">
         <id column="id" property="id"/> 
         <result column="code" property="code"/> 
-        <result column="phoneNo" property="phoneNo"/> 
+        <result column="phoneNo" property="phoneNo"/>
+        <result column="type" property="type"/>
         <result column="createDate" property="createDate"/> 
         <result column="expireDate" property="expireDate"/> 
         <result column="updateDate" property="updateDate"/> 
@@ -19,6 +20,7 @@
         a.id AS "id",
         a.code AS "code",
         a.phone_no AS "phoneNo",
+        a.type AS "type",
         a.create_date AS "createDate",
         a.expire_date AS "expireDate",
         a.update_date AS "updateDate",
@@ -32,11 +34,11 @@
 
     <update id="verifyCode">
         update ho_sms_records set enable_flag='0'
-        where phone_no=#{phoneNo} and code=#{code} and enable_flag='1' and expire_date &gt; now()
+        where phone_no=#{phoneNo} and code=#{code} and enable_flag='1' and expire_date &gt; now() and type=#{type}
     </update>
 
     <update id="delByPhoneNo">
-        update ho_sms_records set enable_flag='0' where phone_no=#{phoneNo} and enable_flag='1'
+        update ho_sms_records set enable_flag='0' where phone_no=#{phoneNo} and enable_flag='1' and type=#{type}
     </update>
 
 

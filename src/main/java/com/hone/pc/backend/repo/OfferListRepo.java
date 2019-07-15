@@ -28,6 +28,15 @@ public class OfferListRepo {
 
     private String starName;
     private String starPhone;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getStarName() {
         return starName;

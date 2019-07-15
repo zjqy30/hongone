@@ -49,6 +49,10 @@ public class HoUserBasicService {
     private HoDictDao hoDictDao;
     @Autowired
     private HoSmsRecordsDao hoSmsRecordsDao;
+    @Autowired
+    private HoServiceTemplateDao hoServiceTemplateDao;
+    @Autowired
+    private HoStarServiceDao hoStarServiceDao;
 
 
 
@@ -145,8 +149,11 @@ public class HoUserBasicService {
         String idCardNumber = params.get("idCardNumber");
         String openid = params.get("openid");
         String userId = params.get("userId");
+        String personalIntroduce=params.get("personalIntroduce");
+        String serviceTemplateIds=params.get("serviceTemplateIds");
 
-        String strings[] = new String[]{"userId","platFormImgs", "openid", "platFormId", "platFormUserId", "fanNums", "age", "thumpUpNums", "workNums", "hasShop", "abilityIds", "personalImgs", "idCardPic", "idCardUpPic", "idCardDownPic", "idCardNumber"};
+
+        String strings[] = new String[]{"userId","platFormImgs", "openid", "platFormId", "platFormUserId", "fanNums", "age", "thumpUpNums", "workNums", "hasShop", "abilityIds", "personalImgs", "idCardPic", "idCardUpPic", "idCardDownPic", "idCardNumber","personalIntroduce","serviceTemplateIds"};
         ParamsUtil.checkParamIfNull(params, strings);
 
         //查询用户
@@ -188,6 +195,7 @@ public class HoUserBasicService {
         hoUserBasic.setIdCardUpPic(idCardUpPic);
         hoUserBasic.setIdCardNumber(idCardNumber);
         hoUserBasic.setAge(Integer.parseInt(age));
+        hoUserBasic.setPersonalIntroduce(personalIntroduce);
         //邀请码
         if (StringUtils.isNotEmpty(inviteCode)) {
             HoMarketer hoMarketer = new HoMarketer();
@@ -197,6 +205,20 @@ public class HoUserBasicService {
                 hoUserBasic.setMarketerId(hoMarketer.getId());
             }
         }
+        //服务类型-价格
+        if(StringUtils.isNotEmpty(serviceTemplateIds)){
+            for(String each:serviceTemplateIds.split(",")){
+                if(StringUtils.isEmpty(each)||each.split("-").length!=2){
+                    continue;
+                }
+                HoStarService starService=new HoStarService();
+                starService.setTemplateId(each.split("-")[0]);
+                starService.setUserId(userId);
+                starService.setPrice(each.split("-")[1]);
+                starService.preInsert();
+                hoStarServiceDao.insert(starService);
+            }
+        }
         hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
 
         //保存网红技能
@@ -204,6 +226,7 @@ public class HoUserBasicService {
             HoUserTag hoUserTag = new HoUserTag();
             hoUserTag.setUserId(hoUserBasic.getId());
             hoUserTag.setDictId(abilityId);
+            hoUserTag.preInsert();
             hoUserTagDao.insert(hoUserTag);
         }
 
@@ -482,6 +505,10 @@ public class HoUserBasicService {
             //网红标签
             hoUserStar.setTags(getTagsByStar(userId));
             jsonResult.getData().put("userExtraInfo", hoUserStar);
+
+            //服务类型模板
+            List<HoServiceTemplate> serviceTemplateList=hoServiceTemplateDao.findByUserId(userId);
+            hoUserStar.setServiceTemplateList(serviceTemplateList);
         }
         jsonResult.getData().put("userBasicInfo", hoUserBasic);
         jsonResult.globalSuccess();
@@ -598,7 +625,7 @@ public class HoUserBasicService {
 
         ParamsUtil.checkParamIfNull(params,new String[]{"userId","code","phoneNo"});
 
-        int result=hoSmsRecordsDao.verifyCode(phoneNo,code);
+        int result=hoSmsRecordsDao.verifyCode(phoneNo,code,"2");
         if(result<0){
             jsonResult.globalError("验证码错误或失效");
             return jsonResult;
@@ -694,12 +721,11 @@ public class HoUserBasicService {
             HoMarketer hoMarketer = new HoMarketer();
             hoMarketer.setUserCode(inviteCode);
             hoMarketer = hoMarketerDao.selectOne(hoMarketer);
-            if (hoMarketer.getId() != null) {
+            if (hoMarketer!=null&&hoMarketer.getId() != null) {
                 hoUserBasic.setMarketerId(hoMarketer.getId());
             }
         }
         hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
-
         //插入 HoUserSeller
         HoUserSeller hoUserSeller=new HoUserSeller();
         hoUserSeller.setIndustryId(industryId);

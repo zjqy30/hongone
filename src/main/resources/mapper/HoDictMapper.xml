@@ -75,4 +75,26 @@
     </select>
 
 
+    <select id="sellerTagRepoList" resultType="com.hone.applet.repo.HoSellerTagRepo">
+        select
+        a.dict_value as 'name',
+        a.id as 'id',
+        #{type} as 'level',
+        a.pid as 'pid'
+        from ho_dict a
+        <if test="type!=null and type!='' and type=='1'.toString()">
+            where a.pid='0' and a.dict_type='sellerTag' and a.enable_flag='1'
+        </if>
+        <if test="type!=null and type!='' and type=='2'.toString()">
+            inner join ho_dict b on a.pid=b.id
+            where a.dict_type='sellerTag' and b.pid='0'
+        </if>
+        <if test="type!=null and type!='' and type=='3'.toString()">
+            inner join ho_dict b on a.pid=b.id
+            where a.dict_type='sellerTag' and b.pid!='0'
+        </if>
+        order by a.create_date desc
+    </select>
+
+
 </mapper>

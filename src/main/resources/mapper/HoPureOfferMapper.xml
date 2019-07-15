@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoPureOfferDao">
+
+    <resultMap id="hoPureOfferResultMap" type="com.hone.entity.HoPureOffer">
+        <id column="id" property="id"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="title" property="title"/>
+        <result column="status" property="status"/>
+        <result column="product_type_id" property="productTypeId"/> 
+        <result column="shop_level" property="shopLevel"/> 
+        <result column="sales_before" property="salesBefore"/> 
+        <result column="star_plate" property="starPlate"/> 
+        <result column="fans_nums" property="fansNums"/> 
+        <result column="if_send" property="ifSend"/> 
+        <result column="profit_ratio" property="profitRatio"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoPureOfferColumns">
+        a.id AS "id",
+        a.user_id AS "userId",
+        a.title AS "title",
+        a.status AS "status",
+        a.product_type_id AS "productTypeId",
+        a.shop_level AS "shopLevel",
+        a.sales_before AS "salesBefore",
+        a.star_plate AS "starPlate",
+        a.fans_nums AS "fansNums",
+        a.if_send AS "ifSend",
+        a.profit_ratio AS "profitRatio",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoPureOfferJoins">
+        
+    </sql>
+
+    <select id="listForWeb" resultType="com.hone.pc.web.repo.PureOfferListRepo">
+      SELECT
+      a.id as 'id',
+      a.title as 'title',
+      d2.dict_value as 'productType',
+      a.fans_nums as 'fansNums',
+      d.dict_value as 'starPlate',
+      a.profit_ratio as 'profitRatio',
+      a.shop_level as 'shopLevel',
+      a.if_send as 'ifSend',
+      a.sales_before as 'salesBefore',
+      a.create_date as 'createDate',
+      r.starTag as 'starTag'
+      from ho_pure_offer a
+      left join ho_dict d2 on a.product_type_id=d2.id
+      left join ho_dict d on d.id=a.star_plate
+      left join (
+          SELECT a.pure_offer_id,GROUP_CONCAT( d.dict_value ) AS 'starTag'
+          FROM ho_pure_offer_tag a
+          LEFT JOIN ho_dict d ON d.id = a.dict_id
+          GROUP BY a.pure_offer_id)r on r.pure_offer_id = a.id
+        where 1=1
+        and a.enable_flag='1' and status='AP'
+      <if test="productType!=null and productType!=''">
+          and  b.type=#{productType}
+      </if>
+      <if test="dateType!=null and dateType!=''">
+              <if test="dateType=='1'.toString()">
+                  and a.create_date &gt; date_format(now(),'%Y-%m-%d')
+              </if>
+              <if test="dateType=='2'.toString()">
+                  and a.create_date &gt; DATE_FORMAT(DATE_SUB(now(),INTERVAL '7' DAY),'%Y%m%d')
+              </if>
+              <if test="dateType=='3'.toString()">
+                  and a.create_date &gt; DATE_FORMAT(DATE_SUB(now(),INTERVAL '30' DAY),'%Y%m%d')
+              </if>
+      </if>
+      <if test="userId!=null and userId!=''">
+            and  a.user_id=#{userId}
+      </if>
+      order by a.create_date desc
+    </select>
+
+
+    <select id="selfListForWeb" resultType="com.hone.pc.web.repo.PureOfferListRepo">
+        SELECT
+        a.id as 'id',
+        a.title as 'title',
+        d2.dict_value as 'productType',
+        a.fans_nums as 'fansNums',
+        d.dict_value as 'starPlate',
+        a.profit_ratio as 'profitRatio',
+        a.shop_level as 'shopLevel',
+        a.if_send as 'ifSend',
+        a.sales_before as 'salesBefore',
+        a.create_date as 'createDate',
+        r.starTag as 'starTag'
+        from ho_pure_offer a
+        left join ho_dict d2 on a.product_type_id=d2.id
+        left join ho_dict d on d.id=a.star_plate
+        left join (
+        SELECT a.pure_offer_id,GROUP_CONCAT( d.dict_value ) AS 'starTag'
+        FROM ho_pure_offer_tag a
+        LEFT JOIN ho_dict d ON d.id = a.dict_id
+        GROUP BY a.pure_offer_id)r on r.pure_offer_id = a.id
+        where 1=1
+        and a.enable_flag='1'
+        <if test="userId!=null and userId!=''">
+            and  a.user_id=#{userId}
+        </if>
+        <if test="keys!=null and keys!=''">
+            and  a.title like  concat('%',#{keys},'%')
+        </if>
+        order by a.create_date desc
+    </select>
+
+
+    <select id="listForBackend" resultType="com.hone.pc.web.repo.PureOfferListRepo">
+      SELECT
+      a.id as 'id',
+      a.title as 'title',
+      d2.dict_value as 'productType',
+      a.fans_nums as 'fansNums',
+      d.dict_value as 'starPlate',
+      a.profit_ratio as 'profitRatio',
+      a.shop_level as 'shopLevel',
+      a.if_send as 'ifSend',
+      a.sales_before as 'salesBefore',
+      a.create_date as 'createDate',
+      r.starTag as 'starTag',
+      a.status as 'status'
+      from ho_pure_offer a
+      left join ho_dict d2 on a.product_type_id=d2.id
+      left join ho_dict d on d.id=a.star_plate
+      left join (
+          SELECT a.pure_offer_id,GROUP_CONCAT( d.dict_value ) AS 'starTag'
+          FROM ho_pure_offer_tag a
+          LEFT JOIN ho_dict d ON d.id = a.dict_id
+          GROUP BY a.pure_offer_id)r on r.pure_offer_id = a.id
+        where 1=1 and a.enable_flag='1' and status=#{status}
+        order by a.create_date desc
+    </select>
+
+
+</mapper>

@@ -1,4 +1,4 @@
-package com.hone.pc.backend.socket;
+package com.hone.pc.web.socket;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

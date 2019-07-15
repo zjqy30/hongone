@@ -22,7 +22,8 @@
         <result column="age" property="age"/> 
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
-        <result column="enable_flag" property="enableFlag"/> 
+        <result column="enable_flag" property="enableFlag"/>
+        <result column="personal_introduce" property="personalIntroduce"/>
 
         
         
@@ -48,7 +49,8 @@
         a.age AS "age",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
-        a.enable_flag AS "enableFlag"
+        a.enable_flag AS "enableFlag",
+        a.personal_introduce as "personalIntroduce"
     </sql>
 
     <sql id="hoUserBasicJoins">
@@ -83,6 +85,7 @@
         a.has_shop as 'hasShop',
         b.personal_imgs as 'personalImgs',
         b.platform_imgs as 'platformImgs',
+        a.personal_introduce as 'personalIntroduce',
         z.tagIds as 'tagIds'
 
         from ho_user_basic a

@@ -40,7 +40,7 @@ public class JwtTokenUtils {
         String token = JWT.create().withHeader(map)
                 .withClaim("userID", userID)
                 .withIssuedAt(new Date())
-                .withExpiresAt(DateUtils.formatStringToDate(DateUtils.getDelayHoursDate(1)))
+                .withExpiresAt(DateUtils.formatStringToDate(DateUtils.getDelayHoursDate(expireHours)))
                 .sign(Algorithm.HMAC256(jwtTokenSecret));
         return token;
     }

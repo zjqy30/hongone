@@ -21,7 +21,7 @@ public class HoSmsRecordsService {
         hoSmsRecordsDao.insert(smsRecords);
     }
 
-    public void delByPhoneNo(String phoneNo) {
-        hoSmsRecordsDao.delByPhoneNo(phoneNo);
+    public void delByPhoneNo(String phoneNo, String type) {
+        hoSmsRecordsDao.delByPhoneNo(phoneNo,type);
     }
 }

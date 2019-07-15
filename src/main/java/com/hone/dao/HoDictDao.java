@@ -1,5 +1,6 @@
 package com.hone.dao;
 
+import com.hone.applet.repo.HoSellerTagRepo;
 import com.hone.entity.HoDict;
 import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -22,4 +23,6 @@ public interface HoDictDao extends TkBaseMapper<HoDict> {
     String findIndustryStr(@Param("id") String industryId);
 
     List<HoDict> sellerTagList(@Param("type") String type);
+
+    List<HoSellerTagRepo> sellerTagRepoList(@Param("type") String type);
 }

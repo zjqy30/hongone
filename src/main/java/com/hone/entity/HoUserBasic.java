@@ -28,6 +28,7 @@ public class HoUserBasic extends BaseEntity implements Serializable {
     private String avatarUrl;//微信头像
     private String country;//所在城市
     private Integer age;//年龄
+    private String personalIntroduce;//个人简介
 
 
     public HoUserBasic() {
@@ -160,5 +161,13 @@ public class HoUserBasic extends BaseEntity implements Serializable {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getPersonalIntroduce() {
+        return personalIntroduce;
+    }
+
+    public void setPersonalIntroduce(String personalIntroduce) {
+        this.personalIntroduce = personalIntroduce;
     }
 }

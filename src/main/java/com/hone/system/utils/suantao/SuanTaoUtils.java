@@ -2,7 +2,11 @@ package com.hone.system.utils.suantao;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hone.applet.controller.HoSuanTaoController;
 import com.hone.system.utils.HttpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 
 /**
@@ -12,7 +16,10 @@ import com.hone.system.utils.HttpUtils;
  *
  *
  */
+@Component
 public class SuanTaoUtils {
+    private static Logger logger= LoggerFactory.getLogger(SuanTaoUtils.class);
+
 
     private  static String publicKey="MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6bs7qRX4ivXZX+lQUxFwgfiVib/g3RoaIhAvcj9dfnhgpi1fWgas9X0XiIBspNZlF9RYzHtem+G7Fi3hOMg2nGqQyAfQbUsPnAgMCfmrv0Pu09TQi8nr1HqKQyssMLpqQooR3V94uiOiVDkuYRwk+IpkEpzhkWT9TChHXhrB4YwIDAQAB";
     private  static String suanTaoUrl="https://www.suantao.com/open/index";
@@ -57,6 +64,7 @@ public class SuanTaoUtils {
 
         String result= HttpUtils.postJson(suanTaoUrl, JSON.toJSONString(suanTaoCommon));
         System.out.println("返回的加密数据："+result);
+        logger.info("返回的加密数据："+result);
         JSONObject jsonObject=JSON.parseObject(result);
         System.out.println("返回的content:"+jsonObject.getString("content"));
         result=RSAUtil.decryptByPublicKey(jsonObject.getString("content"),publicKey);
@@ -64,6 +72,8 @@ public class SuanTaoUtils {
         return result;
 
     }
+
+
 
     public static void main(String[] args){
         getDataFromSuanTao(22L,"yichan6666");

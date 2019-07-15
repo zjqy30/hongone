@@ -20,6 +20,7 @@ public class HoApplyWithdraw extends BaseEntity implements Serializable {
     private String cradNumber;//银行卡号
     private String status;//状态
     private String transferImgs;//转账截图
+    private String userId;
 
 
     public HoApplyWithdraw() {
@@ -82,5 +83,11 @@ public class HoApplyWithdraw extends BaseEntity implements Serializable {
         return transferImgs;
     }
 
+    public String getUserId() {
+        return userId;
+    }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoPureOfferTagDao">
+
+    <resultMap id="hoPureOfferTagResultMap" type="com.hone.entity.HoPureOfferTag">
+        <id column="id" property="id"/> 
+        <result column="pure_offer_id" property="pureOfferId"/> 
+        <result column="dict_id" property="dictId"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoPureOfferTagColumns">
+        a.id AS "id",
+        a.pure_offer_id AS "pureOfferId",
+        a.dict_id AS "dictId"
+    </sql>
+
+    <sql id="hoPureOfferTagJoins">
+        
+    </sql>
+
+
+</mapper>

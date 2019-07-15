@@ -44,9 +44,10 @@ public class SmsUtils {
      * @param params       短信参数
      * @param phoneNumbers 手机号码
      * @param templateId    模板ID
+     * @param type       类型 1 官网联系  2 小程序验证码
      * @return true/false 发送成功/失败
      */
-    public  boolean sendSms(String[] params,String[] phoneNumbers,int templateId){
+    public  boolean sendSms(String[] params,String[] phoneNumbers,int templateId,String type){
         boolean flag=true;
         try {
             SmsMultiSender msender = new SmsMultiSender(appid, appkey);
@@ -60,12 +61,13 @@ public class SmsUtils {
 
         if(flag){
             //更新之前验证码为失效
-            smsRecordsService.delByPhoneNo(phoneNumbers[0]);
+            smsRecordsService.delByPhoneNo(phoneNumbers[0],type);
 
             //验证码发送成功
             HoSmsRecords smsRecords=new HoSmsRecords();
             smsRecords.setCode(params[0]);
             smsRecords.setPhoneNo(phoneNumbers[0]);
+            smsRecords.setType(type);
             smsRecords.preInsert();
             //过期时间
             Date createDate=smsRecords.getCreateDate();

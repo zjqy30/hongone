@@ -3,6 +3,7 @@ package com.hone.entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Author lijia
@@ -27,6 +28,8 @@ public class HoUserStar extends BaseEntity implements Serializable {
     private String platformName;
     @Transient
     private String tags;
+    @Transient
+    private List<HoServiceTemplate> serviceTemplateList;
 
 
     public HoUserStar() {
@@ -112,5 +115,13 @@ public class HoUserStar extends BaseEntity implements Serializable {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public List<HoServiceTemplate> getServiceTemplateList() {
+        return serviceTemplateList;
+    }
+
+    public void setServiceTemplateList(List<HoServiceTemplate> serviceTemplateList) {
+        this.serviceTemplateList = serviceTemplateList;
     }
 }
