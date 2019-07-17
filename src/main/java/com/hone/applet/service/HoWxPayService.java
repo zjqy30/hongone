@@ -14,6 +14,7 @@ import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.MD5Util;
 import com.hone.system.utils.ParamsUtil;
 import com.hone.system.utils.wxpay.*;
+import com.hone.system.utils.wxtemplate.TemplateUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -75,6 +76,8 @@ public class HoWxPayService {
     private HoPayFlowDao hoPayFlowDao;
     @Autowired
     private HoAccountChargeDao hoAccountChargeDao;
+    @Autowired
+    private TemplateUtils templateUtils;
 
 
     /**
@@ -228,6 +231,7 @@ public class HoWxPayService {
             map.put("paySign", paySign);
             map.put("nonce_str", nonceStr);
             map.put("timeStamp", String.valueOf(timeStamp));
+            map.put("out_trade_no",payFlowId);
             jsonResult.getData().put("map", map);
             jsonResult.globalSuccess();
         }
@@ -238,6 +242,8 @@ public class HoWxPayService {
     @Transactional(propagation = Propagation.NESTED)
     public String callBack(String xmlString, HttpServletResponse response, Map<String, String> map) throws Exception {
         String resXml = "";
+        resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
+                + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
         String outTradeNo = "";
         if (map.get("return_code").equals("SUCCESS")) {
             //验证签名
@@ -268,8 +274,20 @@ public class HoWxPayService {
                         throw new Exception("支付流水不存在,out_trade_no="+outTradeNo);
                     }
 
+                    //避免多次回调
+                    if(hoPayFlow!=null&&hoPayFlow.getStatus().equals("1")){
+                        BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+                        out.write(resXml.getBytes());
+                        out.flush();
+                        out.close();
+                        response.getOutputStream().close();
+                        map.put("success", "success");
+                        return map.toString();
+                    }
+
                     //更新交易流水
                     hoPayFlow.setStatus("1");
+                    hoPayFlow.setUpdateDate(new Date());
                     hoPayFlowDao.updateByPrimaryKeySelective(hoPayFlow);
 
                     //更新需求订单
@@ -291,15 +309,21 @@ public class HoWxPayService {
                     hoAccountCharge.preInsert();
                     hoAccountChargeDao.insert(hoAccountCharge);
 
+                    //异步-发送模板消息
+                    Map<String,String> templateMap=new HashMap<>();
+                    templateMap.put("outTradeNo",outTradeNo);
+                    templateMap.put("openId",openid);
+                    templateMap.put("type","1");
+                    templateUtils.sendMessage(templateMap);
+
+                    //回调函数反馈到微信官方
+                    map.put("success", "success");
                     //业务处理结束
-                    resXml = "<xml>" + "<return_code><![CDATA[SUCCESS]]></return_code>"
-                            + "<return_msg><![CDATA[OK]]></return_msg>" + "</xml> ";
                 } catch (Exception e) {
                     //打印日志
-                    e.printStackTrace();
                     logger.error("微信回调函数处理出错", e);
-                    //失败处理
-                   // notifyFailDeal(e.getMessage(), outTradeNo, String.valueOf(totalFee));
+                    //失败处理  执行退款操作
+                    wechatPayRefundForApplet(outTradeNo, OutTradeNoUtil.outTradeNo("2"),String.valueOf(totalFee),String.valueOf(totalFee));
                     //事务回滚
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 }
@@ -324,6 +348,7 @@ public class HoWxPayService {
         response.getOutputStream().close();
         return map.toString();
 }
+
 
     public String createSign(String characterEncoding, SortedMap<Object, Object> parameters) {
         StringBuffer sb = new StringBuffer();
@@ -414,6 +439,23 @@ public class HoWxPayService {
         }catch(Exception e){
             logger.error("微信退款异常", e);
         }
+
+        //插入账户余额变动记录
+        if(tradeResult.equals("SUCCESS")){
+            HoPayFlow payFlow=hoPayFlowDao.findByOutTradeNo(outTradeNo);
+            if(payFlow!=null){
+                HoAccountCharge hoAccountCharge=new HoAccountCharge();
+                hoAccountCharge.setChargeStatus("1");
+                hoAccountCharge.setChargeType("RN");
+                hoAccountCharge.setTotalFee(new BigDecimal(refundFee));
+                hoAccountCharge.setUserId(payFlow.getUserId());
+                hoAccountCharge.setOutTradeNo(outRefundNo);
+                hoAccountCharge.setOfferId(payFlow.getOfferId());
+                hoAccountCharge.preInsert();
+                hoAccountChargeDao.insert(hoAccountCharge);
+            }
+        }
+
         return tradeResult;
     }
 

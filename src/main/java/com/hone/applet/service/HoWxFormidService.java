@@ -5,6 +5,7 @@ import com.hone.dao.HoWxFormidDao;
 import com.hone.entity.HoCollect;
 import com.hone.entity.HoWxFormid;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.ParamsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,4 +63,23 @@ public class HoWxFormidService {
     }
 
 
+    /**
+     * 保存formId
+     * @param params
+     * @return
+     */
+    public JsonResult save(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+
+        String formId=params.get("formId");
+        String userId=params.get("userId");
+        String openId=params.get("openId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"formId","userId","openId"});
+
+
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
 }

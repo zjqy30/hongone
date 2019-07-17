@@ -1,5 +1,9 @@
 package com.hone.applet.repo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
+
 /**
  * Created by Lijia on 2019/6/3.
  */
@@ -16,6 +20,19 @@ public class HoOfferInfoRepo {
     private String offerPic;
     private String status;
     private String ifSnatch;
+    private String orderNo;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createDate;//创建时间
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date approveDate;//发布时间
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date lockDate;//锁单时间
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date finshDate;//结束时间
 
     public String getHeadPic() {
         return headPic;
@@ -103,5 +120,45 @@ public class HoOfferInfoRepo {
 
     public void setIfSnatch(String ifSnatch) {
         this.ifSnatch = ifSnatch;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getApproveDate() {
+        return approveDate;
+    }
+
+    public void setApproveDate(Date approveDate) {
+        this.approveDate = approveDate;
+    }
+
+    public Date getLockDate() {
+        return lockDate;
+    }
+
+    public void setLockDate(Date lockDate) {
+        this.lockDate = lockDate;
+    }
+
+    public Date getFinshDate() {
+        return finshDate;
+    }
+
+    public void setFinshDate(Date finshDate) {
+        this.finshDate = finshDate;
     }
 }

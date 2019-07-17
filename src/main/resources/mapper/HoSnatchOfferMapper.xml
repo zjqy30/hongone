@@ -66,4 +66,27 @@
     </delete>
 
 
+    <select id="snatchListForApi" resultType="com.hone.applet.repo.HoSnatchUserListRepo">
+        select
+        b.id as 'id',
+        b.wx_name as 'wxName',
+        b.avatar_url as 'headPic',
+        d.dict_value as 'platName',
+        c.fans_nums as 'fansNums',
+        b.gender as 'gender'
+        from ho_snatch_offer a
+        left join ho_user_basic b on b.id=a.user_id
+        left join ho_user_star c on c.user_id=a.user_id
+        left join ho_dict d on d.id=c.platform_id
+        left join (
+            select a.user_id as 'userId',GROUP_CONCAT(d.dict_value) as 'tag'
+            from ho_user_tag a
+            left join ho_dict d on d.id =a.dict_id
+            where d.enable_flag='1'
+            group by a.user_id
+        )z on z.userId=a.user_id
+        where a.offer_id=#{offerId} and a.enable_flag='1' order by a.create_date desc
+    </select>
+
+
 </mapper>

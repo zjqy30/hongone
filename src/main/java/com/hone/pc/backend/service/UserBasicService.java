@@ -14,12 +14,14 @@ import com.hone.pc.backend.repo.StarUserListRepo;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
+import com.hone.system.utils.wxtemplate.TemplateUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +43,8 @@ public class UserBasicService {
     private HoUserTagDao hoUserTagDao;
     @Autowired
     private HoDictDao hoDictDao;
+    @Autowired
+    private TemplateUtils templateUtils;
 
     /**
      * 网红列表
@@ -194,6 +198,13 @@ public class UserBasicService {
 
         }
 
+        //发送模板消息
+        Map<String,String> templateMap=new HashMap<>();
+        templateMap.put("type","2");
+        templateMap.put("title","网红认证");
+        templateMap.put("openId",hoUserBasic.getOpenId());
+        templateMap.put("result",ifPass.equals("pass")?"审核通过!开启红腕之旅":"审核驳回，点击查看详情");
+        templateUtils.sendMessage(templateMap);
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -259,6 +270,16 @@ public class UserBasicService {
             hoUserBasic.setIfApproved("-1");
             hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
         }
+
+
+        //发送模板消息
+        Map<String,String> templateMap=new HashMap<>();
+        templateMap.put("type","2");
+        templateMap.put("title","商户认证");
+        templateMap.put("openId",hoUserBasic.getOpenId());
+        templateMap.put("result",ifPass.equals("pass")?"审核通过!开启红腕之旅":"审核驳回，点击查看详情");
+        templateUtils.sendMessage(templateMap);
+
 
         jsonResult.globalSuccess();
         return jsonResult;

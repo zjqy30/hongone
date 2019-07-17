@@ -55,5 +55,15 @@
       where a.enable_flag='1' and a.status='CH' order by a.create_date desc
     </select>
 
+    <select id="receiverList" resultType="com.hone.applet.repo.HoReceiverListRepo">
+        select
+        a.crad_bank AS "bankName",
+        a.user_name AS "userName",
+        a.crad_number AS "cardNo",
+        a.create_date AS "createDate"
+        from ho_apply_withdraw a
+        where a.enable_flag='1' and a.user_id=#{userId} order by a.create_date desc
+    </select>
+
 
 </mapper>

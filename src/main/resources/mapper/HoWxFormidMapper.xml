@@ -32,4 +32,14 @@
     </sql>
 
 
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoWxFormid" statementType="STATEMENT">
+        select <include refid="hoWxFormidColumns"></include> FROM ho_wx_formid a  where a.${propertyName} = '${value}'
+    </select>
+
+
+    <select id="findOneByOpenId" resultType="com.hone.entity.HoWxFormid">
+        select <include refid="hoWxFormidColumns"/> from ho_wx_formid a
+        where a.open_id=#{openId} order by a.expire_date asc limit 1
+    </select>
+
 </mapper>

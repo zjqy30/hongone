@@ -29,6 +29,7 @@ public class OfferListRepo {
     private String starName;
     private String starPhone;
     private String status;
+    private String reason;
 
     public String getStatus() {
         return status;
@@ -156,5 +157,13 @@ public class OfferListRepo {
 
     public void setFansNums(String fansNums) {
         this.fansNums = fansNums;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

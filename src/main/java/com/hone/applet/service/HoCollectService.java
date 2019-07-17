@@ -2,18 +2,21 @@ package com.hone.applet.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import com.hone.applet.repo.HoUserStarListRepo;
 import com.hone.dao.HoCollectDao;
 import com.hone.dao.HoUserBasicDao;
 import com.hone.entity.HoAccountCharge;
 import com.hone.entity.HoCollect;
 import com.hone.entity.HoUserBasic;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.NumUtils;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -187,6 +190,13 @@ public class HoCollectService {
 
         PageHelper.startPage(pageNumber,pageSize,false);
         List<HoCollect> collectList=hoCollectDao.listForApi(userId);
+        //数字格式化
+        if(!CollectionUtils.isEmpty(collectList)){
+            for(HoCollect collect:collectList){
+                collect.setFansNums(NumUtils.formatNum(collect.getFansNums(),false));
+                collect.setThumbUpNums(NumUtils.formatNum(collect.getThumbUpNums(),false));
+            }
+        }
         Page<HoCollect> page=new Page<>(pageNumber,pageSize,collectList);
         jsonResult.getData().put("pageData",page);
         jsonResult.globalSuccess();

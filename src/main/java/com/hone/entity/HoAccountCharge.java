@@ -1,6 +1,7 @@
 package com.hone.entity;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -16,9 +17,13 @@ public class HoAccountCharge extends BaseEntity implements Serializable {
     private String offerId;
     private String outTradeNo;//交易号
     private BigDecimal totalFee;//交易金额
+    private BigDecimal serviceFee;//手续费
     private String chargeType;//交易类型
     private String chargeStatus;//交易状态
     private String userId;
+
+    @Transient
+    private String title;
 
 
     public HoAccountCharge() {
@@ -73,5 +78,19 @@ public class HoAccountCharge extends BaseEntity implements Serializable {
         return userId;
     }
 
+    public BigDecimal getServiceFee() {
+        return serviceFee;
+    }
 
+    public void setServiceFee(BigDecimal serviceFee) {
+        this.serviceFee = serviceFee;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

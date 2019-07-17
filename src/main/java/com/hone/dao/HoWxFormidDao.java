@@ -3,6 +3,7 @@ package com.hone.dao;
 import com.hone.entity.HoWxFormid;
 import com.hone.entity.TkBaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Author lijia
@@ -12,4 +13,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface HoWxFormidDao extends TkBaseMapper<HoWxFormid> {
 
 
+    HoWxFormid findOneByOpenId(@Param("openId") String openId);
 }

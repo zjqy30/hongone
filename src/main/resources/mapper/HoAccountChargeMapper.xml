@@ -6,7 +6,8 @@
         <id column="id" property="id"/> 
         <result column="offer_id" property="offerId"/> 
         <result column="out_trade_no" property="outTradeNo"/> 
-        <result column="total_fee" property="totalFee"/> 
+        <result column="total_fee" property="totalFee"/>
+        <result column="service_fee" property="serviceFee"/>
         <result column="charge_type" property="chargeType"/> 
         <result column="charge_status" property="chargeStatus"/> 
         <result column="user_id" property="userId"/> 
@@ -23,6 +24,7 @@
         a.offer_id AS "offerId",
         a.out_trade_no AS "outTradeNo",
         a.total_fee AS "totalFee",
+        a.service_fee AS "serviceFee",
         a.charge_type AS "chargeType",
         a.charge_status AS "chargeStatus",
         a.user_id AS "userId",

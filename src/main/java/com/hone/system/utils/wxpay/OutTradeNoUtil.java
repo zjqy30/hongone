@@ -11,8 +11,8 @@ public class OutTradeNoUtil {
 
     /**
      *  生成流水号
-     * @param type  PY 1  RA 2
-     * @return
+     * @param type  PY 1  RA 2  订单号 3
+     * @returnd
      */
     public static String outTradeNo(String type) {
         Date date = new Date();

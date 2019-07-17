@@ -2,7 +2,9 @@ package com.hone.applet.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hone.dao.HoUserBasicDao;
 import com.hone.dao.HoWxFormidDao;
+import com.hone.entity.HoUserBasic;
 import com.hone.entity.HoWxFormid;
 import com.hone.pc.www.controller.HoWebsiteMessageController;
 import com.hone.system.utils.DateUtils;
@@ -43,6 +45,8 @@ public class WxController {
     private HoWxFormidDao hoWxFormidDao;
     @Autowired
     private TemplateUtils templateUtils;
+    @Autowired
+    private HoUserBasicDao hoUserBasicDao;
 
     @RequestMapping("/openId")
     public JsonResult getOpenId(@RequestBody Map<String,String> params){
@@ -83,11 +87,19 @@ public class WxController {
             String encrypData=params.get("encrypData");
             String ivData=params.get("ivData");
             String sessionKey=params.get("sessionKey");
-            ParamsUtil.checkParamIfNull(params,new String[]{"sessionKey","ivData","encrypData"});
+            String openid=params.get("openid");
+            ParamsUtil.checkParamIfNull(params,new String[]{"openid","sessionKey","ivData","encrypData"});
 
             String result=WxDecryptData.decrypt(sessionKey,ivData,encrypData);
             JSONObject jsonObject=JSONObject.parseObject(result);
             jsonResult.getData().put("phoneNumber",jsonObject.getString("phoneNumber"));
+
+            if(StringUtils.isNotEmpty(jsonObject.getString("phoneNumber"))){
+                HoUserBasic hoUserBasic=hoUserBasicDao.findUniqueByProperty("open_id",openid);
+                hoUserBasic.setPhoneNo(jsonObject.getString("phoneNumber"));
+                hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
+            }
+
         }catch (Exception e){
             logger.error("解密微信私密信息，获取手机号",e);
             jsonResult.globalError(e.getMessage());
@@ -105,13 +117,29 @@ public class WxController {
             String formId=params.get("formId");
             String userId=params.get("userId");
             String openId=params.get("openId");
+            String outTradeNo=params.get("outTradeNo");
             ParamsUtil.checkParamIfNull(params,new String[]{"formId","userId","openId"});
+
+            //过滤PC段产生的formId
+            if(formId.contains("the formId is a mock one")){
+                jsonResult.globalSuccess();
+                return jsonResult;
+            }
+
+            //判断是否重复添加
+            if(StringUtils.isNotEmpty(outTradeNo)){
+                HoWxFormid wxFormid=hoWxFormidDao.findUniqueByProperty("out_trade_no",outTradeNo);
+                if(wxFormid!=null){
+                    hoWxFormidDao.delete(wxFormid);
+                }
+            }
 
             HoWxFormid wxFormid=new HoWxFormid();
             wxFormid.preInsert();
             wxFormid.setFormId(formId);
             wxFormid.setOpenId(openId);
             wxFormid.setUserId(userId);
+            wxFormid.setOutTradeNo(outTradeNo);
             wxFormid.setExpireDate(DateUtils.formatStringToDate(DateUtils.getOneDaysDate(7)));
             hoWxFormidDao.insert(wxFormid);
 

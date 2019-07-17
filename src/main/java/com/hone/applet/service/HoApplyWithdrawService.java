@@ -2,6 +2,7 @@ package com.hone.applet.service;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.hone.applet.repo.HoReceiverListRepo;
 import com.hone.dao.HoAccountBalanceDao;
 import com.hone.dao.HoAccountChargeDao;
 import com.hone.dao.HoApplyWithdrawDao;
@@ -21,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -137,4 +139,24 @@ public class HoApplyWithdrawService {
         jsonResult.globalSuccess();
         return jsonResult;
     }
+
+    /**
+     * 最近收款人列表
+     * @param params
+     * @return
+     */
+    public JsonResult receiverList(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String userId=params.get("userId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId"});
+
+        List<HoReceiverListRepo> receiverListRepos=hoApplyWithdrawDao.receiverList(userId);
+
+        jsonResult.getData().put("receiverListRepos",receiverListRepos);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
 }

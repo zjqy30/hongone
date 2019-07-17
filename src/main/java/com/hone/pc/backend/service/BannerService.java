@@ -88,7 +88,9 @@ public class BannerService {
 
         ParamsUtil.checkParamIfNull(params, new String[]{"id"});
 
-        hoBannersDao.deleteByPrimaryKey(id);
+        HoBanners hoBanners=hoBannersDao.selectByPrimaryKey(id);
+        hoBanners.setEnableFlag("0");
+        hoBannersDao.updateByPrimaryKeySelective(hoBanners);
 
         jsonResult.globalSuccess();
         return jsonResult;

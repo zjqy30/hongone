@@ -42,19 +42,19 @@
 
     <select id="listByStar" resultType="com.hone.applet.repo.HoUserStarListRepo">
       select
-     b.wx_name as 'wxName',
-     b.avatar_url as 'headPic',
-     b.id as 'userId',
-     a.fans_nums as 'fansNum',
-     d.dict_value as 'platName',
-     d.dict_pic as 'dictPic',
-     b.gender as 'sex',
-     a.thumb_up_nums as 'thumbUpNums'
+         b.wx_name as 'wxName',
+         b.avatar_url as 'headPic',
+         b.id as 'userId',
+         a.fans_nums as 'fansNum',
+         d.dict_value as 'platName',
+         d.dict_pic as 'dictPic',
+         b.gender as 'sex',
+         a.thumb_up_nums as 'thumbUpNums'
       from ho_user_star a
       left join ho_user_basic b on a.user_id=b.id
       left join ho_dict d on d.dict_type='platType' and d.id=a.platform_id
 
-      where 1=1
+      where b.enable_flag='1'
       <if test="sex!=null and sex!=''">
         and b.gender=#{sex}
       </if>

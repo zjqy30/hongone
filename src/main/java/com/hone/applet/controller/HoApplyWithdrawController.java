@@ -57,6 +57,19 @@ public class HoApplyWithdrawController {
         return jsonResult;
     }
 
+    @RequestMapping("/receiverList")
+    public JsonResult receiverList(@RequestBody Map<String,String> params){
+        logger.info("最近收款人列表");
+        JsonResult jsonResult=new JsonResult();
 
+        try {
+            jsonResult=hoApplyWithdrawService.receiverList(params);
+        }catch (Exception e){
+            logger.error("最近收款人列表",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 
 }

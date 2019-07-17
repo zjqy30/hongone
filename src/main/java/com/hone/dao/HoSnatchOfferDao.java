@@ -1,5 +1,6 @@
 package com.hone.dao;
 
+import com.hone.applet.repo.HoSnatchUserListRepo;
 import com.hone.entity.HoSnatchOffer;
 import com.hone.entity.TkBaseMapper;
 import com.hone.pc.backend.repo.InviteUserListRepo;
@@ -25,4 +26,6 @@ public interface HoSnatchOfferDao extends TkBaseMapper<HoSnatchOffer> {
     List<InviteUserListRepo> snatchListForBackend(@Param("offerId") String offerId);
 
     int deleteByOfferId(@Param("offerId") String offerId);
+
+    List<HoSnatchUserListRepo> snatchListForApi(@Param("offerId") String offerId);
 }

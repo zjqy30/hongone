@@ -2,26 +2,23 @@ package com.hone.pc.backend.service;
 
 import com.github.pagehelper.PageHelper;
 import com.hone.applet.service.HoWxPayService;
-import com.hone.dao.HoOffersDao;
-import com.hone.dao.HoPayFlowDao;
-import com.hone.dao.HoSnatchOfferDao;
-import com.hone.dao.HoUserBasicDao;
-import com.hone.entity.HoOffers;
-import com.hone.entity.HoPayFlow;
-import com.hone.entity.HoSnatchOffer;
-import com.hone.entity.HoUserBasic;
+import com.hone.dao.*;
+import com.hone.entity.*;
 import com.hone.pc.backend.repo.InviteUserListRepo;
 import com.hone.pc.backend.repo.OfferListRepo;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
 import com.hone.system.utils.wxpay.OutTradeNoUtil;
+import com.hone.system.utils.wxtemplate.TemplateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +40,12 @@ public class OfferService {
     private HoSnatchOfferDao hoSnatchOfferDao;
     @Autowired
     private HoUserBasicDao hoUserBasicDao;
+    @Autowired
+    private TemplateUtils templateUtils;
+    @Autowired
+    private HoAccountChargeDao hoAccountChargeDao;
+    @Autowired
+    private HoAccountBalanceDao hoAccountBalanceDao;
 
 
     /**
@@ -108,10 +111,20 @@ public class OfferService {
         } else if (ifPass.equals("pass")) {
             hoOffers.setStatus("AP");
         } else if (ifPass.equals("nopass")) {
-            hoOffers.setStatus("ANP");
+            hoOffers.setStatus("NAP");
         }
 
+        hoOffers.setApproveDate(new Date());
         hoOffersDao.updateByPrimaryKeySelective(hoOffers);
+
+        //发送模板消息
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(hoOffers.getUserId());
+        Map<String,String> templateMap=new HashMap<>();
+        templateMap.put("type","2");
+        templateMap.put("title","订单审核");
+        templateMap.put("openId",hoUserBasic.getOpenId());
+        templateMap.put("result",ifPass.equals("pass")?"审核通过!开启红腕之旅":"审核驳回，点击查看详情");
+        templateUtils.sendMessage(templateMap);
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -217,9 +230,45 @@ public class OfferService {
             jsonResult.globalError("当前需求状态有误");
             return jsonResult;
         }
+
+        //获取抢单记录
+        HoSnatchOffer hoSnatchOffer=hoSnatchOfferDao.findByOfferIdSelect(id);
+
+        if(hoSnatchOffer==null){
+            jsonResult.globalError("当前需求抢单信息异常");
+            return jsonResult;
+        }
+
+        //更新需求状态
         hoOffers.setStatus("FN");
+        hoOffers.setFinshDate(new Date());
         hoOffersDao.updateByPrimaryKeySelective(hoOffers);
 
+
+        //插入网红账户变动记录
+        HoAccountCharge hoAccountCharge = new HoAccountCharge();
+        hoAccountCharge.setOfferId(id);
+        hoAccountCharge.setUserId(hoSnatchOffer.getUserId());
+        hoAccountCharge.setTotalFee(new BigDecimal(hoOffers.getPrice()));
+        hoAccountCharge.setServiceFee(new BigDecimal(hoOffers.getPrice() * 0.2));
+        hoAccountCharge.setChargeType("SR");
+        hoAccountCharge.setChargeStatus("1");
+        hoAccountChargeDao.insert(hoAccountCharge);
+
+        //插入账户金额信息
+        HoAccountBalance hoAccountBalance = hoAccountBalanceDao.findUniqueByProperty("user_id", hoSnatchOffer.getUserId());
+        if (hoAccountBalance == null) {
+            hoAccountBalance = new HoAccountBalance();
+            hoAccountBalance.setAvaiableBalance(hoAccountCharge.getTotalFee().subtract(hoAccountCharge.getServiceFee()).toString());
+            hoAccountBalance.setUserId(hoSnatchOffer.getUserId());
+            hoAccountBalance.preInsert();
+            hoAccountBalanceDao.insert(hoAccountBalance);
+        } else {
+            String totalMoney = hoAccountBalance.getAvaiableBalance();
+            totalMoney = new BigDecimal(totalMoney).add(hoAccountCharge.getTotalFee().subtract(hoAccountCharge.getServiceFee())).toString();
+            hoAccountBalance.setAvaiableBalance(totalMoney);
+            hoAccountBalanceDao.updateByPrimaryKeySelective(hoAccountBalance);
+        }
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -287,12 +336,37 @@ public class OfferService {
         hoSnatchOffer.setIfSelect("1");
         hoSnatchOffer.setOfferId(offerId);
         hoSnatchOffer.setUserId(starId);
+        hoSnatchOffer.setStarApprove("0");
+        hoSnatchOffer.setSellApprove("0");
         hoSnatchOffer.preInsert();
         hoSnatchOfferDao.insert(hoSnatchOffer);
 
         hoOffers.setStatus("LK");
         hoOffersDao.updateByPrimaryKeySelective(hoOffers);
 
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 退款列表
+     * @param params
+     * @return
+     */
+    public JsonResult refund(Map<String, String> params) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+
+        String pageNumber = params.get("pageNumber");
+        String pageSize = params.get("pageSize");
+
+        ParamsUtil.checkParamIfNull(params, new String[]{"pageSize", "pageNumber"});
+
+        com.github.pagehelper.Page pageInfo = PageHelper.startPage(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), true);
+        List<OfferListRepo> offerListRepos = hoOffersDao.listForRefund();
+        Page<OfferListRepo> page = new Page<>(pageInfo.toPageInfo());
+
+        jsonResult.getData().put("pageData",page);
         jsonResult.globalSuccess();
         return jsonResult;
     }

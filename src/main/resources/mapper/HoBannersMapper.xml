@@ -45,7 +45,7 @@
 
 
     <select id="findAll" resultMap="HoBannersResult">
-        SELECT <include refid="hoBannersColumns"></include> from ho_banners a order by a.create_date desc
+        SELECT <include refid="hoBannersColumns"></include> from ho_banners a where a.enable_flag='1' order by a.create_date desc
     </select>
 
 

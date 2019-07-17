@@ -135,6 +135,21 @@ public class HoOffersController {
         return jsonResult;
     }
 
+    @RequestMapping("/edit")
+    public JsonResult edit(@RequestBody Map<String,String> params){
+        logger.info("编辑需求");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoOffersService.edit(params);
+        }catch (Exception e){
+            logger.error("编辑需求",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
 
     @RequestMapping("/sellerOfferList")
     public JsonResult sellerOfferList(@RequestBody Map<String,String> params){
@@ -151,6 +166,21 @@ public class HoOffersController {
         return jsonResult;
     }
 
+
+    @RequestMapping("/snatchUserList")
+    public JsonResult snatchUserList(@RequestBody Map<String,String> params){
+        logger.info("获取抢单网红列表");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoOffersService.snatchUserList(params);
+        }catch (Exception e){
+            logger.error("获取抢单网红列表",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 
     @RequestMapping("/applyRefund")
     public JsonResult applyRefund(@RequestBody Map<String,String> params){
@@ -169,13 +199,13 @@ public class HoOffersController {
 
     @RequestMapping("/confirmFN")
     public JsonResult confirmFN(@RequestBody Map<String,String> params){
-        logger.info("商家确认订单完成");
+        logger.info("确认订单完成");
         JsonResult jsonResult=new JsonResult();
 
         try {
             jsonResult=hoOffersService.confirmFN(params);
         }catch (Exception e){
-            logger.error("商家确认订单完成",e);
+            logger.error("确认订单完成",e);
             jsonResult.globalError(e.getMessage());
         }
 

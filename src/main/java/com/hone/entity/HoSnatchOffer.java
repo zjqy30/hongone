@@ -15,6 +15,8 @@ public class HoSnatchOffer extends BaseEntity implements Serializable {
     private String offerId;
     private String userId;
     private String ifSelect;//是否选中
+    private String sellApprove;
+    private String starApprove;
 
 
     public HoSnatchOffer() {
@@ -45,5 +47,19 @@ public class HoSnatchOffer extends BaseEntity implements Serializable {
         return ifSelect;
     }
 
+    public String getSellApprove() {
+        return sellApprove;
+    }
 
+    public void setSellApprove(String sellApprove) {
+        this.sellApprove = sellApprove;
+    }
+
+    public String getStarApprove() {
+        return starApprove;
+    }
+
+    public void setStarApprove(String starApprove) {
+        this.starApprove = starApprove;
+    }
 }

@@ -3,8 +3,10 @@ package com.hone.applet.service;
 import com.alibaba.fastjson.JSONObject;
 import com.hone.dao.HoAccountBalanceDao;
 import com.hone.dao.HoAccountChargeDao;
+import com.hone.dao.HoOffersDao;
 import com.hone.entity.HoAccountBalance;
 import com.hone.entity.HoAccountCharge;
+import com.hone.entity.HoOffers;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
@@ -12,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -30,6 +33,8 @@ public class HoAccountChargeService {
 
     @Autowired
     private HoAccountChargeDao hoAccountChargeDao;
+    @Autowired
+    private HoOffersDao hoOffersDao;
 
 
     public JsonResult initData(Map<String, String> params) throws Exception {
@@ -94,6 +99,24 @@ public class HoAccountChargeService {
         ParamsUtil.checkParamIfNull(params,new String[]{"pageSize","pageNumber","userId"});
 
         List<HoAccountCharge> chargeList=hoAccountChargeDao.listForApi(userId);
+        if(!CollectionUtils.isEmpty(chargeList)){
+            for(HoAccountCharge accountCharge:chargeList){
+                if(accountCharge.getChargeType().equals("SR")){
+                   HoOffers hoOffers= hoOffersDao.selectByPrimaryKey(accountCharge.getOfferId());
+                   accountCharge.setTitle(hoOffers.getTitle());
+                }
+                else if(accountCharge.getChargeType().equals("PY")){
+                    HoOffers hoOffers= hoOffersDao.selectByPrimaryKey(accountCharge.getOfferId());
+                    accountCharge.setTitle(hoOffers.getTitle());
+                }
+                else if(accountCharge.getChargeType().equals("DR")){
+                    accountCharge.setTitle("提现");
+                }
+                else if(accountCharge.getChargeType().equals("RN")){
+                    accountCharge.setTitle("退款");
+                }
+            }
+        }
         Page<HoAccountCharge> page=new Page<>(pageNumber,pageSize,chargeList);
 
         jsonResult.getData().put("pageData",page);

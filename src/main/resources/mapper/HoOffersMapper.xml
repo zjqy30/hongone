@@ -3,25 +3,27 @@
 <mapper namespace="com.hone.dao.HoOffersDao">
 
     <resultMap id="hoOffersResultMap" type="com.hone.entity.HoOffers">
-        <id column="id" property="id"/> 
-        <result column="fans_num" property="fansNum"/> 
-        <result column="gender" property="gender"/> 
-        <result column="imgs" property="imgs"/> 
-        <result column="shop_plate" property="shopPlate"/> 
-        <result column="title" property="title"/> 
-        <result column="user_plate" property="userPlate"/> 
-        <result column="price" property="price"/> 
-        <result column="remarks" property="remarks"/> 
+        <id column="id" property="id"/>
+        <result column="fans_num" property="fansNum"/>
+        <result column="gender" property="gender"/>
+        <result column="imgs" property="imgs"/>
+        <result column="shop_plate" property="shopPlate"/>
+        <result column="title" property="title"/>
+        <result column="user_plate" property="userPlate"/>
+        <result column="price" property="price"/>
+        <result column="remarks" property="remarks"/>
         <result column="status" property="status"/>
         <result column="order_no" property="orderNo"/>
-        <result column="offer_template_id" property="offerTemplateId"/> 
-        <result column="user_id" property="userId"/> 
-        <result column="create_date" property="createDate"/> 
-        <result column="update_date" property="updateDate"/> 
-        <result column="enable_flag" property="enableFlag"/> 
+        <result column="offer_template_id" property="offerTemplateId"/>
+        <result column="user_id" property="userId"/>
+        <result column="approve_date" property="approveDate"/>
+        <result column="lock_date" property="lockDate"/>
+        <result column="finsh_date" property="finshDate"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="enable_flag" property="enableFlag"/>
 
-        
-        
+
     </resultMap>
 
     <sql id="hoOffersColumns">
@@ -38,13 +40,16 @@
         a.order_no AS "orderNo",
         a.offer_template_id AS "offerTemplateId",
         a.user_id AS "userId",
+        a.approve_date AS "approveDate",
+        a.lock_date AS "lockDate",
+        a.finsh_date AS "finshDate",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"
     </sql>
 
     <sql id="hoOffersJoins">
-        
+
     </sql>
 
 
@@ -78,7 +83,7 @@
 
     <select id="listForApiTag" resultType="com.hone.applet.repo.HoOffersListRepo">
 
-       select
+        select
         b.wx_name as 'wxName',
         b.avatar_url as 'headPic',
         a.title as 'offerTitle',
@@ -99,15 +104,18 @@
         GROUP_CONCAT(b.dict_value) as 'offersTag',
         GROUP_CONCAT(b.id) as 'offersTagId'
         from ho_offer_tag a
-        left join  ho_dict b on b.id =a.dict_id
+        left join ho_dict b on b.id =a.dict_id
         group by a.offer_id
         ) c on c.offerId=a.id
         where
-        1=1
-        and  a.status='AP'
+        a.enable_flag='1'
+        and a.status='AP'
         <if test="platIdsList != null and platIdsList.size > 0">
-            and  a.user_plate in
+            and a.user_plate in
             <foreach collection="platIdsList" item="platId" open="(" separator="," close=")">#{platId}</foreach>
+        </if>
+        <if test="sex != null and sex!='' ">
+            and a.gender = #{sex}
         </if>
         order by ${orderBy}
     </select>
@@ -122,7 +130,12 @@
         a.title as 'offerTitle',
         a.remarks as 'remarks',
         a.imgs as 'offerPic',
-        a.status as 'status'
+        a.status as 'status',
+        a.order_no as 'orderNo',
+        a.create_date as 'createDate',
+        a.approve_date as 'approveDate',
+        a.lock_date as 'lockDate',
+        a.finsh_date as 'finshDate'
         from ho_offers a
         left join ho_user_basic b on a.user_id=b.id
         left join ho_dict d on d.id=a.user_plate
@@ -130,41 +143,48 @@
     </select>
 
 
-    <select id="starSnatchList" resultType="com.hone.applet.repo.HoStarSnatchOfferRepo">
-         select
-         a.id as 'id',
-         c.avatar_url as 'headPic',
-         c.wx_name as 'wxName',
-         a.title as 'title',
-         a.fans_num as 'fansNum',
-         z.tags as 'tags'
-         from ho_offers a
-         left join ho_snatch_offer b on a.id=b.offer_id
-         left join ho_user_basic c on c.id=a.user_id
-         left join
-         (
-         select a.offer_id as 'offerId' ,GROUP_CONCAT(b.dict_value) as 'tags'
-         from ho_offer_tag a left join ho_dict b on a.dict_id=b.id group by a.offer_id
-         ) z on z.offerId=a.id
-         where b.user_id=#{starUserId}
+    <select id="starSnatchList" resultType="com.hone.applet.repo.HoStarSnatchOfferListRepo">
+        select
+        a.id as 'id',
+        a.title as 'title',
+        a.fans_num as 'fansNum',
+        a.remarks as 'remarks',
+        a.price as 'price',
+        a.imgs as 'pic',
+        z.tags as 'tags',
+        a.status as 'status',
+        b.sell_approve as 'sellApprove',
+        b.star_approve as 'starApprove',
+        c.phone_no as 'phoneNo',
+        c.wx_name as 'sellName'
+        from ho_offers a
+        left join ho_snatch_offer b on a.id=b.offer_id
+        left join ho_user_basic c on c.id=a.user_id
+        left join
+        (
+        select a.offer_id as 'offerId' ,GROUP_CONCAT(b.dict_value) as 'tags'
+        from ho_offer_tag a left join ho_dict b on a.dict_id=b.id group by a.offer_id
+        ) z on z.offerId=a.id
+        where b.user_id=#{starUserId}
+        <if test="type!=null and type=='1'.toString()">
+            <!--已抢单-->
+            and a.status in ('AP','FN','RA','RN')
+        </if>
         <if test="type!=null and type=='2'.toString()">
-                  <!--进行中-->
-            and a.status='LK'
+            <!--进行中-->
+            and a.status in ('LK') and b.if_select='1'
         </if>
         <if test="type!=null and type=='3'.toString()">
-                 <!--已完成-->
-            and a.status in ('FN','CO')
+            <!--已完成-->
+            and a.status in ('FN') and b.if_select='1'
         </if>
-         order by b.create_date desc
+        order by b.create_date desc
     </select>
-
 
 
     <select id="sellerOfferList" resultType="com.hone.applet.repo.HoSellerOfferListRepo">
         select
         a.id as 'id',
-        b.wx_name as 'wxName',
-        b.avatar_url as 'headPic',
         a.imgs as 'pic',
         a.fans_num as 'fansNum',
         c.title as 'title',
@@ -172,10 +192,15 @@
         <if test="type!=null and (type=='LK'.toString() or type=='FN'.toString())">
             b.phone_no as 'phoneNo',
             b.id as 'starIds',
+            d.sell_approve as 'sellApprove',
+            d.star_approve as 'starApprove',
+            b.wx_name as 'wxName',
+            b.avatar_url as 'headPic',
         </if>
-        a.status as 'status'
+        a.status as 'status',
+        a.remarks as 'remarks'
         from ho_offers a
-        <if test="type!=null and (type=='CR'.toString() or type=='AP'.toString())">
+        <if test="type!=null and (type=='PY'.toString() or type=='AP'.toString())">
             left join ho_user_basic b on a.user_id=b.id
         </if>
         <if test="type!=null and (type=='LK'.toString() or type=='FN'.toString())">
@@ -184,53 +209,94 @@
         </if>
         left join ho_offer_template c on c.id=a.offer_template_id
         left join
-         (
-         select a.offer_id as 'offerId' ,GROUP_CONCAT(b.dict_value) as 'tags'
-         from ho_offer_tag a left join ho_dict b on a.dict_id=b.id group by a.offer_id
-         ) z on z.offerId=a.id
+        (
+        select a.offer_id as 'offerId' ,GROUP_CONCAT(b.dict_value) as 'tags'
+        from ho_offer_tag a left join ho_dict b on a.dict_id=b.id group by a.offer_id
+        ) z on z.offerId=a.id
         where
-        a.user_id=#{userId}
-        and a.status=#{type}
+        a.enable_flag='1' and a.user_id=#{userId}
+        <if test="type!=null and type=='PY'.toString()">
+            and a.status in ('PY','NAP')
+        </if>
+        <if test="type!=null and type!='AP'.toString()">
+            and a.status in ('AP','RA')
+        </if>
+        <if test="type!=null and type!='FN'.toString()">
+            and a.status in ('FN','RN')
+        </if>
         order by a.create_date desc
     </select>
 
 
     <select id="listForBackend" resultType="com.hone.pc.backend.repo.OfferListRepo">
         select
-            a.id as 'id',
-            b.wx_name as 'wxName',
-            b.phone_no as 'sellerPhone',
-            b.avatar_url as 'headPic',
-            d.dict_value as 'platName',
-            a.title as 'title',
-            a.price as 'price',
-            a.remarks as 'infos',
-            a.create_date as 'createDate',
-            a.imgs as 'pics',
-            a.order_no as 'orderNo',
-            a.fans_num as 'fansNums',
-            a.status as 'status',
-            temp.tags as 'tags'
+        a.id as 'id',
+        b.wx_name as 'wxName',
+        b.phone_no as 'sellerPhone',
+        b.avatar_url as 'headPic',
+        d.dict_value as 'platName',
+        a.title as 'title',
+        a.price as 'price',
+        a.remarks as 'infos',
+        a.create_date as 'createDate',
+        a.imgs as 'pics',
+        a.order_no as 'orderNo',
+        a.fans_num as 'fansNums',
+        a.status as 'status',
+        temp.tags as 'tags'
 
 
-            from  ho_offers a
-            left join ho_user_basic b on a.user_id=b.id
-            left join ho_dict d on d.id=a.user_plate
-            left join (
-            select offer_id,GROUP_CONCAT(d.dict_value) as 'tags' from ho_offer_tag a
-            left join ho_dict d on d.id=a.dict_id
-            group by offer_id
-            )temp on temp.offer_id=a.id
-            where 1=1
-            <if test="type!=null and type!=''">
-                and a.status=#{type}
-            </if>
-            <if test="wxName!=null and wxName!=''">
-                and b.wx_name like concat('%',#{wxName},'%')
-            </if>
-            order by a.create_date desc
+        from ho_offers a
+        left join ho_user_basic b on a.user_id=b.id
+        left join ho_dict d on d.id=a.user_plate
+        left join (
+        select offer_id,GROUP_CONCAT(d.dict_value) as 'tags' from ho_offer_tag a
+        left join ho_dict d on d.id=a.dict_id
+        group by offer_id
+        )temp on temp.offer_id=a.id
+        where a.enable_flag='1'
+        <if test="type!=null and type!=''">
+            and a.status=#{type}
+        </if>
+        <if test="wxName!=null and wxName!=''">
+            and b.wx_name like concat('%',#{wxName},'%')
+        </if>
+        order by a.create_date desc
 
     </select>
 
+
+    <select id="listForRefund" resultType="com.hone.pc.backend.repo.OfferListRepo">
+        select
+        a.id as 'id',
+        b.wx_name as 'wxName',
+        b.phone_no as 'sellerPhone',
+        b.avatar_url as 'headPic',
+        d.dict_value as 'platName',
+        a.title as 'title',
+        a.price as 'price',
+        a.remarks as 'infos',
+        a.create_date as 'createDate',
+        a.imgs as 'pics',
+        a.order_no as 'orderNo',
+        a.fans_num as 'fansNums',
+        a.status as 'status',
+        temp.tags as 'tags',
+        r.reason as 'reason'
+
+
+        from  ho_offers a
+        left join ho_apply_refund r on r.offer_id=a.id
+        left join ho_user_basic b on a.user_id=b.id
+        left join ho_dict d on d.id=a.user_plate
+        left join (
+        select offer_id,GROUP_CONCAT(d.dict_value) as 'tags' from ho_offer_tag a
+        left join ho_dict d on d.id=a.dict_id
+        group by offer_id
+        )temp on temp.offer_id=a.id
+        where a.enable_flag='1' and  a.status='RA'
+        order by a.create_date desc
+
+    </select>
 
 </mapper>

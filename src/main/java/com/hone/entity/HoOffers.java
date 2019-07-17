@@ -1,7 +1,10 @@
 package com.hone.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Author lijia
@@ -18,13 +21,19 @@ public class HoOffers extends BaseEntity implements Serializable {
     private String shopPlate;//卖家平台
     private String title;//标题
     private String userPlate;//网红平台
-    private int price;//价格
+    private double price;//价格
     private String remarks;//备注
     private String status;//状态
     private String offerTemplateId;
     private String userId;
     private String orderNo;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date approveDate;//审核时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date lockDate;//锁单时间
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date finshDate;//结束时间
 
     public HoOffers() {
     }
@@ -78,12 +87,12 @@ public class HoOffers extends BaseEntity implements Serializable {
         return userPlate;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public double getPrice() {
+        return price;
     }
 
-    public int getPrice() {
-        return price;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public void setRemarks(String remarks) {
@@ -124,5 +133,29 @@ public class HoOffers extends BaseEntity implements Serializable {
 
     public void setOrderNo(String orderNo) {
         this.orderNo = orderNo;
+    }
+
+    public Date getApproveDate() {
+        return approveDate;
+    }
+
+    public void setApproveDate(Date approveDate) {
+        this.approveDate = approveDate;
+    }
+
+    public Date getLockDate() {
+        return lockDate;
+    }
+
+    public void setLockDate(Date lockDate) {
+        this.lockDate = lockDate;
+    }
+
+    public Date getFinshDate() {
+        return finshDate;
+    }
+
+    public void setFinshDate(Date finshDate) {
+        this.finshDate = finshDate;
     }
 }

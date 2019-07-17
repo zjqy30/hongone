@@ -50,7 +50,9 @@ public class SystemNoticeService {
         String id=params.get("id");
         ParamsUtil.checkParamIfNull(params,new String[]{"id"});
 
-        hoSystemNoticeDao.deleteByPrimaryKey(id);
+        HoSystemNotice systemNotice=hoSystemNoticeDao.selectByPrimaryKey(id);
+        systemNotice.setEnableFlag("0");
+        hoSystemNoticeDao.updateByPrimaryKeySelective(systemNotice);
 
         jsonResult.globalSuccess();
         return jsonResult;

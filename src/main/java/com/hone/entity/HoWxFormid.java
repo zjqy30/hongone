@@ -19,6 +19,7 @@ public class HoWxFormid extends BaseEntity implements Serializable {
     private String formId;
     private String userId;
     private String openId;
+    private String outTradeNo;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expireDate;//失效时间
 
@@ -56,5 +57,13 @@ public class HoWxFormid extends BaseEntity implements Serializable {
 
     public void setExpireDate(Date expireDate) {
         this.expireDate = expireDate;
+    }
+
+    public String getOutTradeNo() {
+        return outTradeNo;
+    }
+
+    public void setOutTradeNo(String outTradeNo) {
+        this.outTradeNo = outTradeNo;
     }
 }

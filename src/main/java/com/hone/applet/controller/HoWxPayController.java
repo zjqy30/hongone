@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,17 +55,15 @@ public class HoWxPayController {
 
     /**
      * 支付回调
-     * @param params
+     * @param
      * @param
      * @return
      */
-    @RequestMapping("/callBack")
-    public JsonResult callBack(@RequestBody Map<String,String> params, HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(value = "/callBack",produces = "text/html;charset=UTF-8", method = RequestMethod.POST)
+    public String callBack(HttpServletRequest request, HttpServletResponse response){
         logger.info("微信支付回调");
-        JsonResult jsonResult=new JsonResult();
 
         String result="";
-
         try {
 
             BufferedReader reader = request.getReader();
@@ -76,18 +75,17 @@ public class HoWxPayController {
             reader.close();
             request.getReader().close();
             String xmlString = sb.toString();
-            logger.info("微信支付完成回调："+xmlString);
+            logger.info("微信支付回调参数："+xmlString);
             // 解析结果存储在HashMap
             Map<String, String> map = new HashMap<String, String>();
             map = XmltoJsonUtil.xmlToMap(xmlString);
-            String outTradeNo = map.get("out_trade_no");
+            logger.info("===map==="+ map.toString());
             result=hoWxPayService.callBack(xmlString,response,map);
         }catch (Exception e){
             logger.error("微信支付回调",e);
-            jsonResult.globalError(e.getMessage());
         }
 
-        return jsonResult;
+        return result;
     }
 
 }

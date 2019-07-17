@@ -32,11 +32,30 @@
 
     <select id="listForApi" resultType="com.hone.entity.HoCollect">
         select
+        a.id AS "id",
+        a.user_id AS "userId",
+        a.object_id AS "objectId",
+        a.collect_type AS "collectType",
+        a.create_date AS "createDate",
         b.wx_name as 'wxName',
         b.avatar_url as 'headPic',
-        <include refid="hoCollectColumns"/>
+        d.dict_value as 'platName',
+        d.dict_pic as 'platPic',
+        s.fans_nums as 'fansNums',
+        s.thumb_up_nums as 'thumbUpNums',
+        b.gender as 'gender',
+        z.tag as 'tag'
         from ho_collect a
         left join ho_user_basic b on a.object_id = b.id
+        left join ho_user_star s on s.user_id=b.id
+        left join ho_dict d on d.id=s.platform_id
+        left join (
+            select a.user_id as 'userId',GROUP_CONCAT(d.dict_value) as 'tag'
+            from ho_user_tag a
+            left join ho_dict d on d.id =a.dict_id
+            where d.enable_flag='1'
+            group by a.user_id
+        )z on z.userId=a.object_id
         where a.enable_flag='1' and a.user_id=#{userId}
         order by a.create_date desc
     </select>

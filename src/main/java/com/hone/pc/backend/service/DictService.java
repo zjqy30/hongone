@@ -26,18 +26,19 @@ public class DictService {
 
     /**
      * 标签列表
+     *
      * @param params
      * @return
      */
     public JsonResult list(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String dictType=params.get("dictType");
-        ParamsUtil.checkParamIfNull(params,new String[]{"dictType"});
+        String dictType = params.get("dictType");
+        ParamsUtil.checkParamIfNull(params, new String[]{"dictType"});
 
-        List<HoDict> dictList=hoDictDao.listByType(dictType);
+        List<HoDict> dictList = hoDictDao.listByType(dictType);
 
-        jsonResult.getData().put("dictList",dictList);
+        jsonResult.getData().put("dictList", dictList);
         jsonResult.globalSuccess();
         return jsonResult;
     }
@@ -45,16 +46,19 @@ public class DictService {
 
     /**
      * 删除标签
+     *
      * @param params
      * @return
      */
     public JsonResult del(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String id=params.get("id");
-        ParamsUtil.checkParamIfNull(params,new String[]{"id"});
+        String id = params.get("id");
+        ParamsUtil.checkParamIfNull(params, new String[]{"id"});
 
-        hoDictDao.deleteByPrimaryKey(id);
+        HoDict hoDict = hoDictDao.selectByPrimaryKey(id);
+        hoDict.setEnableFlag("0");
+        hoDictDao.updateByPrimaryKeySelective(hoDict);
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -63,25 +67,26 @@ public class DictService {
 
     /**
      * 新建标签
+     *
      * @param params
      * @return
      * @throws Exception
      */
     public JsonResult create(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String dictType=params.get("dictType");
-        String dictValue=params.get("dictValue");
+        String dictType = params.get("dictType");
+        String dictValue = params.get("dictValue");
 
-        ParamsUtil.checkParamIfNull(params,new String[]{"dictValue","dictType"});
+        ParamsUtil.checkParamIfNull(params, new String[]{"dictValue", "dictType"});
 
-        HoDict hoDictQ=hoDictDao.selectByTypeAndValue(dictType,dictValue);
-        if(hoDictQ!=null){
+        HoDict hoDictQ = hoDictDao.selectByTypeAndValue(dictType, dictValue);
+        if (hoDictQ != null) {
             jsonResult.globalError("标签已存在");
             return jsonResult;
         }
 
-        HoDict hoDict=new HoDict();
+        HoDict hoDict = new HoDict();
         hoDict.setDictType(dictType);
         hoDict.setDictValue(dictValue);
         hoDict.setPid("0");
@@ -96,19 +101,20 @@ public class DictService {
 
     /**
      * 标签更换图片
+     *
      * @param params
      * @return
      */
     public JsonResult updatePic(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String id=params.get("id");
-        String pic=params.get("pic");
+        String id = params.get("id");
+        String pic = params.get("pic");
 
-        ParamsUtil.checkParamIfNull(params,new String[]{"id","pic"});
+        ParamsUtil.checkParamIfNull(params, new String[]{"id", "pic"});
 
-        HoDict hoDict=hoDictDao.selectByPrimaryKey(id);
-        if(hoDict==null){
+        HoDict hoDict = hoDictDao.selectByPrimaryKey(id);
+        if (hoDict == null) {
             jsonResult.globalError("标签不存在");
             return jsonResult;
         }
@@ -123,19 +129,20 @@ public class DictService {
 
     /**
      * 商家内幕列表
+     *
      * @param params
      * @return
      */
     public JsonResult sellerTagList(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String type=params.get("type");
-        ParamsUtil.checkParamIfNull(params,new String[]{"type"});
+        String type = params.get("type");
+        ParamsUtil.checkParamIfNull(params, new String[]{"type"});
 
 
-        List<HoDict> dictList=hoDictDao.sellerTagList(type);
+        List<HoDict> dictList = hoDictDao.sellerTagList(type);
 
-        jsonResult.getData().put("dictList",dictList);
+        jsonResult.getData().put("dictList", dictList);
         jsonResult.globalSuccess();
         return jsonResult;
     }
@@ -143,30 +150,31 @@ public class DictService {
 
     /**
      * 新增商家内幕
+     *
      * @param params
      * @return
      */
     public JsonResult createSellerTag(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String pid_1=params.get("pid_1");
-        String pid_2=params.get("pid_2");
-        String value=params.get("value");
+        String pid_1 = params.get("pid_1");
+        String pid_2 = params.get("pid_2");
+        String value = params.get("value");
 
-        ParamsUtil.checkParamIfNull(params,new String[]{"pid_1","pid_2","value"});
+        ParamsUtil.checkParamIfNull(params, new String[]{"pid_1", "pid_2", "value"});
 
-        HoDict hoDict=new HoDict();
+        HoDict hoDict = new HoDict();
         hoDict.preInsert();
         hoDict.setDictSort("0");
         hoDict.setDictType("sellerTag");
         hoDict.setDictValue(value);
 
         //新增三级标签
-        if(!StringUtils.isEmpty(pid_1)&&!StringUtils.isEmpty(pid_2)){
-          hoDict.setPid(pid_2);
+        if (!StringUtils.isEmpty(pid_1) && !StringUtils.isEmpty(pid_2)) {
+            hoDict.setPid(pid_2);
         }
         //新增二级标签
-        if(!StringUtils.isEmpty(pid_1)&&StringUtils.isEmpty(pid_2)){
+        if (!StringUtils.isEmpty(pid_1) && StringUtils.isEmpty(pid_2)) {
             hoDict.setPid(pid_1);
         }
         hoDictDao.insert(hoDict);

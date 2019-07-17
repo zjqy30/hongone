@@ -15,4 +15,6 @@ public interface HoOfferTagDao extends TkBaseMapper<HoOfferTag> {
 
     //根据offerId 获取拼接后的 tag
     String findStringByOfferId(@Param("offerId") String offerId);
+
+    int deleteByOfferId(@Param("offerId") String offerId);
 }

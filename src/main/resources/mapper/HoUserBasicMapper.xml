@@ -95,7 +95,7 @@
         select user_id as 'userId',GROUP_CONCAT(dict_id) as 'tagIds'
         from ho_user_tag where user_id=#{userId} group by user_id
         )z on z.userId=a.id
-        where a.id=#{userId} and a.open_id=#{openId}
+        where a.enbale_flag='1' and   a.id=#{userId} and a.open_id=#{openId}
     </select>
 
 

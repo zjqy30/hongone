@@ -5,8 +5,10 @@
     <resultMap id="hoOfferTagResultMap" type="com.hone.entity.HoOfferTag">
         <id column="id" property="id"/> 
         <result column="offer_id" property="offerId"/> 
-        <result column="dict_id" property="dictId"/> 
-
+        <result column="dict_id" property="dictId"/>
+        <result column="create_date" property="createDate"/>
+        <result column="update_date" property="updateDate"/>
+        <result column="enable_flag" property="enableFlag"/>
         
         
     </resultMap>
@@ -14,7 +16,10 @@
     <sql id="hoOfferTagColumns">
         a.id AS "id",
         a.offer_id AS "offerId",
-        a.dict_id AS "dictId"
+        a.dict_id AS "dictId",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
     </sql>
 
     <sql id="hoOfferTagJoins">
@@ -27,6 +32,11 @@
        left join ho_dict b on b.id=a.dict_id
        where offer_id=#{offerId}
     </select>
+
+
+    <delete id="deleteByOfferId">
+        delete from ho_offer_tag where offer_id=#{offerId}
+    </delete>
 
 
 </mapper>

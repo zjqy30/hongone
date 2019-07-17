@@ -21,6 +21,19 @@ public class HoCollect extends BaseEntity implements Serializable {
     private String wxName;
     @Transient
     private String headPic;
+    @Transient
+    private String platName;
+    @Transient
+    private String platPic;
+    @Transient
+    private String tag;
+    @Transient
+    private String fansNums;
+    @Transient
+    private String thumbUpNums;
+    @Transient
+    private String gender;
+
 
 
     public HoCollect() {
@@ -65,5 +78,53 @@ public class HoCollect extends BaseEntity implements Serializable {
 
     public void setHeadPic(String headPic) {
         this.headPic = headPic;
+    }
+
+    public String getPlatName() {
+        return platName;
+    }
+
+    public void setPlatName(String platName) {
+        this.platName = platName;
+    }
+
+    public String getPlatPic() {
+        return platPic;
+    }
+
+    public void setPlatPic(String platPic) {
+        this.platPic = platPic;
+    }
+
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
+
+    public String getFansNums() {
+        return fansNums;
+    }
+
+    public void setFansNums(String fansNums) {
+        this.fansNums = fansNums;
+    }
+
+    public String getThumbUpNums() {
+        return thumbUpNums;
+    }
+
+    public void setThumbUpNums(String thumbUpNums) {
+        this.thumbUpNums = thumbUpNums;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

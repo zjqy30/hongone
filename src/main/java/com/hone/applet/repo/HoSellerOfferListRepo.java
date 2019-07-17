@@ -18,6 +18,11 @@ public class HoSellerOfferListRepo {
     private String status;
     private String snatchNums;
     private String phoneNo;
+    private String remarks;
+    private String sellApprove;
+    private String starApprove;
+
+
     private List<String> starIds=new ArrayList<>();
 
     public String getId() {
@@ -106,5 +111,29 @@ public class HoSellerOfferListRepo {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+    public String getSellApprove() {
+        return sellApprove;
+    }
+
+    public void setSellApprove(String sellApprove) {
+        this.sellApprove = sellApprove;
+    }
+
+    public String getStarApprove() {
+        return starApprove;
+    }
+
+    public void setStarApprove(String starApprove) {
+        this.starApprove = starApprove;
     }
 }

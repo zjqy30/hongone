@@ -12,6 +12,13 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface HoSmsRecordsDao extends TkBaseMapper<HoSmsRecords> {
 
+    /**
+     *
+     * @param phoneNo
+     * @param code
+     * @param type  1 官网联系 2 小程序  3 PC
+     * @return
+     */
     int  verifyCode(@Param("phoneNo") String phoneNo, @Param("code")String code,@Param("type") String type);
 
     int delByPhoneNo(@Param("phoneNo") String phoneNo, @Param("type") String type);
