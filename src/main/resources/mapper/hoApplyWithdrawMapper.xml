@@ -11,6 +11,7 @@
         <result column="crad_number" property="cradNumber"/> 
         <result column="status" property="status"/>
         <result column="user_id" property="userId"/>
+        <result column="account_charge_id" property="accountChargeId"/>
         <result column="transfer_imgs" property="transferImgs"/> 
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
@@ -30,6 +31,7 @@
         a.status AS "status",
         a.transfer_imgs AS "transferImgs",
         a.user_id AS "userId",
+        a.account_charge_id as "accountChargeId",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"

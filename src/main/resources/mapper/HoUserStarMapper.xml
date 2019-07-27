@@ -54,7 +54,7 @@
       left join ho_user_basic b on a.user_id=b.id
       left join ho_dict d on d.dict_type='platType' and d.id=a.platform_id
 
-      where b.enable_flag='1'
+      where b.enable_flag='1'  and  b.if_approved='1'
       <if test="sex!=null and sex!=''">
         and b.gender=#{sex}
       </if>
@@ -98,7 +98,7 @@
                 and b.wx_name like concat('%',#{wxName},'%')
             </if>
             <if test="sex!=null and sex!=''">
-                and sex=#{sex}
+                and b.gender=#{sex}
             </if>
         </where>
           order by ${orderBy}

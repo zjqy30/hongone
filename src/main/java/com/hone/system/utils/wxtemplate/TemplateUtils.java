@@ -90,6 +90,15 @@ public class TemplateUtils {
      */
     @Async
     public void sendMessage(Map<String, String> params) {
+        //封装模板的内容
+        List<String> listData = new ArrayList<>();
+        //模板信息点击进入的页面地址
+        String pagePath = "pages/index/index";
+        //模板ID
+        String templateId = "";
+        //formId
+        String formId = "";
+        HoWxFormid hoWxFormid=null;
         try {
             logger.info("开始发送微信模板消息，"+params.toString());
             //睡眠3秒
@@ -99,11 +108,6 @@ public class TemplateUtils {
             if (StringUtils.isEmpty(type)) {
                 return;
             }
-            List<String> listData = new ArrayList<>();
-            String pagePath = "pages/index/index";
-            String templateId = "";
-            String formId = "";
-            HoWxFormid hoWxFormid=null;
             if (type.equals("1")) {
                 /**
                  *订单付款成功
@@ -126,7 +130,7 @@ public class TemplateUtils {
                 }
             }
             else if(type.equals("2")){
-                /**用户认证审核
+                /**网红审核  商家审核  订单审核  退款审核
                  * 审核内容 审核结果 审核时间
                  */
                 templateId="jsqOWJt67phqjUOaKzmdGUuDJj9yU053Gb67A_Uw1P8";
@@ -141,14 +145,34 @@ public class TemplateUtils {
                     addTemplate(listData, pagePath, templateId, openId, hoWxFormid.getFormId());
                 }
             }
+            else if(type.equals("3")){
+                /** 订单删除
+                 * 退款金额 退款原因 退款时间 订单编号
+                 */
 
+                templateId="sCuTG4iQ0W_tWybfvG-RIUgeSYEoziOm7QabJDUiq_8";
+                String totalFee=params.get("totalFee");
+                String reason=params.get("reason");
+                String orderNo=params.get("orderNo");
+                listData.add(totalFee);
+                listData.add(reason);
+                listData.add(DateUtils.formatDateToString(new Date()));
+                listData.add(orderNo);
 
-            //删除 hoWxFormid
-            hoWxFormidDao.delete(hoWxFormid);
-
+                hoWxFormid=hoWxFormidDao.findOneByOpenId(openId);
+                if(hoWxFormid!=null){
+                    addTemplate(listData, pagePath, templateId, openId, hoWxFormid.getFormId());
+                }
+            }
         } catch (Exception e) {
             logger.error("发送微信模板消息失败",e);
         }
+
+        if(hoWxFormid!=null){
+            //删除 hoWxFormid
+            hoWxFormidDao.delete(hoWxFormid);
+        }
+
     }
 
 }

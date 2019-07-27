@@ -17,8 +17,8 @@ public class HoPayFlow extends BaseEntity implements Serializable {
     private String outTradeNo;//交易号
     private BigDecimal totalFee;//交易金额
     private String userId;
-    private String status;//状态
-    private String transType;//交易类型
+    private String status;//状态 1 成功 0 失败
+    private String transType;//交易类型 PY 支付 DR 提现 RN 退款
 
 
     public HoPayFlow() {

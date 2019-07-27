@@ -1,6 +1,7 @@
 package com.hone.entity;
 
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 
 /**
@@ -14,6 +15,8 @@ public class HoServiceTemplate extends BaseEntity implements Serializable {
     private String infos;
     private int sort;
 
+    @Transient
+    private String price;
 
     public HoServiceTemplate() {
     }
@@ -42,4 +45,11 @@ public class HoServiceTemplate extends BaseEntity implements Serializable {
         return sort;
     }
 
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
 }

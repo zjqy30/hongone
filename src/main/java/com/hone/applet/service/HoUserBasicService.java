@@ -53,6 +53,8 @@ public class HoUserBasicService {
     private HoServiceTemplateDao hoServiceTemplateDao;
     @Autowired
     private HoStarServiceDao hoStarServiceDao;
+    @Autowired
+    private HoBackendMessageDao hoBackendMessageDao;
 
 
 
@@ -78,6 +80,8 @@ public class HoUserBasicService {
         String country = params.get("country");
         String inviteCode = params.get("inviteCode");
         ParamsUtil.checkParamIfNull(params, new String[]{"openid", "wxname", "avatarUrl"});
+
+
 
 
         HoUserBasic hoUserBasic = findByOpenId(openid);
@@ -201,7 +205,7 @@ public class HoUserBasicService {
             HoMarketer hoMarketer = new HoMarketer();
             hoMarketer.setUserCode(inviteCode);
             hoMarketer = hoMarketerDao.selectOne(hoMarketer);
-            if (hoMarketer.getId() != null) {
+            if (hoMarketer!=null&&hoMarketer.getId() != null) {
                 hoUserBasic.setMarketerId(hoMarketer.getId());
             }
         }
@@ -229,6 +233,14 @@ public class HoUserBasicService {
             hoUserTag.preInsert();
             hoUserTagDao.insert(hoUserTag);
         }
+
+        //插入后台消息提醒
+        HoBackendMessage backendMessage=new HoBackendMessage();
+        backendMessage.setContent("有网红申请认证快去看看");
+        backendMessage.setType("1");
+        backendMessage.setObjectId(hoUserBasic.getId());
+        backendMessage.preInsert();
+        hoBackendMessageDao.insert(backendMessage);
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -562,8 +574,10 @@ public class HoUserBasicService {
         String platformImgs = params.get("platformImgs");
         String userId = params.get("userId");
         String openId = params.get("openId");
+        String personalIntroduce = params.get("personalIntroduce");
+        String serviceTemplateIds=params.get("serviceTemplateIds");
 
-        ParamsUtil.checkParamIfNull(params, new String[]{"openId", "userId", "platformImgs", "personalImgs", "tagIds", "hasShop", "workNums", "thumbUpNums", "age", "fansNums", "platFormId"});
+        ParamsUtil.checkParamIfNull(params, new String[]{"serviceTemplateIds","openId", "userId", "platformImgs", "personalImgs", "tagIds", "hasShop", "workNums", "thumbUpNums", "age", "fansNums", "platFormId"});
 
         //查询 hoUserBasic
         HoUserBasic hoUserBasicQuery=new HoUserBasic();
@@ -580,6 +594,7 @@ public class HoUserBasicService {
         hoUserBasic.setAge(Integer.parseInt(age));
         hoUserBasic.setHasShop(hasShop);
         hoUserBasic.setUpdateDate(new Date());
+        hoUserBasic.setPersonalIntroduce(personalIntroduce);
         hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
 
         //更新 hoUserStar
@@ -588,7 +603,7 @@ public class HoUserBasicService {
         hoUserStar.setPlatformId(platFormId);
         hoUserStar.setThumbUpNums(Integer.parseInt(thumbUpNums));
         hoUserStar.setWorkNums(Integer.parseInt(workNums));
-        hoUserStar.setPlatformImgs(personalImgs);
+        hoUserStar.setPersonalImgs(personalImgs);
         hoUserStar.setPlatformImgs(platformImgs);
         hoUserStarDao.updateByPrimaryKeySelective(hoUserStar);
 
@@ -603,6 +618,22 @@ public class HoUserBasicService {
                 tag.setDictId(str);
                 tag.preInsert();
                 hoUserTagDao.insert(tag);
+            }
+        }
+
+        //服务类型-价格
+        if(StringUtils.isNotEmpty(serviceTemplateIds)){
+            hoStarServiceDao.deleteByUserId(userId);
+            for(String each:serviceTemplateIds.split(",")){
+                if(StringUtils.isEmpty(each)||each.split("-").length!=2){
+                    continue;
+                }
+                HoStarService starService=new HoStarService();
+                starService.setTemplateId(each.split("-")[0]);
+                starService.setUserId(userId);
+                starService.setPrice(each.split("-")[1]);
+                starService.preInsert();
+                hoStarServiceDao.insert(starService);
             }
         }
 
@@ -626,7 +657,7 @@ public class HoUserBasicService {
         ParamsUtil.checkParamIfNull(params,new String[]{"userId","code","phoneNo"});
 
         int result=hoSmsRecordsDao.verifyCode(phoneNo,code,"2");
-        if(result<0){
+        if(result<=0){
             jsonResult.globalError("验证码错误或失效");
             return jsonResult;
         }
@@ -726,6 +757,7 @@ public class HoUserBasicService {
             }
         }
         hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
+
         //插入 HoUserSeller
         HoUserSeller hoUserSeller=new HoUserSeller();
         hoUserSeller.setIndustryId(industryId);
@@ -734,6 +766,14 @@ public class HoUserBasicService {
         hoUserSeller.setCertLicense(certLicense);
         hoUserSeller.preInsert();
         hoUserSellerDao.insert(hoUserSeller);
+
+        //插入后台消息提醒
+        HoBackendMessage backendMessage=new HoBackendMessage();
+        backendMessage.setContent("有商家申请认证快去看看");
+        backendMessage.setType("2");
+        backendMessage.setObjectId(hoUserBasic.getId());
+        backendMessage.preInsert();
+        hoBackendMessageDao.insert(backendMessage);
 
         jsonResult.globalSuccess();
         return jsonResult;

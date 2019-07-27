@@ -6,10 +6,8 @@ import com.hone.applet.repo.HoReceiverListRepo;
 import com.hone.dao.HoAccountBalanceDao;
 import com.hone.dao.HoAccountChargeDao;
 import com.hone.dao.HoApplyWithdrawDao;
-import com.hone.entity.HoAccountBalance;
-import com.hone.entity.HoAccountCharge;
-import com.hone.entity.HoApplyWithdraw;
-import com.hone.entity.HoUserBasic;
+import com.hone.dao.HoBackendMessageDao;
+import com.hone.entity.*;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.ParamsUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,8 @@ public class HoApplyWithdrawService {
     private HoAccountBalanceDao hoAccountBalanceDao;
     @Autowired
     private HoAccountChargeDao hoAccountChargeDao;
+    @Autowired
+    private HoBackendMessageDao hoBackendMessageDao;
 
     public JsonResult initData(Map<String, String> params) throws Exception {
         JsonResult jsonResult=new JsonResult();
@@ -111,14 +111,27 @@ public class HoApplyWithdrawService {
             jsonResult.globalError("提现余额有误");
             return jsonResult;
         }
+
+        //插入账户交易记录
+        HoAccountCharge hoAccountCharge=new HoAccountCharge();
+        hoAccountCharge.setUserId(userId);
+        hoAccountCharge.setTotalFee(new BigDecimal(drawAmount));
+        hoAccountCharge.setChargeType("DR");
+        hoAccountCharge.setChargeStatus("2");//待审核
+        hoAccountCharge.setServiceFee(new BigDecimal(Double.valueOf(drawAmount)*0.01));
+        hoAccountCharge.preInsert();
+        hoAccountChargeDao.insert(hoAccountCharge);
+
         //插入提现记录
         HoApplyWithdraw hoApplyWithdraw=new HoApplyWithdraw();
         hoApplyWithdraw.setUserName(receiver);
         hoApplyWithdraw.setCradNumber(cardNo);
         hoApplyWithdraw.setCradBank(bankName);
         hoApplyWithdraw.setStatus("CH");
+        hoApplyWithdraw.setUserId(userId);
         hoApplyWithdraw.setDrawFee(new BigDecimal(Double.valueOf(drawAmount)*0.01));
-        hoApplyWithdraw.setDrawAmount(new BigDecimal(drawAmount).subtract(hoApplyWithdraw.getDrawFee()));
+        hoApplyWithdraw.setDrawAmount(new BigDecimal(drawAmount));
+        hoApplyWithdraw.setAccountChargeId(hoAccountCharge.getId());
         hoApplyWithdraw.preInsert();
         hoApplyWithdrawDao.insert(hoApplyWithdraw);
 
@@ -127,14 +140,13 @@ public class HoApplyWithdrawService {
         hoAccountBalance.setAvaiableBalance(balance.toString());
         hoAccountBalanceDao.updateByPrimaryKeySelective(hoAccountBalance);
 
-        //插入账户交易记录
-        HoAccountCharge hoAccountCharge=new HoAccountCharge();
-        hoAccountCharge.setUserId(userId);
-        hoAccountCharge.setTotalFee(new BigDecimal(drawAmount));
-        hoAccountCharge.setChargeType("DR");
-        hoAccountCharge.setChargeStatus("2");//待审核
-        hoAccountCharge.preInsert();
-        hoAccountChargeDao.insert(hoAccountCharge);
+        //插入后台消息提醒
+        HoBackendMessage backendMessage=new HoBackendMessage();
+        backendMessage.setContent("有网红申请提现快去看看");
+        backendMessage.setType("4");
+        backendMessage.setObjectId(hoApplyWithdraw.getId());
+        backendMessage.preInsert();
+        hoBackendMessageDao.insert(backendMessage);
 
         jsonResult.globalSuccess();
         return jsonResult;

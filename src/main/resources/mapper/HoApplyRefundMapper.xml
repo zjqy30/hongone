@@ -31,4 +31,42 @@
     </sql>
 
 
+    <select id="findUniqueByProperty" resultType="com.hone.entity.HoApplyRefund" statementType="STATEMENT">
+        select <include refid="hoApplyRefundColumns"></include> FROM ho_apply_refund a  where a.${propertyName} = '${value}'
+    </select>
+
+    <select id="listForBackend" resultType="com.hone.pc.backend.repo.OfferListRepo">
+        select
+        a.id as 'id',
+        b.wx_name as 'wxName',
+        b.phone_no as 'sellerPhone',
+        b.avatar_url as 'headPic',
+        d.dict_value as 'platName',
+        a.title as 'title',
+        a.price as 'price',
+        a.remarks as 'infos',
+        a.create_date as 'createDate',
+        a.imgs as 'pics',
+        a.order_no as 'orderNo',
+        a.fans_num as 'fansNums',
+        a.status as 'status',
+        temp.tags as 'tags',
+        r.reason as 'reason'
+
+
+        from ho_apply_refund r
+        left join  ho_offers a on r.offer_id=a.id
+        left join ho_user_basic b on a.user_id=b.id
+        left join ho_dict d on d.id=a.user_plate
+        left join (
+        select offer_id,GROUP_CONCAT(d.dict_value) as 'tags' from ho_offer_tag a
+        left join ho_dict d on d.id=a.dict_id
+        group by offer_id
+        )temp on temp.offer_id=a.id
+        where a.enable_flag='1' and a.status='RA' and r.status='CH'
+
+        order by r.create_date desc
+    </select>
+
+
 </mapper>

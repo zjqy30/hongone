@@ -9,7 +9,7 @@ import java.util.Date;
  * Author lijia
  * Date  2019-06-14
  */
-@Table(name = "Ho_access_token")
+@Table(name = "ho_access_token")
 public class HoAccessToken extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     private String accessToken;

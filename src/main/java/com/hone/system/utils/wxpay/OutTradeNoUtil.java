@@ -11,7 +11,7 @@ public class OutTradeNoUtil {
 
     /**
      *  生成流水号
-     * @param type  PY 1  RA 2  订单号 3
+     * @param type  支付 1  退款 2  订单号 3
      * @returnd
      */
     public static String outTradeNo(String type) {

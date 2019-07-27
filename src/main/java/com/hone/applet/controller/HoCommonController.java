@@ -6,6 +6,7 @@ import com.hone.system.utils.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,9 @@ public class HoCommonController {
     @Autowired
     private HoCommonService hoCommonService;
 
+
+
+
     @RequestMapping("/serviceTemplate/list")
     public JsonResult serviceList(@RequestBody Map<String,String> params){
         logger.info("服务类型列表");
@@ -34,6 +38,22 @@ public class HoCommonController {
             jsonResult=hoCommonService.serviceList(params);
         }catch (Exception e){
             logger.error("服务类型列表",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+
+    @RequestMapping("/fansNums")
+    public JsonResult fansNums(@RequestBody Map<String,String> params){
+        logger.info("获取入驻网红数量");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=hoCommonService.fansNums(params);
+        }catch (Exception e){
+            logger.error("获取入驻网红数量",e);
             jsonResult.globalError(e.getMessage());
         }
 

@@ -63,12 +63,10 @@ public class SuanTaoUtils {
         suanTaoCommon.setContent(content);
 
         String result= HttpUtils.postJson(suanTaoUrl, JSON.toJSONString(suanTaoCommon));
-        System.out.println("返回的加密数据："+result);
         logger.info("返回的加密数据："+result);
         JSONObject jsonObject=JSON.parseObject(result);
-        System.out.println("返回的content:"+jsonObject.getString("content"));
         result=RSAUtil.decryptByPublicKey(jsonObject.getString("content"),publicKey);
-        System.out.println("解密后的数据："+result);
+        logger.info("解密后的数据："+result);
         return result;
 
     }

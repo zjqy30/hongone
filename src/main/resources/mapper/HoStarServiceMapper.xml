@@ -30,4 +30,9 @@
     </sql>
 
 
+    <delete id="deleteByUserId">
+      DELETE FROM ho_star_service WHERE user_id=#{userId}
+    </delete>
+
+
 </mapper>

@@ -4,6 +4,7 @@ import com.hone.applet.service.HoAccountBalanceService;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.ParamsUtil;
 import com.hone.system.utils.SimpleUploadFileCos;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,11 @@ public class HoCosController {
             String fileName = multipartFile.getOriginalFilename();
             InputStream inputStream=multipartFile.getInputStream();
             fileName= simpleUploadFileCos.SimpleUploadFileFromStream(inputStream,fileName,multipartFile.getSize());
+            //判断是否上传成功
+            if(StringUtils.isEmpty(fileName)){
+                jsonResult.globalError("上传图片失败,请稍后再试");
+                return  jsonResult;
+            }
             jsonResult.globalSuccess();
             jsonResult.getData().put("fileName",fileName);
         }catch (Exception e){
@@ -84,6 +90,11 @@ public class HoCosController {
                 String fileName = multipartFile.getOriginalFilename();
                 InputStream inputStream=multipartFile.getInputStream();
                 fileName= simpleUploadFileCos.SimpleUploadFileFromStream(inputStream,fileName,multipartFile.getSize());
+                //判断是否上传成功
+                if(StringUtils.isEmpty(fileName)){
+                    jsonResult.globalError("上传图片失败,请稍后再试");
+                    return  jsonResult;
+                }
                 sb.append(fileName).append(",");
             }
            String fileNames= sb.substring(0,sb.lastIndexOf(","));

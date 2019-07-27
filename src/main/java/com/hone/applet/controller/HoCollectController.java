@@ -1,7 +1,6 @@
 package com.hone.applet.controller;
 
 import com.hone.applet.service.HoCollectService;
-import com.hone.applet.service.HoPlatformService;
 import com.hone.system.utils.JsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

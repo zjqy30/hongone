@@ -21,6 +21,7 @@ public class HoSellerOfferListRepo {
     private String remarks;
     private String sellApprove;
     private String starApprove;
+    private String price;
 
 
     private List<String> starIds=new ArrayList<>();
@@ -135,5 +136,13 @@ public class HoSellerOfferListRepo {
 
     public void setStarApprove(String starApprove) {
         this.starApprove = starApprove;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 }

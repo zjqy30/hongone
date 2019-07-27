@@ -2,7 +2,10 @@ package com.hone.dao;
 
 import com.hone.entity.HoApplyRefund;
 import com.hone.entity.TkBaseMapper;
+import com.hone.pc.backend.repo.OfferListRepo;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * Author lijia
@@ -12,4 +15,5 @@ import org.apache.ibatis.annotations.Mapper;
 public interface HoApplyRefundDao extends TkBaseMapper<HoApplyRefund> {
 
 
+    List<OfferListRepo> listForBackend();
 }

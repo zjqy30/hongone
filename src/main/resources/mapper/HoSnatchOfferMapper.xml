@@ -6,7 +6,9 @@
         <id column="id" property="id"/> 
         <result column="offer_id" property="offerId"/> 
         <result column="user_id" property="userId"/> 
-        <result column="if_select" property="ifSelect"/> 
+        <result column="if_select" property="ifSelect"/>
+        <result column="sell_approve" property="sellApprove"/>
+        <result column="star_approve" property="starApprove"/>
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
         <result column="enable_flag" property="enableFlag"/> 
@@ -20,6 +22,8 @@
         a.offer_id AS "offerId",
         a.user_id AS "userId",
         a.if_select AS "ifSelect",
+        a.sell_approve AS "sellApprove",
+        a.star_approve AS "starApprove",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"
@@ -52,7 +56,8 @@
         b.avatar_url as 'headPic',
         d.dict_value as 'platName',
         c.fans_nums as 'fansNums',
-        b.gender as 'sex'
+        b.gender as 'sex',
+        c.fans_nums as 'fansNums'
         from ho_snatch_offer a
         left join ho_user_basic b on b.id=a.user_id
         left join ho_user_star c on c.user_id=a.user_id
@@ -73,7 +78,8 @@
         b.avatar_url as 'headPic',
         d.dict_value as 'platName',
         c.fans_nums as 'fansNums',
-        b.gender as 'gender'
+        b.gender as 'gender',
+        z.tag as 'tag'
         from ho_snatch_offer a
         left join ho_user_basic b on b.id=a.user_id
         left join ho_user_star c on c.user_id=a.user_id

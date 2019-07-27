@@ -4,6 +4,7 @@ import com.github.qcloudsms.SmsMultiSender;
 import com.github.qcloudsms.SmsMultiSenderResult;
 import com.hone.entity.HoSmsRecords;
 import com.hone.applet.service.HoSmsRecordsService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,9 @@ public class SmsUtils {
             HoSmsRecords smsRecords=new HoSmsRecords();
             smsRecords.setCode(params[0]);
             smsRecords.setPhoneNo(phoneNumbers[0]);
+            if(StringUtils.isEmpty(type)){
+                type="1";
+            }
             smsRecords.setType(type);
             smsRecords.preInsert();
             //过期时间

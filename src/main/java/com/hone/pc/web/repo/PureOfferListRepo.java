@@ -19,10 +19,22 @@ public class PureOfferListRepo {
     private String shopLevel;
     private String ifSend;
     private String salesBefore;//以往销量
+    private String headPic;
+    private String wxName;
+    private String ifSnatch;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
     private String status;
+
+
+    public String getIfSnatch() {
+        return ifSnatch;
+    }
+
+    public void setIfSnatch(String ifSnatch) {
+        this.ifSnatch = ifSnatch;
+    }
 
     public String getId() {
         return id;
@@ -118,5 +130,21 @@ public class PureOfferListRepo {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getHeadPic() {
+        return headPic;
+    }
+
+    public void setHeadPic(String headPic) {
+        this.headPic = headPic;
+    }
+
+    public String getWxName() {
+        return wxName;
+    }
+
+    public void setWxName(String wxName) {
+        this.wxName = wxName;
     }
 }

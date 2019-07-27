@@ -18,8 +18,8 @@ public class HoAccountCharge extends BaseEntity implements Serializable {
     private String outTradeNo;//交易号
     private BigDecimal totalFee;//交易金额
     private BigDecimal serviceFee;//手续费
-    private String chargeType;//交易类型
-    private String chargeStatus;//交易状态
+    private String chargeType;//交易类型  PY 订单支付 SR 网红服务 RN 退款 DR 提现
+    private String chargeStatus;//交易状态  1 成功 2 审核中 3 拒绝
     private String userId;
 
     @Transient

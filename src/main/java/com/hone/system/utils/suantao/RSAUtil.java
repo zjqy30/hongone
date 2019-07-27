@@ -193,7 +193,12 @@ public class RSAUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return new String(ddataByte);
+		try {
+			return new String(ddataByte,"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**

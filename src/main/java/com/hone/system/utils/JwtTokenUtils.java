@@ -20,7 +20,7 @@ import java.util.Map;
 public class JwtTokenUtils {
 
     private static  String jwtTokenSecret = "ans8euf98eu89fjfioehjfo";
-    private static  int expireHours=1;
+    private static  int expireHours=36;
 
 
     /**

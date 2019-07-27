@@ -1,6 +1,8 @@
 package com.hone.applet.service;
 
+import com.hone.dao.HoDictDao;
 import com.hone.dao.HoServiceTemplateDao;
+import com.hone.entity.HoDict;
 import com.hone.entity.HoServiceTemplate;
 import com.hone.system.utils.JsonResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,8 @@ public class HoCommonService {
 
     @Autowired
     private HoServiceTemplateDao hoServiceTemplateDao;
+    @Autowired
+    private HoDictDao hoDictDao;
 
     /**
      * 服务类型列表
@@ -33,6 +37,22 @@ public class HoCommonService {
         List<HoServiceTemplate> serviceTemplateList=hoServiceTemplateDao.listAll();
 
         jsonResult.getData().put("serviceTemplateList",serviceTemplateList);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 获取入驻网红数量
+     * @param params
+     * @return
+     */
+    public JsonResult fansNums(Map<String, String> params) {
+        JsonResult jsonResult=new JsonResult();
+
+        HoDict hoDict=hoDictDao.findUniqueByProperty("dict_type","fansNums");
+
+        jsonResult.getData().put("fansNums",hoDict.getDictValue());
         jsonResult.globalSuccess();
         return jsonResult;
     }

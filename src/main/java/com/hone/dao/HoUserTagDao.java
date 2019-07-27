@@ -16,4 +16,6 @@ public interface HoUserTagDao extends TkBaseMapper<HoUserTag> {
 
 
     List<HoUserTag> findListByUserId(@Param("userId") String userId);
+
+    int deleteByUserId(String appletUserId);
 }

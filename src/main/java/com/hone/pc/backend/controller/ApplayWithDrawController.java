@@ -47,6 +47,24 @@ public class ApplayWithDrawController {
     }
 
 
+    @RequestMapping("/operate")
+    public JsonResult operate(@RequestBody Map<String,String> params){
+        logger.info("提现操作");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=applayWithDrawService.operate(params);
+        }catch (Exception e){
+            logger.error("提现操作",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 
 
 }

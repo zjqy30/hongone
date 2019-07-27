@@ -65,6 +65,7 @@ public class SimpleUploadFileCos {
 
     // 从输入流进行读取并上传到COS
     public  String SimpleUploadFileFromStream(InputStream fileInputStream,String fileName,long size) {
+        boolean flag=false;
         // 1 初始化用户身份信息(secretId, secretKey)
         COSCredentials cred = new BasicCOSCredentials(accesskey, sercetKey);
         // 2 设置bucket的区域, COS地域的简称请参照 https://www.qcloud.com/document/product/436/6224
@@ -88,6 +89,7 @@ public class SimpleUploadFileCos {
             // putobjectResult会返回文件的etag
             String etag = putObjectResult.getETag();
             System.out.println(etag);
+            flag=true;
         } catch (CosServiceException e) {
             e.printStackTrace();
         } catch (CosClientException e) {
@@ -96,7 +98,13 @@ public class SimpleUploadFileCos {
 
         // 关闭客户端
         cosclient.shutdown();
-        return bucketUrl+key;
+        //文件上传成功
+        if(flag){
+            return bucketUrl+key;
+        }else {
+         //文件上传失败
+            return null;
+        }
     }
 
     /**

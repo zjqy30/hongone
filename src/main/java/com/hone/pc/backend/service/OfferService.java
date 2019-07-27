@@ -7,6 +7,7 @@ import com.hone.entity.*;
 import com.hone.pc.backend.repo.InviteUserListRepo;
 import com.hone.pc.backend.repo.OfferListRepo;
 import com.hone.system.utils.JsonResult;
+import com.hone.system.utils.NumUtils;
 import com.hone.system.utils.Page;
 import com.hone.system.utils.ParamsUtil;
 import com.hone.system.utils.wxpay.OutTradeNoUtil;
@@ -46,7 +47,10 @@ public class OfferService {
     private HoAccountChargeDao hoAccountChargeDao;
     @Autowired
     private HoAccountBalanceDao hoAccountBalanceDao;
-
+    @Autowired
+    private HoBackendMessageDao hoBackendMessageDao;
+    @Autowired
+    private HoFrontMessageDao hoFrontMessageDao;
 
     /**
      * 需求列表
@@ -110,6 +114,17 @@ public class OfferService {
             return jsonResult;
         } else if (ifPass.equals("pass")) {
             hoOffers.setStatus("AP");
+            //删除对应的 object 消息
+            hoBackendMessageDao.deleteByObjectId(hoOffers.getId());
+
+            //添加 ho_front_message 记录
+            HoFrontMessage hoFrontMessage=new HoFrontMessage();
+            hoFrontMessage.setContent("小程序订单大厅有新的订单");
+            hoFrontMessage.setObjectId(hoOffers.getId());
+            hoFrontMessage.setType("3");
+            hoFrontMessage.preInsert();
+            hoFrontMessageDao.insert(hoFrontMessage);
+
         } else if (ifPass.equals("nopass")) {
             hoOffers.setStatus("NAP");
         }
@@ -130,6 +145,7 @@ public class OfferService {
         return jsonResult;
     }
 
+
     /**
      * 派单中删除需求
      *
@@ -143,7 +159,7 @@ public class OfferService {
         ParamsUtil.checkParamIfNull(params, new String[]{"id"});
 
         HoOffers hoOffers = hoOffersDao.selectByPrimaryKey(id);
-        if(hoOffers==null||hoOffers.getStatus().equals("AP")){
+        if(hoOffers==null||!hoOffers.getStatus().equals("AP")){
             jsonResult.globalError("当前订单不可删除");
             return jsonResult;
         }
@@ -176,12 +192,23 @@ public class OfferService {
                 hoPayFlow2.preInsert();
                 hoPayFlowDao.insert(hoPayFlow2);
             }
+
+            //发送模板消息提醒用户已退款
+            HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(hoOffers.getUserId());
+            HashMap<String,String> map=new HashMap<>();
+            map.put("type","3");
+            map.put("reason","订单已被删除，详情联系客服");
+            map.put("orderNo",hoOffers.getOrderNo());
+            map.put("totalFee",hoOffers.getPrice()+"");
+            map.put("openId",hoUserBasic.getOpenId());
+            templateUtils.sendMessage(map);
         } else {
             jsonResult.globalError("退款失败");
             return jsonResult;
         }
 
-        //TODO 发送模板消息提醒抢单用户 订单已被删除
+        //TODO 发送模板消息提醒抢单用户 抢单失败
+
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -203,6 +230,11 @@ public class OfferService {
 
         com.github.pagehelper.Page pageInfo = PageHelper.startPage(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), true);
         List<InviteUserListRepo> userListRepos=hoSnatchOfferDao.snatchListForBackend(id);
+        if(!CollectionUtils.isEmpty(pageInfo.toPageInfo().getList())){
+            for(InviteUserListRepo repo:(List<InviteUserListRepo>)pageInfo.toPageInfo().getList()){
+                repo.setFansNums(NumUtils.formatNum(repo.getFansNums(),false));
+            }
+        }
         Page<InviteUserListRepo> page = new Page<>(pageInfo.toPageInfo());
 
         jsonResult.getData().put("pageData", page);
@@ -348,26 +380,4 @@ public class OfferService {
         return jsonResult;
     }
 
-
-    /**
-     * 退款列表
-     * @param params
-     * @return
-     */
-    public JsonResult refund(Map<String, String> params) throws Exception {
-        JsonResult jsonResult = new JsonResult();
-
-        String pageNumber = params.get("pageNumber");
-        String pageSize = params.get("pageSize");
-
-        ParamsUtil.checkParamIfNull(params, new String[]{"pageSize", "pageNumber"});
-
-        com.github.pagehelper.Page pageInfo = PageHelper.startPage(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), true);
-        List<OfferListRepo> offerListRepos = hoOffersDao.listForRefund();
-        Page<OfferListRepo> page = new Page<>(pageInfo.toPageInfo());
-
-        jsonResult.getData().put("pageData",page);
-        jsonResult.globalSuccess();
-        return jsonResult;
-    }
 }

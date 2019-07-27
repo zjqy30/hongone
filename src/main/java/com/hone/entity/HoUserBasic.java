@@ -14,8 +14,8 @@ public class HoUserBasic extends BaseEntity implements Serializable {
 
     private String openId;
     private String wxName;//微信名
-    private String userType;//用户类型
-    private String ifApproved;//是否审核
+    private String userType;//用户类型 1 网红 2 商家
+    private String ifApproved;//是否审核 -1 新用户 0 审核中 1 审核通过 2 审核拒绝
     private String idCardPic;//手持身份证照片
     private String idCardUpPic;//身份证正面照片
     private String idCardDownPic;//身份证反面照片

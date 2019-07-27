@@ -67,7 +67,7 @@
         where 1=1
         and a.enable_flag='1' and status='AP'
       <if test="productType!=null and productType!=''">
-          and  b.type=#{productType}
+          and  a.product_type_id=#{productType}
       </if>
       <if test="dateType!=null and dateType!=''">
               <if test="dateType=='1'.toString()">
@@ -79,9 +79,6 @@
               <if test="dateType=='3'.toString()">
                   and a.create_date &gt; DATE_FORMAT(DATE_SUB(now(),INTERVAL '30' DAY),'%Y%m%d')
               </if>
-      </if>
-      <if test="userId!=null and userId!=''">
-            and  a.user_id=#{userId}
       </if>
       order by a.create_date desc
     </select>
@@ -116,7 +113,7 @@
         <if test="keys!=null and keys!=''">
             and  a.title like  concat('%',#{keys},'%')
         </if>
-        order by a.create_date desc
+        order by ${orderBy}
     </select>
 
 
@@ -133,8 +130,11 @@
       a.sales_before as 'salesBefore',
       a.create_date as 'createDate',
       r.starTag as 'starTag',
-      a.status as 'status'
+      a.status as 'status',
+      b.avatar_url as 'headPic',
+      b.wx_name as 'wxName'
       from ho_pure_offer a
+      left join ho_user_basic b on b.id=a.user_id
       left join ho_dict d2 on a.product_type_id=d2.id
       left join ho_dict d on d.id=a.star_plate
       left join (
@@ -143,7 +143,47 @@
           LEFT JOIN ho_dict d ON d.id = a.dict_id
           GROUP BY a.pure_offer_id)r on r.pure_offer_id = a.id
         where 1=1 and a.enable_flag='1' and status=#{status}
+        <if test="title!=null and title!=''">
+            and a.title like concat('%',#{title},'%')
+        </if>
         order by a.create_date desc
+    </select>
+
+
+    <select id="snatchListForWeb" resultType="com.hone.pc.web.repo.PureOfferListRepo">
+
+        SELECT
+        a.id as 'id',
+        a.title as 'title',
+        d2.dict_value as 'productType',
+        a.fans_nums as 'fansNums',
+        d.dict_value as 'starPlate',
+        a.profit_ratio as 'profitRatio',
+        a.shop_level as 'shopLevel',
+        a.if_send as 'ifSend',
+        a.sales_before as 'salesBefore',
+        a.create_date as 'createDate',
+        r.starTag as 'starTag',
+        '1' as 'ifSnatch'
+        from ho_snatch_pure_offer z
+        left join ho_pure_offer a on a.id=z.pure_offer_id
+        left join ho_dict d2 on a.product_type_id=d2.id
+        left join ho_dict d on d.id=a.star_plate
+        left join (
+        SELECT a.pure_offer_id,GROUP_CONCAT( d.dict_value ) AS 'starTag'
+        FROM ho_pure_offer_tag a
+        LEFT JOIN ho_dict d ON d.id = a.dict_id
+        GROUP BY a.pure_offer_id)r on r.pure_offer_id = a.id
+        where 1=1
+        and a.enable_flag='1' and z.enable_flag='1'
+        <if test="userId!=null and userId!=''">
+            and  z.user_id=#{userId}
+        </if>
+        <if test="keys!=null and keys!=''">
+            and  a.title like concat('%',#{keys},'%')
+        </if>
+        order by ${orderBy}
+
     </select>
 
 

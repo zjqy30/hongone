@@ -20,6 +20,10 @@ public class OfferListRepo {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date approveDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date finshDate;
 
     private String pics;
     private String orderNo;
@@ -165,5 +169,21 @@ public class OfferListRepo {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public Date getApproveDate() {
+        return approveDate;
+    }
+
+    public void setApproveDate(Date approveDate) {
+        this.approveDate = approveDate;
+    }
+
+    public Date getFinshDate() {
+        return finshDate;
+    }
+
+    public void setFinshDate(Date finshDate) {
+        this.finshDate = finshDate;
     }
 }

@@ -1,12 +1,8 @@
 package com.hone.pc.web.service;
 
 import com.github.pagehelper.PageHelper;
-import com.hone.dao.HoPureOfferDao;
-import com.hone.dao.HoPureOfferTagDao;
-import com.hone.dao.HoUserBasicDao;
-import com.hone.entity.HoPureOffer;
-import com.hone.entity.HoPureOfferTag;
-import com.hone.entity.HoUserBasic;
+import com.hone.dao.*;
+import com.hone.entity.*;
 import com.hone.pc.web.repo.PureOfferListRepo;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.Page;
@@ -33,6 +29,10 @@ public class WebPureOfferService {
     private HoPureOfferTagDao hoPureOfferTagDao;
     @Autowired
     private HoUserBasicDao hoUserBasicDao;
+    @Autowired
+    private HoBackendMessageDao hoBackendMessageDao;
+    @Autowired
+    private HoSnatchPureOfferDao hoSnatchPureOfferDao;
 
 
     /**
@@ -52,9 +52,9 @@ public class WebPureOfferService {
         String starTag=params.get("starTag");
         String ifSend=params.get("ifSend");
         String profitRatio=params.get("profitRatio");
-        String userId=params.get("userId");
+        String userId=params.get("loginUserId");
 
-        String[] strings= new String[]{"userId","title","productType","shopLevel","salesBefore","fansNums","starTag","ifSend","profitRatio"};
+        String[] strings= new String[]{"loginUserId","title","productType","shopLevel","salesBefore","fansNums","starTag","ifSend","profitRatio"};
         ParamsUtil.checkParamIfNull(params,strings);
 
         //校验用户信息
@@ -75,6 +75,7 @@ public class WebPureOfferService {
         pureOffer.setStarPlate(starPlate);
         pureOffer.setUserId(userId);
         pureOffer.setTitle(title);
+        pureOffer.setStatus("PY");
         pureOffer.preInsert();
         hoPureOfferDao.insert(pureOffer);
 
@@ -88,6 +89,14 @@ public class WebPureOfferService {
                 hoPureOfferTagDao.insert(offerTag);
             }
         }
+
+        //插入后台消息提醒
+        HoBackendMessage backendMessage=new HoBackendMessage();
+        backendMessage.setContent("有商家提交纯佣订单快去看看");
+        backendMessage.setType("6");
+        backendMessage.setObjectId(pureOffer.getId());
+        backendMessage.preInsert();
+        hoBackendMessageDao.insert(backendMessage);
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -133,10 +142,26 @@ public class WebPureOfferService {
         Integer pageSize=Integer.parseInt(params.get("pageSize"));
         String userId=params.get("loginUserId");
         String keys=params.get("keys");
+        String fansNumsOrderBy=params.get("fansNumsOrderBy");
+        String dateOrderBy=params.get("dateOrderBy");
         ParamsUtil.checkParamIfNull(params,new String[]{"pageNumber","pageSize"});
 
+        String orderBy="";
+        if(StringUtils.isNotEmpty(fansNumsOrderBy)){
+            orderBy=" a.fans_nums "+fansNumsOrderBy;
+        }
+        if(StringUtils.isNotEmpty(dateOrderBy)){
+            if(StringUtils.isEmpty(orderBy)){
+                orderBy=orderBy+" a.create_date "+dateOrderBy;
+            }else {
+                orderBy=orderBy+", a.create_date "+dateOrderBy;
+            }
+        }
+        if(StringUtils.isEmpty(orderBy)){
+            orderBy=" a.create_date desc ";
+        }
         com.github.pagehelper.Page pageInfo =PageHelper.startPage(pageNumber,pageSize,true);
-        List<PureOfferListRepo> pureOfferList=hoPureOfferDao.selfListForWeb(userId,keys);
+        List<PureOfferListRepo> pureOfferList=hoPureOfferDao.selfListForWeb(userId,keys,orderBy);
 
         Page<PureOfferListRepo> page=new Page<>(pageInfo.toPageInfo());
 
@@ -157,6 +182,136 @@ public class WebPureOfferService {
         HoPureOffer pureOffer=hoPureOfferDao.selectByPrimaryKey(id);
         pureOffer.setEnableFlag("0");
         hoPureOfferDao.updateByPrimaryKeySelective(pureOffer);
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 纯佣订单抢单
+     * @param params
+     * @return
+     */
+    public JsonResult snatch(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String loginUserId=params.get("loginUserId");
+        String offerId=params.get("offerId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"offerId","loginUserId"});
+
+        HoPureOffer pureOffer=hoPureOfferDao.selectByPrimaryKey(offerId);
+        if(pureOffer==null||!pureOffer.getStatus().equals("AP")){
+            jsonResult.globalError("当前订单不可抢单");
+            return jsonResult;
+        }
+
+        //用户信息校验
+        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(loginUserId);
+        if(hoUserBasic==null||!hoUserBasic.getIfApproved().equals("1")||!hoUserBasic.getUserType().equals("1")){
+            jsonResult.globalError("请前往小程序申请网红认证后重试");
+            return jsonResult;
+        }
+
+        //判断是否已经存在记录
+        HoSnatchPureOffer snatchPureOffer= hoSnatchPureOfferDao.findByOfferIdAndUserId(offerId,loginUserId);
+        if(snatchPureOffer==null){
+            snatchPureOffer=new HoSnatchPureOffer();
+            snatchPureOffer.setPureOfferId(offerId);
+            snatchPureOffer.setUserId(loginUserId);
+            snatchPureOffer.preInsert();
+            hoSnatchPureOfferDao.insert(snatchPureOffer);
+        }else {
+            jsonResult.globalError("你已经抢过该单啦");
+            return jsonResult;
+        }
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 网红纯佣订单抢单列表
+     * @param params
+     * @return
+     */
+    public JsonResult snatchList(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        Integer pageNumber=Integer.parseInt(params.get("pageNumber"));
+        Integer pageSize=Integer.parseInt(params.get("pageSize"));
+        String userId=params.get("loginUserId");
+        String keys=params.get("keys");
+        String fansNumsOrderBy=params.get("fansNumsOrderBy");
+        String dateOrderBy=params.get("dateOrderBy");
+        ParamsUtil.checkParamIfNull(params,new String[]{"pageNumber","pageSize"});
+
+        String orderBy="";
+        if(StringUtils.isNotEmpty(fansNumsOrderBy)){
+            orderBy=" a.fans_nums "+fansNumsOrderBy;
+        }
+        if(StringUtils.isNotEmpty(dateOrderBy)){
+            if(StringUtils.isEmpty(orderBy)){
+                orderBy=orderBy+" a.create_date "+dateOrderBy;
+            }else {
+                orderBy=orderBy+", a.create_date "+dateOrderBy;
+            }
+        }
+        if(StringUtils.isEmpty(orderBy)){
+            orderBy=" a.create_date desc ";
+        }
+        com.github.pagehelper.Page pageInfo =PageHelper.startPage(pageNumber,pageSize,true);
+        List<PureOfferListRepo> pureOfferList=hoPureOfferDao.snatchListForWeb(userId,keys,orderBy);
+
+        Page<PureOfferListRepo> page=new Page<>(pageInfo.toPageInfo());
+
+        jsonResult.getData().put("pageData", page);
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+
+    /**
+     * 网红删除纯佣订单抢单记录
+     * @param params
+     * @return
+     */
+    public JsonResult delSnatch(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String userId=params.get("loginUserId");
+        String offerId=params.get("offerId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"loginUserId","offerId"});
+
+        HoSnatchPureOffer snatchPureOffer=hoSnatchPureOfferDao.findByOfferIdAndUserId(offerId,userId);
+        if(snatchPureOffer!=null){
+            snatchPureOffer.setEnableFlag("0");
+            hoSnatchPureOfferDao.updateByPrimaryKeySelective(snatchPureOffer);
+        }
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
+    /**
+     * 查看网红是否抢纯佣单
+     * @param params
+     * @return
+     */
+    public JsonResult ifSnatch(Map<String, String> params) throws Exception {
+        JsonResult jsonResult=new JsonResult();
+
+        String userId=params.get("loginUserId");
+        String offerId=params.get("offerId");
+        ParamsUtil.checkParamIfNull(params,new String[]{"loginUserId","offerId"});
+
+        HoSnatchPureOffer snatchPureOffer=hoSnatchPureOfferDao.findByOfferIdAndUserId(offerId,userId);
+        if(snatchPureOffer!=null){
+            jsonResult.getData().put("ifSnatch","1");
+        }else {
+            jsonResult.getData().put("ifSnatch","0");
+        }
 
         jsonResult.globalSuccess();
         return jsonResult;

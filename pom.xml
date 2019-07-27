@@ -28,7 +28,7 @@
 
 
 		<!--打成war包时候请解除注释-->
-		<!-- 去除springboot内嵌tomcat -->
+		 <!--去除springboot内嵌tomcat-->
 		<!--<dependency>-->
 			<!--<groupId>org.springframework.boot</groupId>-->
 			<!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
@@ -149,6 +149,14 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
+
+
+		<!-- 引入solr依赖 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-solr</artifactId>
+		</dependency>
+
 
 
 	</dependencies>

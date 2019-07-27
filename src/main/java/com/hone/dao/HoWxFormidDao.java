@@ -14,4 +14,6 @@ public interface HoWxFormidDao extends TkBaseMapper<HoWxFormid> {
 
 
     HoWxFormid findOneByOpenId(@Param("openId") String openId);
+
+    int deleteExpireData();
 }

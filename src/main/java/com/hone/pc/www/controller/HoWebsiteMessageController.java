@@ -1,7 +1,6 @@
 package com.hone.pc.www.controller;
 
 import com.hone.pc.www.service.HoWebsiteMessageService;
-import com.hone.applet.service.HoTokenService;
 import com.hone.system.utils.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,9 +28,6 @@ public class HoWebsiteMessageController {
 
     @Autowired
     private SmsUtils smsUtils;
-
-    @Autowired
-    private HoTokenService hoTokenService;
 
 
     @RequestMapping("/list")

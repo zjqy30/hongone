@@ -168,24 +168,4 @@ public class OfferController {
     }
 
 
-    @RequestMapping("/refundList")
-    public JsonResult refundList(@RequestBody Map<String,String> params){
-        logger.info("退款列表");
-        JsonResult jsonResult=new JsonResult();
-        //token校验
-        if(JwtTokenUtils.checkToken(params)==false){
-            jsonResult.loginExpire();
-            return jsonResult;
-        }
-        try {
-            jsonResult=offerService.refund(params);
-        }catch (Exception e){
-            logger.error("退款列表",e);
-            jsonResult.globalError(e.getMessage());
-        }
-
-        return jsonResult;
-    }
-
-
 }

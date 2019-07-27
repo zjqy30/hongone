@@ -50,6 +50,8 @@ public class HoOffersService {
     private HoApplyRefundDao hoApplyRefundDao;
     @Autowired
     private HoAccountBalanceDao hoAccountBalanceDao;
+    @Autowired
+    private HoBackendMessageDao hoBackendMessageDao;
 
 
     public JsonResult initData(Map<String, String> params) throws Exception {
@@ -71,14 +73,14 @@ public class HoOffersService {
             hoOffers.setOfferTemplateId(jsonObject.getString("template"));
             System.out.println(jsonObject.getString("_id") + "   " + jsonObject.getString("price"));
             if (StringUtils.isEmpty(jsonObject.getString("price"))) {
-                continue;
+               continue;
             }
             hoOffers.setPrice(jsonObject.getInteger("price") / 100);
             hoOffers.setRemarks(jsonObject.getString("remarks"));
             hoOffers.setShopPlate(jsonObject.getString("mall"));
             hoOffers.setStatus(jsonObject.getIntValue("status") + "");
             if (hoOffers.getStatus().equals("0") || hoOffers.getStatus().equals("1")) {
-                continue;
+                //continue;
             }
             hoOffers.setTitle(jsonObject.getString("name"));
             hoOffers.setUserId(jsonObject.getString("userId"));
@@ -112,14 +114,22 @@ public class HoOffersService {
         String platIds = params.get("platIds");
         String fansNumsOrderBy = params.get("fansNumsOrderBy");
         String priceOrderBy = params.get("priceOrderBy");
-        String sex = params.get("sex");
+        String tag = params.get("tag");
         ParamsUtil.checkParamIfNull(params, new String[]{"pageNumber", "pageSize"});
 
-        //标签
+        //平台
         List<String> platIdsList = new ArrayList<>();
         if (StringUtils.isNotEmpty(platIds)) {
             for (String each : platIds.split(",")) {
                 platIdsList.add(each);
+            }
+        }
+
+        //标签
+        List<String> tagIds=new ArrayList<>();
+        if(!StringUtils.isEmpty(tag)){
+            for(String each:tag.split(",")){
+                tagIds.add(each);
             }
         }
 
@@ -141,12 +151,8 @@ public class HoOffersService {
         }
 
         PageHelper.startPage(pageNumber, pageSize, false);
-        List<HoOffersListRepo> hoOffersRepoList = hoOffersDao.listForApiTag(platIdsList, orderBy, sex);
-        if (!CollectionUtils.isEmpty(hoOffersRepoList)) {
-            for (HoOffersListRepo repo : hoOffersRepoList) {
-                repo.setFanNums(NumUtils.formatNum(repo.getFanNums(), false));
-            }
-        }
+        List<HoOffersListRepo> hoOffersRepoList = hoOffersDao.listForApiTag(platIdsList, orderBy, tagIds);
+
         Page<HoOffersListRepo> page = new Page<>(pageNumber, pageSize, hoOffersRepoList);
         jsonResult.getData().put("pageData", page);
 
@@ -220,7 +226,7 @@ public class HoOffersService {
 
         //校验需求状态
         HoOffers hoOffers = hoOffersDao.selectByPrimaryKey(id);
-        if (!hoOffers.getStatus().equals("RA")) {
+        if (!hoOffers.getStatus().equals("AP")) {
             jsonResult.globalError("当前状态不可抢单");
             return jsonResult;
         }
@@ -294,11 +300,6 @@ public class HoOffersService {
 
         PageHelper.startPage(pageNumber, pageSize, false);
         List<HoStarSnatchOfferListRepo> offerList = hoOffersDao.starSnatchList(userId, type);
-        if (!CollectionUtils.isEmpty(offerList)) {
-            for (HoStarSnatchOfferListRepo repo : offerList) {
-                repo.setFansNum(NumUtils.formatNum(repo.getFansNum(), false));
-            }
-        }
         Page<HoStarSnatchOfferListRepo> page = new Page<>(pageNumber, pageSize, offerList);
 
         jsonResult.getData().put("pageData", page);
@@ -338,6 +339,10 @@ public class HoOffersService {
             jsonResult.globalError("请先申请认证");
             return jsonResult;
         }
+        if(fansNum.contains(".")){
+            jsonResult.globalError("请输入整数");
+            return jsonResult;
+        }
 
         HoOfferTemplate hoOfferTemplate = hoOfferTemplateDao.selectByPrimaryKey(templateId);
 
@@ -368,6 +373,15 @@ public class HoOffersService {
                 hoOfferTagDao.insert(hoOfferTag);
             }
         }
+
+        //插入后台消息提醒
+        HoBackendMessage backendMessage=new HoBackendMessage();
+        backendMessage.setContent("有商家提交非纯佣订单快去看看");
+        backendMessage.setType("5");
+        backendMessage.setObjectId(hoOffers.getId());
+        backendMessage.preInsert();
+        hoBackendMessageDao.insert(backendMessage);
+
 
         jsonResult.getData().put("offerId", hoOffers.getId());
         jsonResult.globalSuccess();
@@ -406,6 +420,10 @@ public class HoOffersService {
             jsonResult.globalError("请先申请认证");
             return jsonResult;
         }
+        if(fansNum.contains(".")){
+            jsonResult.globalError("请输入整数");
+            return jsonResult;
+        }
 
         HoOfferTemplate hoOfferTemplate = hoOfferTemplateDao.selectByPrimaryKey(templateId);
 
@@ -418,7 +436,7 @@ public class HoOffersService {
         hoOffers.setUserPlate(plateFormId);
         hoOffers.setUserId(userId);
         hoOffers.setTitle(hoOfferTemplate.getTitle());
-        hoOffers.setStatus("AP");
+        hoOffers.setStatus("PY");
         hoOffers.setShopPlate(shopPlateForm);
         hoOffers.setRemarks(remarks);
         hoOffers.setOfferTemplateId(templateId);
@@ -515,6 +533,7 @@ public class HoOffersService {
         String userId = params.get("userId");
         String openid = params.get("openid");
         String reason = params.get("reason");
+        Date date=new Date();
 
         ParamsUtil.checkParamIfNull(params, new String[]{"openid", "userId", "offerId"});
 
@@ -529,7 +548,7 @@ public class HoOffersService {
             jsonResult.globalError("当前用户信息有误");
             return jsonResult;
         }
-        if (!StringUtils.containsAny(hoOffers.getStatus(), "AP", "PY")) {
+        if (!StringUtils.containsAny(hoOffers.getStatus(),  "PY")) {
             jsonResult.globalError("当前订单不能申请退款");
             return jsonResult;
         }
@@ -542,17 +561,34 @@ public class HoOffersService {
         }
 
         hoOffers.setStatus("RA");
-        hoOffers.setUpdateDate(new Date());
+        hoOffers.setUpdateDate(date);
         hoOffersDao.updateByPrimaryKeySelective(hoOffers);
 
+
         //插入退款申请记录
-        HoApplyRefund applyRefund = new HoApplyRefund();
-        applyRefund.setOfferId(offerId);
-        applyRefund.setUserId(userId);
-        applyRefund.setReason(reason);
-        applyRefund.setStatus("CH");
-        applyRefund.preInsert();
-        hoApplyRefundDao.insert(applyRefund);
+        HoApplyRefund applyRefund = hoApplyRefundDao.findUniqueByProperty("offer_id",offerId);
+        if(applyRefund==null){
+            applyRefund=new HoApplyRefund();
+            applyRefund.setOfferId(offerId);
+            applyRefund.setUserId(userId);
+            applyRefund.setReason(reason);
+            applyRefund.setStatus("CH");
+            applyRefund.preInsert();
+            hoApplyRefundDao.insert(applyRefund);
+        }else {
+            applyRefund.setStatus("CH");
+            applyRefund.setUpdateDate(date);
+            applyRefund.setReason(reason);
+            hoApplyRefundDao.updateByPrimaryKeySelective(applyRefund);
+        }
+
+        //插入后台消息提醒
+        HoBackendMessage backendMessage=new HoBackendMessage();
+        backendMessage.setContent("有商家申请退款快去看看");
+        backendMessage.setType("3");
+        backendMessage.setObjectId(applyRefund.getId());
+        backendMessage.preInsert();
+        hoBackendMessageDao.insert(backendMessage);
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -574,7 +610,7 @@ public class HoOffersService {
 
         ParamsUtil.checkParamIfNull(params, new String[]{"openid", "userId", "offerId"});
         HoOffers hoOffers = hoOffersDao.selectByPrimaryKey(offerId);
-        if (hoOffers == null || !hoOffers.getUserId().equals(userId)) {
+        if (hoOffers == null) {
             jsonResult.globalError("当前订单信息有误");
             return jsonResult;
         }
@@ -607,7 +643,7 @@ public class HoOffersService {
         }
 
         //网红、商家都确认服务完成
-        if (hoSnatchOffer.getSellApprove().equals("1") && hoSnatchOffer.getStarApprove().equals("1")) {
+        if ("1".equals(hoSnatchOffer.getSellApprove()) && "1".equals(hoSnatchOffer.getStarApprove())) {
             //更新需求状态
             hoOffers.setStatus("FN");
             hoOffers.setFinshDate(new Date());
@@ -621,19 +657,21 @@ public class HoOffersService {
             hoAccountCharge.setServiceFee(new BigDecimal(hoOffers.getPrice() * 0.2));
             hoAccountCharge.setChargeType("SR");
             hoAccountCharge.setChargeStatus("1");
+            hoAccountCharge.preInsert();
             hoAccountChargeDao.insert(hoAccountCharge);
 
             //插入账户金额信息
-            HoAccountBalance hoAccountBalance = hoAccountBalanceDao.findUniqueByProperty("user_id", userId);
+            HoAccountBalance hoAccountBalance = hoAccountBalanceDao.findUniqueByProperty("user_id", hoSnatchOffer.getUserId());
             if (hoAccountBalance == null) {
                 hoAccountBalance = new HoAccountBalance();
-                hoAccountBalance.setAvaiableBalance(hoAccountCharge.getTotalFee().subtract(hoAccountCharge.getServiceFee()).toString());
-                hoAccountBalance.setUserId(userId);
+                BigDecimal balance=hoAccountCharge.getTotalFee().subtract(new BigDecimal(String.valueOf(hoAccountCharge.getServiceFee())));
+                hoAccountBalance.setAvaiableBalance(balance.setScale(2,BigDecimal.ROUND_HALF_UP).toString());
+                hoAccountBalance.setUserId(hoSnatchOffer.getUserId());
                 hoAccountBalance.preInsert();
                 hoAccountBalanceDao.insert(hoAccountBalance);
             } else {
                 String totalMoney = hoAccountBalance.getAvaiableBalance();
-                totalMoney = new BigDecimal(totalMoney).add(hoAccountCharge.getTotalFee().subtract(hoAccountCharge.getServiceFee())).toString();
+                totalMoney = new BigDecimal(totalMoney).add(hoAccountCharge.getTotalFee().subtract(hoAccountCharge.getServiceFee())).setScale(2,BigDecimal.ROUND_HALF_UP).toString();
                 hoAccountBalance.setAvaiableBalance(totalMoney);
                 hoAccountBalanceDao.updateByPrimaryKeySelective(hoAccountBalance);
             }
@@ -643,6 +681,7 @@ public class HoOffersService {
         jsonResult.globalSuccess();
         return jsonResult;
     }
+
 
     /**
      * 商家锁单
@@ -686,6 +725,7 @@ public class HoOffersService {
             return jsonResult;
         } else {
             hoOffers.setStatus("LK");
+            hoOffers.setLockDate(new Date());
             hoOffersDao.updateByPrimaryKeySelective(hoOffers);
         }
 
@@ -707,6 +747,11 @@ public class HoOffersService {
         ParamsUtil.checkParamIfNull(params, new String[]{"offerId"});
 
         List<HoSnatchUserListRepo> snatchUserListRepos = hoSnatchOfferDao.snatchListForApi(offerId);
+        if(!CollectionUtils.isEmpty(snatchUserListRepos)){
+            for(HoSnatchUserListRepo repo:snatchUserListRepos){
+                repo.setFansNums(NumUtils.formatNum(repo.getFansNums(),false));
+            }
+        }
 
         jsonResult.getData().put("snatchUserList", snatchUserListRepos);
         jsonResult.globalSuccess();

@@ -42,4 +42,8 @@
         where a.open_id=#{openId} order by a.expire_date asc limit 1
     </select>
 
+    <delete id="deleteExpireData">
+        DELETE FROM ho_wx_formid where expire_date &lt; now()
+    </delete>
+
 </mapper>

@@ -17,7 +17,16 @@ public class HoStarSnatchOfferListRepo {
     private String starApprove;
     private String phoneNo;
     private String sellName;
+    private String ifSelect;
 
+
+    public String getIfSelect() {
+        return ifSelect;
+    }
+
+    public void setIfSelect(String ifSelect) {
+        this.ifSelect = ifSelect;
+    }
 
     public String getId() {
         return id;

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hone.dao.HoSnatchPureOfferDao">
+
+    <resultMap id="hoSnatchPureOfferResultMap" type="com.hone.entity.HoSnatchPureOffer">
+        <id column="id" property="id"/> 
+        <result column="pure_offer_id" property="pureOfferId"/> 
+        <result column="user_id" property="userId"/> 
+        <result column="create_date" property="createDate"/> 
+        <result column="update_date" property="updateDate"/> 
+        <result column="enable_flag" property="enableFlag"/> 
+
+        
+        
+    </resultMap>
+
+    <sql id="hoSnatchPureOfferColumns">
+        a.id AS "id",
+        a.pure_offer_id AS "pureOfferId",
+        a.user_id AS "userId",
+        a.create_date AS "createDate",
+        a.update_date AS "updateDate",
+        a.enable_flag AS "enableFlag"
+    </sql>
+
+    <sql id="hoSnatchPureOfferJoins">
+        
+    </sql>
+
+    <select id="findUniqueByProperty" resultType="com.hone.dao.HoSnatchPureOfferDao" statementType="STATEMENT">
+        select <include refid="hoSnatchPureOfferColumns"></include> FROM ho_snatch_pure_offer a  where a.${propertyName} = '${value}'
+    </select>
+
+
+    <select id="findByOfferIdAndUserId" resultType="com.hone.entity.HoSnatchPureOffer">
+        select <include refid="hoSnatchPureOfferColumns"></include>
+        FROM ho_snatch_pure_offer a
+        where  a.user_id=#{userId} and a.pure_offer_id=#{offerId} and a.enable_flag='1'
+    </select>
+
+    <select id="listForBackend" resultType="com.hone.pc.backend.repo.SnatchPureOfferListRepo">
+        select
+        b.wx_name as 'wxName',
+        b.phone_no as 'phoneNo',
+        a.create_date as 'createDate',
+        c.title as 'title',
+        a.id as 'id'
+        from ho_snatch_pure_offer a
+        left join ho_pure_offer c on c.id = a.pure_offer_id
+        left join ho_user_basic b on b.id=a.user_id
+        order by a.create_date desc
+    </select>
+
+
+</mapper>

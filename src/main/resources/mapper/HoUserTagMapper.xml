@@ -32,4 +32,9 @@
     </select>
 
 
+    <delete id="deleteByUserId">
+        DELETE from ho_user_tag where user_id=#{userId}
+    </delete>
+
+
 </mapper>

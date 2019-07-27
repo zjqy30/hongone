@@ -36,7 +36,7 @@
 
 
     <select id="findByUserId" resultType="com.hone.entity.HoServiceTemplate">
-        select <include refid="hoServiceTemplateColumns"/> from ho_star_service b
+        select <include refid="hoServiceTemplateColumns"/>,b.price as 'price' from ho_star_service b
         left join ho_service_template a on a.id=b.template_id
         where b.user_id=#{userId} and a.enable_flag='1' order by a.sort asc
     </select>

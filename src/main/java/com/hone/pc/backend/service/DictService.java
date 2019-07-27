@@ -26,7 +26,6 @@ public class DictService {
 
     /**
      * 标签列表
-     *
      * @param params
      * @return
      */
@@ -161,13 +160,14 @@ public class DictService {
         String pid_2 = params.get("pid_2");
         String value = params.get("value");
 
-        ParamsUtil.checkParamIfNull(params, new String[]{"pid_1", "pid_2", "value"});
+        ParamsUtil.checkParamIfNull(params, new String[]{"value"});
 
         HoDict hoDict = new HoDict();
         hoDict.preInsert();
         hoDict.setDictSort("0");
         hoDict.setDictType("sellerTag");
         hoDict.setDictValue(value);
+        hoDict.setPid("0");
 
         //新增三级标签
         if (!StringUtils.isEmpty(pid_1) && !StringUtils.isEmpty(pid_2)) {

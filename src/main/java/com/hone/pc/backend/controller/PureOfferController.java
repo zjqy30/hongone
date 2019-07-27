@@ -86,4 +86,44 @@ public class PureOfferController {
         return jsonResult;
     }
 
+
+    @RequestMapping("/approveOperate")
+    public JsonResult approveOperate(@RequestBody Map<String,String> params){
+        logger.info("纯佣订单审核");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=pureOfferService.approveOperate(params);
+        }catch (Exception e){
+            logger.error("纯佣订单审核",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+
+    @RequestMapping("/snatchList")
+    public JsonResult snatchList(@RequestBody Map<String,String> params){
+        logger.info("已抢单网红列表");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=pureOfferService.snatchList(params);
+        }catch (Exception e){
+            logger.error("已抢单网红列表",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
 }

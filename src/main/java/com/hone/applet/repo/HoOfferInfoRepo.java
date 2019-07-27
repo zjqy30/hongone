@@ -21,6 +21,10 @@ public class HoOfferInfoRepo {
     private String status;
     private String ifSnatch;
     private String orderNo;
+    private String gender;
+    private String price;
+    private String platId;
+    private String templateId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;//创建时间
@@ -33,6 +37,22 @@ public class HoOfferInfoRepo {
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date finshDate;//结束时间
+
+    public String getTemplateId() {
+        return templateId;
+    }
+
+    public void setTemplateId(String templateId) {
+        this.templateId = templateId;
+    }
+
+    public String getPlatId() {
+        return platId;
+    }
+
+    public void setPlatId(String platId) {
+        this.platId = platId;
+    }
 
     public String getHeadPic() {
         return headPic;
@@ -160,5 +180,21 @@ public class HoOfferInfoRepo {
 
     public void setFinshDate(Date finshDate) {
         this.finshDate = finshDate;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 }

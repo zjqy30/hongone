@@ -1,5 +1,6 @@
 package com.hone.pc.web.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.hone.entity.HoSocketLogin;
 import com.hone.entity.HoUserBasic;
 import com.hone.pc.backend.controller.BannerController;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -35,27 +37,34 @@ public class WebUserBasicController {
     private WebSocketLoginService webSocketLoginService;
 
 
+
     @RequestMapping("/scan")
-    public JsonResult scan(@RequestBody Map<String,String> params){
+    public void scan(@RequestBody Map<String,String> params){
         logger.info("扫码登录");
-        JsonResult jsonResult=new JsonResult();
+        JSONObject jsonObject=new JSONObject();
+        String socketId="";
+        String openId="";
         try {
 
-            String socketId=params.get("socketId");
-            String openId=params.get("openId");
+            socketId=params.get("socketId");
+            openId=params.get("openId");
             ParamsUtil.checkParamIfNull(params,new String[]{"socketId","openId"});
 
             //校验socketId有效性
             HoSocketLogin hoSocketLogin= webSocketLoginService.findBySocketId(socketId);
             if(hoSocketLogin==null){
-                jsonResult.globalError("二维码已经失效");
-                return jsonResult;
+                jsonObject.put("errorCode","1003");
+                jsonObject.put("message","二维码已经失效");
+                webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
+                return;
             }
             //校验用户信息逻辑
             HoUserBasic hoUserBasic= webUserBasicService.findByOpenId(openId);
             if(hoUserBasic==null){
-                jsonResult.globalError("用户不存在");
-                return jsonResult;
+                jsonObject.put("errorCode","1003");
+                jsonObject.put("message","用户不存在");
+                webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
+                return;
             }
             //更新 WebSocketLogin
             hoSocketLogin.setEnableFlag("0");
@@ -66,24 +75,51 @@ public class WebUserBasicController {
             String token=JwtTokenUtils.createToken(hoUserBasic.getId());
 
             //发送消息到客户端
-            jsonResult.globalSuccess();
-            jsonResult.setErrorCode("1002");
-            jsonResult.getData().put("userId", hoUserBasic.getId());
-            jsonResult.getData().put("openid", hoUserBasic.getOpenId());
-            jsonResult.getData().put("userType", hoUserBasic.getUserType());
-            jsonResult.getData().put("ifApproved", hoUserBasic.getIfApproved());
-            jsonResult.getData().put("phoneNo", hoUserBasic.getPhoneNo());
-            jsonResult.getData().put("headPic", hoUserBasic.getAvatarUrl());
-            jsonResult.getData().put("token", token);
-            webSocketServer.sendInfo(jsonResult.toString(),socketId);
+            jsonObject.put("userId", hoUserBasic.getId());
+            jsonObject.put("errorCode", "1002");
+            jsonObject.put("message","操作成功");
+            jsonObject.put("openid", hoUserBasic.getOpenId());
+            jsonObject.put("userType", hoUserBasic.getUserType());
+            jsonObject.put("ifApproved", hoUserBasic.getIfApproved());
+            jsonObject.put("phoneNo", hoUserBasic.getPhoneNo());
+            jsonObject.put("headPic", hoUserBasic.getAvatarUrl());
+            jsonObject.put("wxName", hoUserBasic.getWxName());
+            jsonObject.put("token", token);
+            webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
 
         }catch (Exception e){
             logger.error("扫码登录",e);
+            jsonObject.clear();
+            jsonObject.put("errorCode", "1003");
+            jsonObject.put("message","服务器故障稍后再试");
+            try {
+                webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public static void main(String[] args){
+        String str="{errorCode='1002', msg='操作成功', data={userId=3b1af32bdef744eaafd99b728d12c74a, openid=o562H5ID7DnGiGjpiQOTSIDeyXNw, userType=2, ifApproved=1, phoneNo=18261732399, headPic=https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTLIuzryYia3h8OHV6XbVIiahhTqfqgGiaib0Qez8byq3IR5iaicW55WEQ0kmQVXTHiaqULhKFRc5LYDqbicPw/132, token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1NjQxNzY4MDksInVzZXJJRCI6IjNiMWFmMzJiZGVmNzQ0ZWFhZmQ5OWI3MjhkMTJjNzRhIiwiaWF0IjoxNTY0MDQ3MjA5fQ.Kpti61_m5-lq2ahfwfrp1ib0ZXwEIq3YbVPf91kXdbg}}";
+        System.out.println(JSONObject.toJSONString(str).toString());
+    }
+
+
+    @RequestMapping("/loginByPhone")
+    public JsonResult loginByPhone(@RequestBody Map<String,String> params){
+        logger.info("手机验证码登录");
+        JsonResult jsonResult=new JsonResult();
+
+        try {
+            jsonResult=webUserBasicService.loginByPhone(params);
+        }catch (Exception e){
+            logger.error("手机验证码登录",e);
             jsonResult.globalError(e.getMessage());
         }
 
-        jsonResult.getData().clear();
         return jsonResult;
     }
+
 
 }

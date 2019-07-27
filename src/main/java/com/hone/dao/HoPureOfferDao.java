@@ -18,7 +18,9 @@ public interface HoPureOfferDao extends TkBaseMapper<HoPureOffer> {
 
     List<PureOfferListRepo> listForWeb(@Param("productType") String productType, @Param("dateType") String dateType);
 
-    List<PureOfferListRepo> selfListForWeb(@Param("userId") String userId, @Param("keys") String keys);
+    List<PureOfferListRepo> selfListForWeb(@Param("userId") String userId, @Param("keys") String keys,@Param("orderBy") String orderBy);
 
-    List<PureOfferListRepo> listForBackend(@Param("status") String status);
+    List<PureOfferListRepo> listForBackend(@Param("title") String title,@Param("status") String status);
+
+    List<PureOfferListRepo> snatchListForWeb(@Param("userId") String userId, @Param("keys") String keys,@Param("orderBy") String orderBy);
 }

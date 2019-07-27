@@ -103,4 +103,80 @@ public class WebPureOfferController {
         return jsonResult;
     }
 
+    @RequestMapping("/snatch")
+    public JsonResult snatch(@RequestBody Map<String,String> params){
+        logger.info("纯佣订单抢单");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=webPureOfferService.snatch(params);
+        }catch (Exception e){
+            logger.error("纯佣订单抢单",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+
+    @RequestMapping("/snatchList")
+    public JsonResult snatchList(@RequestBody Map<String,String> params){
+        logger.info("网红纯佣订单抢单列表");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=webPureOfferService.snatchList(params);
+        }catch (Exception e){
+            logger.error("网红纯佣订单抢单列表",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+    @RequestMapping("/delSnatch")
+    public JsonResult delSnatch(@RequestBody Map<String,String> params){
+        logger.info("网红删除纯佣订单抢单记录");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=webPureOfferService.delSnatch(params);
+        }catch (Exception e){
+            logger.error("网红删除纯佣订单抢单记录",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
+    @RequestMapping("/ifSnatch")
+    public JsonResult ifSnatch(@RequestBody Map<String,String> params){
+        logger.info("查看网红是否抢纯佣单");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=webPureOfferService.ifSnatch(params);
+        }catch (Exception e){
+            logger.error("查看网红是否抢纯佣单",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
 }

@@ -15,18 +15,21 @@ public class NumUtils {
      * 小于万默认显示 大于万以1.7万方式显示最大是9999.9万
      * 大于亿以1.1亿方式显示最大没有限制都是亿单位
      * </pre>
-     * @param num
-     *            格式化的数字
-     * @param kBool
-     *            是否格式化千,为true,并且num大于999就显示999+,小于等于999就正常显示
+     *
+     * @param num   格式化的数字
+     * @param kBool 是否格式化千,为true,并且num大于999就显示999+,小于等于999就正常显示
      * @return
      */
     public static String formatNum(String num, Boolean kBool) {
         StringBuffer sb = new StringBuffer();
-        if (!StringUtils.isNumeric(num))
+        if (!StringUtils.isNumeric(num)) {
             return "0";
-        if (kBool == null)
+        }
+
+        if (kBool == null) {
             kBool = false;
+        }
+
 
         BigDecimal b0 = new BigDecimal("1000");
         BigDecimal b1 = new BigDecimal("10000");
@@ -70,14 +73,16 @@ public class NumUtils {
                 }
             }
         }
-        if (sb.length() == 0)
+        if (sb.length() == 0) {
             return "0";
+        }
+
         return sb.toString();
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-        String str= formatNum("158795",false);
+        String str = formatNum("158795", false);
         System.out.println(str);
 
     }

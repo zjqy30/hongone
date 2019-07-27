@@ -373,9 +373,9 @@ public class HoWxPayService {
     public String wechatPayRefundForApplet(String outTradeNo, String outRefundNo,String totalFee, String refundFee) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, KeyManagementException, UnrecoverableKeyException {
         String tradeResult="";
         Resource resource = new ClassPathResource("apiclient_cert.p12");
-        File file = resource.getFile();
+        InputStream instream = resource.getInputStream();
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        FileInputStream instream = new FileInputStream(file);
+//        FileInputStream instream = new FileInputStream(file);
         try{
             keyStore.load(instream,mchId.toCharArray());
         }finally{
@@ -451,6 +451,7 @@ public class HoWxPayService {
                 hoAccountCharge.setUserId(payFlow.getUserId());
                 hoAccountCharge.setOutTradeNo(outRefundNo);
                 hoAccountCharge.setOfferId(payFlow.getOfferId());
+                hoAccountCharge.setServiceFee(new BigDecimal(0));
                 hoAccountCharge.preInsert();
                 hoAccountChargeDao.insert(hoAccountCharge);
             }

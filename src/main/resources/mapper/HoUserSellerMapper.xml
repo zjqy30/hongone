@@ -87,7 +87,7 @@
                 and b.wx_name like concat('%',#{wxName},'%')
             </if>
             <if test="sex!=null and sex!=''">
-                and sex=#{sex}
+                and b.gender=#{sex}
             </if>
         </where>
         order by ${orderBy}

@@ -12,6 +12,7 @@ public class InviteUserListRepo {
     private String platName;
     private String industry;
     private String sex;
+    private String fansNums;
 
     public String getId() {
         return id;
@@ -67,5 +68,13 @@ public class InviteUserListRepo {
 
     public void setSex(String sex) {
         this.sex = sex;
+    }
+
+    public String getFansNums() {
+        return fansNums;
+    }
+
+    public void setFansNums(String fansNums) {
+        this.fansNums = fansNums;
     }
 }
