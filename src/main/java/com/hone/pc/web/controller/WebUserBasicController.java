@@ -37,7 +37,6 @@ public class WebUserBasicController {
     private WebSocketLoginService webSocketLoginService;
 
 
-
     @RequestMapping("/scan")
     public void scan(@RequestBody Map<String,String> params){
         logger.info("扫码登录");

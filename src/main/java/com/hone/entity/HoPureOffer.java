@@ -19,6 +19,7 @@ public class HoPureOffer extends BaseEntity implements Serializable {
     private String fansNums;
     private String ifSend;
     private String profitRatio;
+    private String serverProfitRatio;
     private String status;
 
 
@@ -103,5 +104,13 @@ public class HoPureOffer extends BaseEntity implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getServerProfitRatio() {
+        return serverProfitRatio;
+    }
+
+    public void setServerProfitRatio(String serverProfitRatio) {
+        this.serverProfitRatio = serverProfitRatio;
     }
 }

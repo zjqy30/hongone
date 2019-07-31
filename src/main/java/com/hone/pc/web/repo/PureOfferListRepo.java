@@ -15,6 +15,7 @@ public class PureOfferListRepo {
     private String fansNums;
     private String starPlate;
     private String profitRatio;//佣金比例
+    private String serverProfitRatio;//平台服务费比例
     private String starTag;
     private String shopLevel;
     private String ifSend;
@@ -146,5 +147,13 @@ public class PureOfferListRepo {
 
     public void setWxName(String wxName) {
         this.wxName = wxName;
+    }
+
+    public String getServerProfitRatio() {
+        return serverProfitRatio;
+    }
+
+    public void setServerProfitRatio(String serverProfitRatio) {
+        this.serverProfitRatio = serverProfitRatio;
     }
 }

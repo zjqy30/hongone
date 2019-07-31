@@ -6,7 +6,8 @@
         <id column="id" property="id"/> 
         <result column="market_name" property="marketName"/> 
         <result column="open_id" property="openId"/> 
-        <result column="user_code" property="userCode"/> 
+        <result column="user_code" property="userCode"/>
+        <result column="qrcode_url" property="qrcodeUrl"/>
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
         <result column="enable_flag" property="enableFlag"/> 
@@ -20,6 +21,7 @@
         a.market_name AS "marketName",
         a.open_id AS "openId",
         a.user_code AS "userCode",
+        a.qrcode_url AS "qrcodeUrl",
         a.create_date AS "createDate",
         a.update_date AS "updateDate",
         a.enable_flag AS "enableFlag"

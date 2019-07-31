@@ -114,9 +114,6 @@ public class OfferService {
             return jsonResult;
         } else if (ifPass.equals("pass")) {
             hoOffers.setStatus("AP");
-            //删除对应的 object 消息
-            hoBackendMessageDao.deleteByObjectId(hoOffers.getId());
-
             //添加 ho_front_message 记录
             HoFrontMessage hoFrontMessage=new HoFrontMessage();
             hoFrontMessage.setContent("小程序订单大厅有新的订单");
@@ -128,6 +125,9 @@ public class OfferService {
         } else if (ifPass.equals("nopass")) {
             hoOffers.setStatus("NAP");
         }
+
+        //删除对应的 object 消息
+        hoBackendMessageDao.deleteByObjectId(hoOffers.getId());
 
         hoOffers.setApproveDate(new Date());
         hoOffersDao.updateByPrimaryKeySelective(hoOffers);

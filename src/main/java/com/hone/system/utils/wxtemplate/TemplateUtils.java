@@ -164,6 +164,56 @@ public class TemplateUtils {
                     addTemplate(listData, pagePath, templateId, openId, hoWxFormid.getFormId());
                 }
             }
+            else if(type.equals("4")){
+                /**
+                 * 服务确认完成
+                 * 服务名称  完成时间  温馨提示
+                 */
+                templateId="uKXW82Y_InAwP4eecl7V2hgFmAg9Md9WXWuRSdQw1d8";
+                String offerId=params.get("offerId");
+                HoOffers hoOffers=hoOffersDao.selectByPrimaryKey(offerId);
+                listData.add(hoOffers.getTitle());
+                listData.add(DateUtils.formatDateToString(hoOffers.getFinshDate()));
+                listData.add("商家和网红都已确认订单完成,如有问题请联系红腕客服");
+
+                hoWxFormid=hoWxFormidDao.findOneByOpenId(openId);
+                if(hoWxFormid!=null){
+                    addTemplate(listData, pagePath, templateId, openId, hoWxFormid.getFormId());
+                }
+            }
+            else  if(type.equals("5")){
+                /**
+                 * 服务开始提醒
+                 * 服务名称  订单编号  服务提醒
+                 */
+                templateId="-82Q-SUif6lwooiPfHRR-9F7RRSJq7GzLgANQI3M1bU";
+                String offerId=params.get("offerId");
+                HoOffers hoOffers=hoOffersDao.selectByPrimaryKey(offerId);
+                listData.add(hoOffers.getTitle());
+                listData.add(hoOffers.getOrderNo());
+                listData.add("恭喜你被商家选中,点我去查看订单。服务完成后记得确认喔~");
+
+                hoWxFormid=hoWxFormidDao.findOneByOpenId(openId);
+                if(hoWxFormid!=null){
+                    addTemplate(listData, pagePath, templateId, openId, hoWxFormid.getFormId());
+                }
+            }
+            else if(type.equals("6")){
+                /**
+                 * 抢单失败
+                 * 预约项目   拒绝原因
+                 */
+                templateId="VYMy0Rpv3hRkNy7Bfu5SX8wEfTkoAcppbWbsVAIkW34";
+                String title=params.get("title");
+                String createDate=params.get("createDate");
+                listData.add(title);
+                listData.add("你在 "+createDate+" 参与的抢单失败,详情联系红腕客服");
+
+                hoWxFormid=hoWxFormidDao.findOneByOpenId(openId);
+                if(hoWxFormid!=null){
+                    addTemplate(listData, pagePath, templateId, openId, hoWxFormid.getFormId());
+                }
+            }
         } catch (Exception e) {
             logger.error("发送微信模板消息失败",e);
         }

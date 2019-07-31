@@ -31,7 +31,7 @@
 
 
     <select id="listAll" resultType="com.hone.entity.HoServiceTemplate">
-        SELECT <include refid="hoServiceTemplateColumns"/> from ho_service_template a where a.enable_flag='1' order by a.sort asc
+        SELECT <include refid="hoServiceTemplateColumns"/> from ho_service_template a where a.enable_flag='1' order by a.create_date desc
     </select>
 
 

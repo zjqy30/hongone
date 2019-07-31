@@ -2,14 +2,8 @@ package com.hone.applet.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hone.applet.controller.HoWxPayController;
-import com.hone.dao.HoAccountChargeDao;
-import com.hone.dao.HoBannersDao;
-import com.hone.dao.HoOffersDao;
-import com.hone.dao.HoPayFlowDao;
-import com.hone.entity.HoAccountCharge;
-import com.hone.entity.HoBanners;
-import com.hone.entity.HoOffers;
-import com.hone.entity.HoPayFlow;
+import com.hone.dao.*;
+import com.hone.entity.*;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.MD5Util;
 import com.hone.system.utils.ParamsUtil;
@@ -60,11 +54,13 @@ public class HoWxPayService {
     private static Logger logger = LoggerFactory.getLogger(HoWxPayService.class);
     private static final String WeChatPayUrl = "https://api.mch.weixin.qq.com/pay/unifiedorder";
     private static final String WeChatPayRefundUrl2 = "https://api.mch.weixin.qq.com/secapi/pay/refund";
-    private static final String notifyUrl = "http://l1838324x8.imwork.net/hone/applet/wxpay/callBack";
+
     private static final String body = "红腕";
 
     @Value("${applet.appid}")
     private String appId;
+    @Value("${wxpay.notify.url}")
+    private String notifyUrl;
     @Value("${applet.mchid}")
     private String mchId;
     @Value("${applet.key}")
@@ -78,6 +74,8 @@ public class HoWxPayService {
     private HoAccountChargeDao hoAccountChargeDao;
     @Autowired
     private TemplateUtils templateUtils;
+    @Autowired
+    private HoBackendMessageDao hoBackendMessageDao;
 
 
     /**
@@ -109,7 +107,7 @@ public class HoWxPayService {
             jsonResult.globalError("用户信息有误");
             return jsonResult;
         }
-        if (new BigDecimal(totalMoney).compareTo(new BigDecimal(hoOffers.getPrice())) != 0) {
+        if (new BigDecimal(totalMoney).compareTo(new BigDecimal(String.valueOf(hoOffers.getPrice()))) != 0) {
             jsonResult.globalError("支付金额有误");
             return jsonResult;
         }
@@ -315,6 +313,14 @@ public class HoWxPayService {
                     templateMap.put("openId",openid);
                     templateMap.put("type","1");
                     templateUtils.sendMessage(templateMap);
+
+                    //插入后台消息提醒
+                    HoBackendMessage backendMessage = new HoBackendMessage();
+                    backendMessage.setContent("有商家提交非纯佣订单快去看看");
+                    backendMessage.setType("5");
+                    backendMessage.setObjectId(hoOffers.getId());
+                    backendMessage.preInsert();
+                    hoBackendMessageDao.insert(backendMessage);
 
                     //回调函数反馈到微信官方
                     map.put("success", "success");

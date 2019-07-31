@@ -38,6 +38,14 @@ public class DateUtils {
     }
 
     /**
+     * 获取当前时间 格式为 yyyy-MM-dd
+     * @return
+     */
+    public static  String YYYYMMDD(Date date){
+        return new SimpleDateFormat("yyyyMMdd").format(date);
+    }
+
+    /**
      * 获取当前时间 格式为 yyyy-MM
      * @return
      */

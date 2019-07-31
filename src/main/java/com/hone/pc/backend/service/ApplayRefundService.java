@@ -135,8 +135,6 @@ public class ApplayRefundService {
                 map.put("result","已同意，请留意微信账户信息通知");
             }
 
-            //删除对应的 object 消息
-            hoBackendMessageDao.deleteByObjectId(applyRefund.getId());
         }else {
             //更改订单状态
             hoOffers.setStatus("RF");
@@ -150,6 +148,9 @@ public class ApplayRefundService {
 
             map.put("result","已拒绝，详情请联系红腕客服人员");
         }
+
+        //删除对应的 object 消息
+        hoBackendMessageDao.deleteByObjectId(applyRefund.getId());
 
         HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(hoOffers.getUserId());
         map.put("openId",hoUserBasic.getOpenId());

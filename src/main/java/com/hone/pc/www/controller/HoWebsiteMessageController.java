@@ -39,7 +39,6 @@ public class HoWebsiteMessageController {
         JsonResult jsonResult=new JsonResult();
 
 
-
         Page page= websiteMessageService.list();
 
         jsonResult.globalSuccess();

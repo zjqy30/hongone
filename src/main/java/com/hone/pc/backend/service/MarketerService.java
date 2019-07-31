@@ -108,19 +108,19 @@ public class MarketerService {
         String name=params.get("name");
         ParamsUtil.checkParamIfNull(params,new String[]{"name"});
 
-//        //数字验证码4位
-//        String verifyCode = RandomStringUtils.random(4, "1234567890");
-//        while (hoMarketerDao.findUniqueByProperty("user_code",verifyCode)!=null){
-//            verifyCode = RandomStringUtils.random(4, "1234567890");
-//        }
-//
-//        //插入 hoMarketer
-//        HoMarketer hoMarketer=new HoMarketer();
-//        hoMarketer.setMarketName(name);
-//        hoMarketer.setUserCode(verifyCode);
-//        hoMarketer.setInviteNums("0");
-//        hoMarketer.preInsert();
-//        hoMarketerDao.insert(hoMarketer);
+        //数字验证码4位
+        String verifyCode = RandomStringUtils.random(4, "1234567890");
+        while (hoMarketerDao.findUniqueByProperty("user_code",verifyCode)!=null){
+            verifyCode = RandomStringUtils.random(4, "1234567890");
+        }
+
+        //插入 hoMarketer
+        HoMarketer hoMarketer=new HoMarketer();
+        hoMarketer.setMarketName(name);
+        hoMarketer.setUserCode(verifyCode);
+        hoMarketer.setInviteNums("0");
+        hoMarketer.preInsert();
+        hoMarketerDao.insert(hoMarketer);
 
         //获取 accessToken
         String accessToken=accessTokenUtils.getAccessToken();
@@ -130,12 +130,11 @@ public class MarketerService {
         //上传二维码图片到腾讯云COS
         File file=new File(fileName);
         String imgUrl= simpleUploadFileCos.SimpleUploadFileFromStream(new FileInputStream(file), file.getName(),file.length());
-//        //更新 hoMarketer
-//        hoMarketer.setQrcodeUrl(imgUrl);
-//        hoMarketerDao.updateByPrimaryKeySelective(hoMarketer);
-//
-//        jsonResult.getData().put("hoMarketer",hoMarketer);
-        jsonResult.getData().put("imgUrl",imgUrl);
+       //更新 hoMarketer
+        hoMarketer.setQrcodeUrl(imgUrl);
+        hoMarketerDao.updateByPrimaryKeySelective(hoMarketer);
+
+        jsonResult.getData().put("hoMarketer",hoMarketer);
         jsonResult.globalSuccess();
         return jsonResult;
     }

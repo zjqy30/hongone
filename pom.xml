@@ -12,7 +12,7 @@
 	<artifactId>hongone</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>hongone</name>
-	<!--<packaging>war</packaging>-->
+	<packaging>war</packaging>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -29,17 +29,17 @@
 
 		<!--打成war包时候请解除注释-->
 		 <!--去除springboot内嵌tomcat-->
-		<!--<dependency>-->
-			<!--<groupId>org.springframework.boot</groupId>-->
-			<!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
-			<!--<scope>provided</scope>-->
-		<!--</dependency>-->
-		<!--&lt;!&ndash;websocket依赖包&ndash;&gt;-->
-		<!--<dependency>-->
-			<!--<groupId>org.apache.tomcat.embed</groupId>-->
-			<!--<artifactId>tomcat-embed-websocket</artifactId>-->
-			<!--<version>8.5.23</version>-->
-		<!--</dependency>-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!--websocket依赖包-->
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
+			<version>8.5.23</version>
+		</dependency>
 		<!--打成war包时候请解除注释-->
 
 

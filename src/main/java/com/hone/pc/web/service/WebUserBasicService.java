@@ -64,6 +64,8 @@ public class WebUserBasicService {
         jsonResult.getData().put("userType", hoUserBasic.getUserType());
         jsonResult.getData().put("ifApproved", hoUserBasic.getIfApproved());
         jsonResult.getData().put("phoneNo", hoUserBasic.getPhoneNo());
+        jsonResult.getData().put("headPic",hoUserBasic.getAvatarUrl());
+        jsonResult.getData().put("wxName",hoUserBasic.getWxName());
         jsonResult.globalSuccess();
         return jsonResult;
     }

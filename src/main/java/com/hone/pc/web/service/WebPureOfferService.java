@@ -57,6 +57,11 @@ public class WebPureOfferService {
         String[] strings= new String[]{"loginUserId","title","productType","shopLevel","salesBefore","fansNums","starTag","ifSend","profitRatio"};
         ParamsUtil.checkParamIfNull(params,strings);
 
+        if(Double.parseDouble(profitRatio)>=100||Double.parseDouble(profitRatio)<=5){
+            jsonResult.globalError("佣金比例有误");
+            return jsonResult;
+        }
+
         //校验用户信息
         HoUserBasic userBasic=hoUserBasicDao.selectByPrimaryKey(userId);
         if(userBasic==null||!userBasic.getUserType().equals("2")){
@@ -69,6 +74,7 @@ public class WebPureOfferService {
         pureOffer.setFansNums(fansNums);
         pureOffer.setIfSend(ifSend);
         pureOffer.setProductTypeId(productType);
+
         pureOffer.setProfitRatio(profitRatio);
         pureOffer.setSalesBefore(salesBefore);
         pureOffer.setShopLevel(shopLevel);
@@ -76,6 +82,7 @@ public class WebPureOfferService {
         pureOffer.setUserId(userId);
         pureOffer.setTitle(title);
         pureOffer.setStatus("PY");
+        pureOffer.setServerProfitRatio("5");
         pureOffer.preInsert();
         hoPureOfferDao.insert(pureOffer);
 
@@ -148,7 +155,7 @@ public class WebPureOfferService {
 
         String orderBy="";
         if(StringUtils.isNotEmpty(fansNumsOrderBy)){
-            orderBy=" a.fans_nums "+fansNumsOrderBy;
+            orderBy=" cast(a.fans_nums as SIGNED) "+fansNumsOrderBy;
         }
         if(StringUtils.isNotEmpty(dateOrderBy)){
             if(StringUtils.isEmpty(orderBy)){
@@ -249,7 +256,7 @@ public class WebPureOfferService {
 
         String orderBy="";
         if(StringUtils.isNotEmpty(fansNumsOrderBy)){
-            orderBy=" a.fans_nums "+fansNumsOrderBy;
+            orderBy=" cast(a.fans_nums as SIGNED) "+fansNumsOrderBy;
         }
         if(StringUtils.isNotEmpty(dateOrderBy)){
             if(StringUtils.isEmpty(orderBy)){

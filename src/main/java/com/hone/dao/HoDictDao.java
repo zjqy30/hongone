@@ -22,7 +22,9 @@ public interface HoDictDao extends TkBaseMapper<HoDict> {
 
     String findIndustryStr(@Param("id") String industryId);
 
-    List<HoDict> sellerTagList(@Param("type") String type);
+    List<HoDict> sellerTagList(@Param("type") String type,@Param("pid") String pid);
 
     List<HoSellerTagRepo> sellerTagRepoList(@Param("type") String type);
+
+
 }

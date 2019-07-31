@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +57,38 @@ public class DictService {
         ParamsUtil.checkParamIfNull(params, new String[]{"id"});
 
         HoDict hoDict = hoDictDao.selectByPrimaryKey(id);
+
         hoDict.setEnableFlag("0");
         hoDictDao.updateByPrimaryKeySelective(hoDict);
+
+        if(hoDict.getDictType().equals("sellerTag")){
+            //删除一级分类
+            if(hoDict.getPid().equals("0")){
+              List<HoDict> dictList= hoDictDao.sellerTagList("2",hoDict.getId());
+              if(!CollectionUtils.isEmpty(dictList)){
+                  for(HoDict second:dictList){
+                      second.setEnableFlag("0");
+                      hoDictDao.updateByPrimaryKeySelective(second);
+                      List<HoDict> childList= hoDictDao.sellerTagList("3",second.getId());
+                      if(!CollectionUtils.isEmpty(childList)){
+                          for(HoDict child:childList){
+                              child.setEnableFlag("0");
+                              hoDictDao.updateByPrimaryKeySelective(child);
+                          }
+                      }
+                  }
+              }
+            }else {
+                //删除二级分类
+                List<HoDict> childList= hoDictDao.sellerTagList("3",hoDict.getId());
+                if(!CollectionUtils.isEmpty(childList)){
+                    for(HoDict child:childList){
+                        child.setEnableFlag("0");
+                        hoDictDao.updateByPrimaryKeySelective(child);
+                    }
+                }
+            }
+        }
 
         jsonResult.globalSuccess();
         return jsonResult;
@@ -136,10 +167,11 @@ public class DictService {
         JsonResult jsonResult = new JsonResult();
 
         String type = params.get("type");
+        String pid=params.get("pid");
         ParamsUtil.checkParamIfNull(params, new String[]{"type"});
 
 
-        List<HoDict> dictList = hoDictDao.sellerTagList(type);
+        List<HoDict> dictList = hoDictDao.sellerTagList(type,pid);
 
         jsonResult.getData().put("dictList", dictList);
         jsonResult.globalSuccess();

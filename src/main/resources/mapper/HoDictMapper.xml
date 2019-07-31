@@ -12,10 +12,7 @@
         <result column="dict_pic" property="dictPic"/>
         <result column="create_date" property="createDate"/> 
         <result column="update_date" property="updateDate"/> 
-        <result column="enable_flag" property="enableFlag"/> 
-
-        
-        
+        <result column="enable_flag" property="enableFlag"/>
     </resultMap>
 
     <sql id="hoDictColumns">
@@ -36,7 +33,6 @@
     </sql>
 
     <select id="selectByTypeAndValue" resultType="com.hone.entity.HoDict">
-
         select <include refid="hoDictColumns"></include>
         from ho_dict a where a.dict_type=#{type} and a.dict_value=#{value} and a.enable_flag='1'
     </select>
@@ -47,7 +43,7 @@
     </select>
 
     <select id="listByType" resultType="com.hone.entity.HoDict">
-        select <include refid="hoDictColumns"></include> from ho_dict a where a.dict_type=#{type} and a.enable_flag='1' order by a.dict_sort asc
+        select <include refid="hoDictColumns"></include> from ho_dict a where a.dict_type=#{type} and a.enable_flag='1' order by a.create_date desc
     </select>
 
     <select id="findIndustryStr" resultType="java.lang.String">
@@ -71,6 +67,10 @@
             inner join ho_dict b on a.pid=b.id
             where a.dict_type='sellerTag' and b.pid!='0'
         </if>
+        <if test="pid!=null and pid!=''">
+            and a.pid=#{pid}
+        </if>
+        and a.enable_flag='1'
         order by a.create_date desc
     </select>
 
@@ -93,8 +93,8 @@
             inner join ho_dict b on a.pid=b.id
             where a.dict_type='sellerTag' and b.pid!='0'
         </if>
+        and a.enable_flag='1'
         order by a.create_date desc
     </select>
-
 
 </mapper>

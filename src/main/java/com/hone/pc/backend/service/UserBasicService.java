@@ -182,10 +182,6 @@ public class UserBasicService {
         if(ifPass.equals("pass")){
             hoUserBasic.setIfApproved("1");
             hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
-
-            //删除对应的 object 消息
-            hoBackendMessageDao.deleteByObjectId(appletUserId);
-
             //添加 ho_front_message 记录
             HoFrontMessage hoFrontMessage=new HoFrontMessage();
             hoFrontMessage.setContent("网红 "+hoUserBasic.getWxName()+" 入驻红腕平台");
@@ -196,8 +192,9 @@ public class UserBasicService {
         }else if(ifPass.equals("nopass")){
             //删除扩展信息
             HoUserStar hoUserStar=hoUserStarDao.findUniqueByProperty("user_id",appletUserId);
-            hoUserStarDao.delete(hoUserStar);
-
+            if(hoUserStar!=null){
+                hoUserStarDao.delete(hoUserStar);
+            }
             //删除标签
             hoUserTagDao.deleteByUserId(appletUserId);
 
@@ -207,6 +204,9 @@ public class UserBasicService {
             hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
 
         }
+
+        //删除对应的 object 消息
+        hoBackendMessageDao.deleteByObjectId(appletUserId);
 
         //发送模板消息
         Map<String,String> templateMap=new HashMap<>();
@@ -275,9 +275,6 @@ public class UserBasicService {
             hoUserBasic.setIfApproved("1");
             hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
 
-            //删除对应的 object 消息
-            hoBackendMessageDao.deleteByObjectId(appletUserId);
-
             //添加 ho_front_message 记录
             HoFrontMessage hoFrontMessage=new HoFrontMessage();
             hoFrontMessage.setContent("商家 "+hoUserBasic.getWxName()+" 入驻红腕平台");
@@ -292,6 +289,8 @@ public class UserBasicService {
             hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
         }
 
+        //删除对应的 object 消息
+        hoBackendMessageDao.deleteByObjectId(appletUserId);
 
         //发送模板消息
         Map<String,String> templateMap=new HashMap<>();

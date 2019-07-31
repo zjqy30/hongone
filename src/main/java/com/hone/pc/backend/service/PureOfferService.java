@@ -136,8 +136,6 @@ public class PureOfferService {
 
         if(ifPass.equals("pass")){
             pureOffer.setStatus("AP");
-            //删除对应的 object 消息
-            hoBackendMessageDao.deleteByObjectId(pureOffer.getId());
 
             //添加 ho_front_message 记录
             HoFrontMessage hoFrontMessage=new HoFrontMessage();
@@ -152,6 +150,9 @@ public class PureOfferService {
 
         pureOffer.setUpdateDate(new Date());
         hoPureOfferDao.updateByPrimaryKeySelective(pureOffer);
+
+        //删除对应的 object 消息
+        hoBackendMessageDao.deleteByObjectId(pureOffer.getId());
 
         //发送模板消息
         HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(pureOffer.getUserId());

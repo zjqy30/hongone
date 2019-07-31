@@ -92,9 +92,6 @@ public class ApplayWithDrawService {
             payFlow.preInsert();
             hoPayFlowDao.insert(payFlow);
 
-
-            //删除对应的 object 消息
-            hoBackendMessageDao.deleteByObjectId(hoApplyWithdraw.getId());
         }else {
             hoApplyWithdraw.setStatus("RE");
             hoApplyWithdraw.setUpdateDate(date);
@@ -106,6 +103,10 @@ public class ApplayWithDrawService {
                 hoAccountChargeDao.updateByPrimaryKeySelective(accountCharge);
             }
         }
+
+
+        //删除对应的 object 消息
+        hoBackendMessageDao.deleteByObjectId(hoApplyWithdraw.getId());
 
         jsonResult.globalSuccess();
         return jsonResult;

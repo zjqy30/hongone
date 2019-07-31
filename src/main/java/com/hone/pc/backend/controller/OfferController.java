@@ -47,7 +47,6 @@ public class OfferController {
     }
 
 
-
     @RequestMapping("/approveOperate")
     public JsonResult approveOperate(@RequestBody Map<String,String> params){
         logger.info("需求审核操作");
