@@ -2,6 +2,7 @@ package com.hone.system.utils.suantao;
 
 
 import org.springframework.util.Base64Utils;
+import org.springframework.util.StringUtils;
 
 import javax.crypto.Cipher;
 import java.io.*;
@@ -186,6 +187,9 @@ public class RSAUtil {
 	 * @author jie.xu  2017年3月29日 下午1:21:50
 	 */
 	public static String decryptByPublicKey(String base64Data,String publicKey){
+		if(StringUtils.isEmpty(base64Data)){
+			return "";
+		}
 		byte[] encryptedDataByte=Base64Utils.decode(base64Data.getBytes());
 		byte[] ddataByte=new byte[0];
 		try {

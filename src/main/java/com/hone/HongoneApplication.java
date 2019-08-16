@@ -20,23 +20,23 @@ import javax.servlet.ServletException;
 @EnableScheduling
 @EnableAsync
 @ServletComponentScan
-//public class HongoneApplication     {
-public class HongoneApplication  extends SpringBootServletInitializer{
+public class HongoneApplication     {
+//public class HongoneApplication  extends SpringBootServletInitializer{
 	public static void main(String[] args) {
 		ConfigurableApplicationContext configurableApplicationContext =SpringApplication.run(HongoneApplication.class, args);
 		//解决WebSocket不能注入的问题
 		WebSocketServer.setApplicationContext(configurableApplicationContext);
 	}
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		return builder.sources(HongoneApplication.class);
-	}
-
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		super.onStartup(servletContext);
-		WebSocketServer.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
-	}
+//	@Override
+//	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+//		return builder.sources(HongoneApplication.class);
+//	}
+//
+//	@Override
+//	public void onStartup(ServletContext servletContext) throws ServletException {
+//		super.onStartup(servletContext);
+//		WebSocketServer.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
+//	}
 
 }

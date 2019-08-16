@@ -12,7 +12,7 @@
 	<artifactId>hongone</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>hongone</name>
-	<packaging>war</packaging>
+	<!--<packaging>war</packaging>-->
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -29,17 +29,17 @@
 
 		<!--打成war包时候请解除注释-->
 		 <!--去除springboot内嵌tomcat-->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-tomcat</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!--websocket依赖包-->
-		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-websocket</artifactId>
-			<version>8.5.23</version>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>org.springframework.boot</groupId>-->
+			<!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
+			<!--<scope>provided</scope>-->
+		<!--</dependency>-->
+		<!--&lt;!&ndash;websocket依赖包&ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>org.apache.tomcat.embed</groupId>-->
+			<!--<artifactId>tomcat-embed-websocket</artifactId>-->
+			<!--<version>8.5.23</version>-->
+		<!--</dependency>-->
 		<!--打成war包时候请解除注释-->
 
 
@@ -151,11 +151,23 @@
 		</dependency>
 
 
-		<!-- 引入solr依赖 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-solr</artifactId>
-		</dependency>
+		<!-- 添加servlet依赖模块 -->
+		<!--<dependency>-->
+			<!--<groupId>javax.servlet</groupId>-->
+			<!--<artifactId>javax.servlet-api</artifactId>-->
+			<!--<scope>provided</scope>-->
+		<!--</dependency>-->
+		<!--&lt;!&ndash; 添加jstl标签库依赖模块 &ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>javax.servlet</groupId>-->
+			<!--<artifactId>jstl</artifactId>-->
+		<!--</dependency>-->
+		<!--&lt;!&ndash; 使用jsp引擎，springboot内置tomcat没有此依赖 &ndash;&gt;-->
+		<!--<dependency>-->
+			<!--<groupId>org.apache.tomcat.embed</groupId>-->
+			<!--<artifactId>tomcat-embed-jasper</artifactId>-->
+			<!--<scope>provided</scope>-->
+		<!--</dependency>-->
 
 
 

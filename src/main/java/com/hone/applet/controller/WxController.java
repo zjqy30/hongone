@@ -6,7 +6,6 @@ import com.hone.dao.HoUserBasicDao;
 import com.hone.dao.HoWxFormidDao;
 import com.hone.entity.HoUserBasic;
 import com.hone.entity.HoWxFormid;
-import com.hone.pc.www.controller.HoWebsiteMessageController;
 import com.hone.system.utils.DateUtils;
 import com.hone.system.utils.HttpUtils;
 import com.hone.system.utils.JsonResult;
@@ -14,21 +13,12 @@ import com.hone.system.utils.ParamsUtil;
 import com.hone.system.utils.wxdecrypt.WxDecryptData;
 import com.hone.system.utils.wxtemplate.TemplateUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -53,8 +43,6 @@ public class WxController {
     @Autowired
     private HoUserBasicDao hoUserBasicDao;
 
-    @Autowired
-    private SolrClient solrClient;
 
     @RequestMapping("/openId")
     public JsonResult getOpenId(@RequestBody Map<String,String> params){
@@ -199,131 +187,6 @@ public class WxController {
         System.out.println(String.format("%d",10/3));//3
         System.out.println(String.format("%03d",5));//005
         System.out.println(String.format("%,f",100000.0));//100,000.000000
-    }
-
-
-    @RequestMapping("/insert")
-    public String insert(@RequestBody Map<String,String> params) throws IOException, SolrServerException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
-        String dateString = sdf.format(new Date());
-        try {
-            SolrInputDocument doc = new SolrInputDocument();
-            doc.setField("id", dateString);
-            doc.setField("studentName", params.get("wx_name"));
-            solrClient.add(doc);
-            solrClient.commit();
-            return dateString;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "error";
-    }
-
-    @RequestMapping("/get")
-    public String getDocumentById(@RequestBody Map<String,String> params) throws SolrServerException, IOException {
-        SolrDocument document = solrClient.getById(params.get("id"));
-        System.out.println(document);
-        return document.toString();
-    }
-
-    @RequestMapping("/delete")
-    public String delete(@RequestBody Map<String,String> params) {
-        try {
-            solrClient.deleteById(params.get("id"));
-            solrClient.commit();
-            return "success";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "error";
-    }
-
-
-    @RequestMapping("deleteAll")
-    public String deleteAll() {
-        try {
-            solrClient.deleteByQuery("*:*");
-            solrClient.commit();
-            return "success";
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "error";
-    }
-
-
-    @RequestMapping("/update")
-    public String update(@RequestBody Map<String,String> params) throws IOException, SolrServerException {
-        try {
-            SolrInputDocument doc = new SolrInputDocument();
-            doc.setField("id", params.get("id"));
-            doc.setField("text",  params.get("message"));
-
-            /*
-             * 如果 spring.data.solr.host 里面配置到 core了, 那么这里就不需要传 itaem 这个参数 下面都是一样的 即
-             * client.commit();
-             */
-            solrClient.add(doc);
-            solrClient.commit();
-            return doc.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return "error";
-    }
-
-    @RequestMapping("/query")
-    public  Object select(@RequestBody Map<String,String> params)
-            throws SolrServerException, IOException {
-        SolrQuery solrQuery = new SolrQuery();
-
-        // 查询条件
-        solrQuery.set("q", params.get("key"));
-
-        // 排序
-        //solrQuery.addSort("id", SolrQuery.ORDER.desc);
-
-        // 分页
-        solrQuery.setStart(Integer.parseInt(params.get("pageNumber")));
-        solrQuery.setRows(Integer.parseInt(params.get("pageSize")));
-
-        // 默认域
-        if(!StringUtils.isEmpty(params.get("df"))){
-            solrQuery.set("df",params.get("df"));
-        }
-
-
-        if(!StringUtils.isEmpty(params.get("fl"))){
-            solrQuery.set("fl", params.get("fl"));
-        }
-        // 只查询指定域
-//        solrQuery.set("fl", "content");
-
-        // 开启高亮
-        solrQuery.setHighlight(true);
-
-        // 设置前缀
-        solrQuery.setHighlightSimplePre("<span style='color:red'>");
-        // 设置后缀
-        solrQuery.setHighlightSimplePost("</span>");
-
-        // solr数据库是 itaem
-        QueryResponse queryResponse = solrClient.query(solrQuery);
-        SolrDocumentList results = queryResponse.getResults();
-//
-//        // 数量，分页用
-//        long total = results.getNumFound();// JS 使用 size=MXA 和 data.length 即可知道长度了（但不合理）
-
-        // 获取高亮显示的结果, 高亮显示的结果和查询结果是分开放的
-        Map<String, Map<String, List<String>>> highlight = queryResponse.getHighlighting();
-        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("total", total);
-        map.put("data", highlight);
-
-
-        System.out.println(map);
-        return results;
-
     }
 
 }
