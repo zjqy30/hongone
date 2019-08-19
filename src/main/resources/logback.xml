@@ -22,7 +22,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 路径 -->
             <fileNamePattern>/app_log/info/app.info.%d.log</fileNamePattern>
-            <MaxHistory>1</MaxHistory>
+            <!-- 控制保留的归档文件的最大数量，滚动策略是每天，保存10天 -->
+            <MaxHistory>10</MaxHistory>
         </rollingPolicy>
     </appender>
 
@@ -41,9 +42,8 @@
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 路径 -->
             <fileNamePattern>/app_log/error/app.err.%d.log</fileNamePattern>
-            <!-- 控制保留的归档文件的最大数量，超出数量就删除旧文件，假设设置每个月滚动，
-            且<maxHistory> 是1，则只保存最近1个月的文件，删除之前的旧文件 -->
-            <MaxHistory>1</MaxHistory>
+            <!-- 控制保留的归档文件的最大数量，滚动策略是每天，保存10天 -->
+            <MaxHistory>10</MaxHistory>
         </rollingPolicy>
     </appender>
 
@@ -53,6 +53,7 @@
     <logger name="java.sql.Statement" level="DEBUG" />
     <logger name="java.sql.PreparedStatement" level="DEBUG" />
     <logger name="org.springframework.web" level="WARN" />
+    <!--过滤掉 druid 非 warn 日志-->
     <logger name="com.alibaba.druid" level="WARN"></logger>
 
     <!--输出 com.example.sp.mapper 下的日志 -->

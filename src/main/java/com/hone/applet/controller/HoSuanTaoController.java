@@ -50,9 +50,13 @@ public class HoSuanTaoController {
             //已经认证
             if(hoUserStar!=null){
                 HoDict hoDict=hoDictDao.selectByPrimaryKey(hoUserStar.getPlatformId());;
-                String identityCode=hoUserStar.getPlatformUserId();
-                String content=SuanTaoUtils.getDataFromSuanTao(Long.valueOf(hoDict.getDictDesc()),identityCode);
-                jsonResult.getData().put("content", content);
+                if(hoDict!=null){
+                    String identityCode=hoUserStar.getPlatformUserId();
+                    String content=SuanTaoUtils.getDataFromSuanTao(Long.valueOf(hoDict.getDictDesc()),identityCode);
+                    jsonResult.getData().put("content", content);
+                }else {
+                    jsonResult.getData().put("content", null);
+                }
             }else {
             //未认证
                 HoDict hoDict=hoDictDao.selectByPrimaryKey(platId);

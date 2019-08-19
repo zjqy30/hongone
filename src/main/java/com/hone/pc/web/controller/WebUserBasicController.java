@@ -7,6 +7,7 @@ import com.hone.pc.backend.controller.BannerController;
 import com.hone.pc.web.service.WebSocketLoginService;
 import com.hone.pc.web.service.WebUserBasicService;
 import com.hone.pc.web.socket.WebSocketServer;
+import com.hone.system.utils.DateUtils;
 import com.hone.system.utils.JsonResult;
 import com.hone.system.utils.JwtTokenUtils;
 import com.hone.system.utils.ParamsUtil;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Lijia on 2019/7/8.
@@ -57,11 +60,22 @@ public class WebUserBasicController {
                 webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
                 return;
             }
+
+            //是否超过五分钟
+            long timeSub=new Date().getTime()-hoSocketLogin.getCreateDate().getTime();
+            System.out.println(timeSub/1000/60);
+            if(timeSub/1000/60>=5){
+                jsonObject.put("errorCode","1003");
+                jsonObject.put("message","二维码已经失效");
+                webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
+                return;
+            }
+
             //校验用户信息逻辑
             HoUserBasic hoUserBasic= webUserBasicService.findByOpenId(openId);
             if(hoUserBasic==null){
                 jsonObject.put("errorCode","1003");
-                jsonObject.put("message","用户不存在");
+                jsonObject.put("message","用户不存在，请先扫码登录小程序");
                 webSocketServer.sendInfo(jsonObject.toJSONString(),socketId);
                 return;
             }

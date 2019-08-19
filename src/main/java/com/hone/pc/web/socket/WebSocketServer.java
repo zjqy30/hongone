@@ -75,9 +75,9 @@ public class WebSocketServer {
      */
     @OnClose
     public void onClose() {
+        log.info("有一连接关闭！socketId="+this.socketId+"当前在线人数为" + getOnlineCount());
         webSocketSet.remove(this);  //从set中删除
         subOnlineCount();           //在线数减1
-        log.info("有一连接关闭！当前在线人数为" + getOnlineCount());
     }
 
     /**
@@ -104,7 +104,7 @@ public class WebSocketServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        log.error("发生错误");
+        log.error("websocket连接发生错误，socketId="+this.socketId,error);
         error.printStackTrace();
     }
 

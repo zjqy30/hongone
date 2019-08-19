@@ -53,6 +53,7 @@ public class HoUserBasicController {
     @RequestMapping("/star/applyApproved")
     public JsonResult applyApproved(@RequestBody Map<String,String> params){
         logger.info("网红用户申请认证");
+        logger.info(params.toString());
         JsonResult jsonResult=new JsonResult();
 
         try {
