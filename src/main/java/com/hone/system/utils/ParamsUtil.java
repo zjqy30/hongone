@@ -29,6 +29,9 @@ public class ParamsUtil {
                 }
              }
         }
+        else {
+            throw new Exception("参数{}为空");
+        }
     }
 
 }

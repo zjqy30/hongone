@@ -152,12 +152,14 @@ public class HoCollectService {
      * @param params
      * @return
      */
-    public JsonResult ifCollect(Map<String, String> params) {
+    public JsonResult ifCollect(Map<String, String> params) throws Exception {
         JsonResult jsonResult=new JsonResult();
 
 
         String userId=params.get("userId");
         String objectId=params.get("objectId");
+
+        ParamsUtil.checkParamIfNull(params,new String[]{"userId","objectId"});
 
         HoCollect hoCollect=new HoCollect();
         hoCollect.setUserId(userId);
