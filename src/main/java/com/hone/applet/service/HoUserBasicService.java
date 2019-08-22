@@ -106,7 +106,7 @@ public class HoUserBasicService {
                 HoMarketer hoMarketer = new HoMarketer();
                 hoMarketer.setUserCode(inviteCode);
                 hoMarketer = hoMarketerDao.selectOne(hoMarketer);
-                if (hoMarketer.getId() != null) {
+                if (hoMarketer!=null&&hoMarketer.getId() != null) {
                     hoUserBasic.setMarketerId(hoMarketer.getId());
                 }
             }

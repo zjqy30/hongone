@@ -48,6 +48,7 @@
         from ho_snatch_pure_offer a
         left join ho_pure_offer c on c.id = a.pure_offer_id
         left join ho_user_basic b on b.id=a.user_id
+        where a.enable_flag='1'
         order by a.create_date desc
     </select>
 

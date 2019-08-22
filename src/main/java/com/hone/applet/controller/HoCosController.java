@@ -117,7 +117,7 @@ public class HoCosController {
         try {
             String fileName=params.get("fileName");
             ParamsUtil.checkParamIfNull(params,new String[]{"fileName"});
-            simpleUploadFileCos.DelSingleFile(fileName.substring(fileName.indexOf("images")));
+            simpleUploadFileCos.DelSingleFile(fileName.substring(fileName.lastIndexOf("images")));
             jsonResult.globalSuccess();
         }catch (Exception e){
             logger.error("删除图片",e);

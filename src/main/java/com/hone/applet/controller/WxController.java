@@ -92,8 +92,10 @@ public class WxController {
 
             if(StringUtils.isNotEmpty(jsonObject.getString("phoneNumber"))){
                 HoUserBasic hoUserBasic=hoUserBasicDao.findUniqueByProperty("open_id",openid);
-                hoUserBasic.setPhoneNo(jsonObject.getString("phoneNumber"));
-                hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
+                if(hoUserBasic!=null){
+                    hoUserBasic.setPhoneNo(jsonObject.getString("phoneNumber"));
+                    hoUserBasicDao.updateByPrimaryKeySelective(hoUserBasic);
+                }
             }
 
         }catch (Exception e){

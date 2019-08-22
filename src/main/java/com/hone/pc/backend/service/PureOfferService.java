@@ -3,10 +3,7 @@ package com.hone.pc.backend.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.hone.dao.*;
-import com.hone.entity.HoBanners;
-import com.hone.entity.HoFrontMessage;
-import com.hone.entity.HoPureOffer;
-import com.hone.entity.HoUserBasic;
+import com.hone.entity.*;
 import com.hone.pc.backend.repo.SnatchPureOfferListRepo;
 import com.hone.pc.backend.repo.StarUserListRepo;
 import com.hone.pc.web.repo.PureOfferListRepo;
@@ -40,30 +37,31 @@ public class PureOfferService {
     @Autowired
     private HoBackendMessageDao hoBackendMessageDao;
     @Autowired
-    private HoFrontMessageDao  hoFrontMessageDao;
+    private HoFrontMessageDao hoFrontMessageDao;
     @Autowired
     private HoSnatchPureOfferDao hoSnatchPureOfferDao;
 
     /**
      * 纯佣订单列表
+     *
      * @param params
      * @return
      */
     public JsonResult list(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String status=params.get("status");
+        String status = params.get("status");
         String pageNumber = params.get("pageNumber");
         String pageSize = params.get("pageSize");
-        String title=params.get("title");
-        ParamsUtil.checkParamIfNull(params,new String[]{"status","pageNumber","pageSize"});
+        String title = params.get("title");
+        ParamsUtil.checkParamIfNull(params, new String[]{"status", "pageNumber", "pageSize"});
 
-        com.github.pagehelper.Page pageInfo=PageHelper.startPage(Integer.parseInt(pageNumber),Integer.parseInt(pageSize),true);
-        List<PureOfferListRepo> pureOfferListRepos=hoPureOfferDao.listForBackend(title,status);
+        com.github.pagehelper.Page pageInfo = PageHelper.startPage(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), true);
+        List<PureOfferListRepo> pureOfferListRepos = hoPureOfferDao.listForBackend(title, status);
 
-        Page<PureOfferListRepo> page=new Page<>(pageInfo.toPageInfo());
+        Page<PureOfferListRepo> page = new Page<>(pageInfo.toPageInfo());
 
-        jsonResult.getData().put("pageData",page);
+        jsonResult.getData().put("pageData", page);
         jsonResult.globalSuccess();
         return jsonResult;
     }
@@ -71,17 +69,18 @@ public class PureOfferService {
 
     /**
      * 纯佣订单结束
+     *
      * @param params
      * @return
      */
     public JsonResult finsh(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String id=params.get("id");
-        ParamsUtil.checkParamIfNull(params,new String[]{"id"});
+        String id = params.get("id");
+        ParamsUtil.checkParamIfNull(params, new String[]{"id"});
 
-        HoPureOffer pureOffer=hoPureOfferDao.selectByPrimaryKey(id);
-        if(pureOffer==null||!pureOffer.getStatus().equals("AP")){
+        HoPureOffer pureOffer = hoPureOfferDao.selectByPrimaryKey(id);
+        if (pureOffer == null || !pureOffer.getStatus().equals("AP")) {
             jsonResult.globalError("当前订单状态有误");
             return jsonResult;
         }
@@ -94,17 +93,18 @@ public class PureOfferService {
 
     /**
      * 纯佣订单删除
+     *
      * @param params
      * @return
      */
     public JsonResult del(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String id=params.get("id");
-        ParamsUtil.checkParamIfNull(params,new String[]{"id"});
+        String id = params.get("id");
+        ParamsUtil.checkParamIfNull(params, new String[]{"id"});
 
-        HoPureOffer pureOffer=hoPureOfferDao.selectByPrimaryKey(id);
-        if(pureOffer==null){
+        HoPureOffer pureOffer = hoPureOfferDao.selectByPrimaryKey(id);
+        if (pureOffer == null) {
             jsonResult.globalError("订单不存在");
             return jsonResult;
         }
@@ -118,33 +118,34 @@ public class PureOfferService {
 
     /**
      * 纯佣订单审核
+     *
      * @param params
      * @return
      */
     public JsonResult approveOperate(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
-        String id=params.get("id");
-        String ifPass=params.get("ifPass");
-        ParamsUtil.checkParamIfNull(params,new String[]{"ifPass","id"});
-        HoPureOffer pureOffer=hoPureOfferDao.selectByPrimaryKey(id);
+        String id = params.get("id");
+        String ifPass = params.get("ifPass");
+        ParamsUtil.checkParamIfNull(params, new String[]{"ifPass", "id"});
+        HoPureOffer pureOffer = hoPureOfferDao.selectByPrimaryKey(id);
 
-        if(pureOffer==null||!pureOffer.getStatus().equals("PY")){
+        if (pureOffer == null || !pureOffer.getStatus().equals("PY")) {
             jsonResult.globalError("订单信息异常");
             return jsonResult;
         }
 
-        if(ifPass.equals("pass")){
+        if (ifPass.equals("pass")) {
             pureOffer.setStatus("AP");
 
             //添加 ho_front_message 记录
-            HoFrontMessage hoFrontMessage=new HoFrontMessage();
+            HoFrontMessage hoFrontMessage = new HoFrontMessage();
             hoFrontMessage.setContent("网页端订单大厅有新的订单");
             hoFrontMessage.setObjectId(pureOffer.getId());
             hoFrontMessage.setType("4");
             hoFrontMessage.preInsert();
             hoFrontMessageDao.insert(hoFrontMessage);
-        }else if(ifPass.equals("nopas")){
+        } else if (ifPass.equals("nopass")) {
             pureOffer.setStatus("NAP");
         }
 
@@ -155,12 +156,12 @@ public class PureOfferService {
         hoBackendMessageDao.deleteByObjectId(pureOffer.getId());
 
         //发送模板消息
-        HoUserBasic hoUserBasic=hoUserBasicDao.selectByPrimaryKey(pureOffer.getUserId());
-        Map<String,String> templateMap=new HashMap<>();
-        templateMap.put("type","2");
-        templateMap.put("title","纯佣订单审核");
-        templateMap.put("openId",hoUserBasic.getOpenId());
-        templateMap.put("result",ifPass.equals("pass")?"审核通过!开启红腕之旅":"审核驳回,详情联系客服");
+        HoUserBasic hoUserBasic = hoUserBasicDao.selectByPrimaryKey(pureOffer.getUserId());
+        Map<String, String> templateMap = new HashMap<>();
+        templateMap.put("type", "2");
+        templateMap.put("title", "纯佣订单审核");
+        templateMap.put("openId", hoUserBasic.getOpenId());
+        templateMap.put("result", ifPass.equals("pass") ? "审核通过!开启红腕之旅" : "审核驳回,详情联系客服");
         templateUtils.sendMessage(templateMap);
 
         jsonResult.globalSuccess();
@@ -169,24 +170,46 @@ public class PureOfferService {
 
     /**
      * 已抢单网红列表
+     *
      * @param params
      * @return
      */
     public JsonResult snatchList(Map<String, String> params) throws Exception {
-        JsonResult jsonResult=new JsonResult();
+        JsonResult jsonResult = new JsonResult();
 
         String pageNumber = params.get("pageNumber");
         String pageSize = params.get("pageSize");
 
-        ParamsUtil.checkParamIfNull(params,new String[]{"pageSize","pageNumber"});
+        ParamsUtil.checkParamIfNull(params, new String[]{"pageSize", "pageNumber"});
 
-        com.github.pagehelper.Page pageInfo=PageHelper.startPage(Integer.parseInt(pageNumber),Integer.parseInt(pageSize),true);
-        List<SnatchPureOfferListRepo> pureOfferListRepos=hoSnatchPureOfferDao.listForBackend();
+        com.github.pagehelper.Page pageInfo = PageHelper.startPage(Integer.parseInt(pageNumber), Integer.parseInt(pageSize), true);
+        List<SnatchPureOfferListRepo> pureOfferListRepos = hoSnatchPureOfferDao.listForBackend();
 
-        Page<SnatchPureOfferListRepo> page=new Page<>(pageInfo.toPageInfo());
+        Page<SnatchPureOfferListRepo> page = new Page<>(pageInfo.toPageInfo());
 
-        jsonResult.getData().put("pageData",page);
+        jsonResult.getData().put("pageData", page);
         jsonResult.globalSuccess();
         return jsonResult;
     }
+
+    /**
+     * 删除已抢单记录
+     *
+     * @param params
+     * @return
+     */
+    public JsonResult snatchDel(Map<String, String> params) throws Exception {
+        JsonResult jsonResult = new JsonResult();
+
+        String id = params.get("id");
+        ParamsUtil.checkParamIfNull(params, new String[]{"id"});
+
+        HoSnatchPureOffer hoSnatchPureOffer=hoSnatchPureOfferDao.selectByPrimaryKey(id);
+        hoSnatchPureOffer.setEnableFlag("0");
+        hoSnatchPureOfferDao.updateByPrimaryKeySelective(hoSnatchPureOffer);
+
+        jsonResult.globalSuccess();
+        return jsonResult;
+    }
+
 }

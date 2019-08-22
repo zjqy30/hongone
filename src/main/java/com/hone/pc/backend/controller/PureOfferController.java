@@ -126,4 +126,24 @@ public class PureOfferController {
         return jsonResult;
     }
 
+
+    @RequestMapping("/snatchDel")
+    public JsonResult snatchDel(@RequestBody Map<String,String> params){
+        logger.info("删除已抢单记录");
+        JsonResult jsonResult=new JsonResult();
+        //token校验
+        if(JwtTokenUtils.checkToken(params)==false){
+            jsonResult.loginExpire();
+            return jsonResult;
+        }
+        try {
+            jsonResult=pureOfferService.snatchDel(params);
+        }catch (Exception e){
+            logger.error("删除已抢单记录",e);
+            jsonResult.globalError(e.getMessage());
+        }
+
+        return jsonResult;
+    }
+
 }
