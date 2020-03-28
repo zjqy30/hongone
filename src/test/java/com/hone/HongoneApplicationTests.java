@@ -11,11 +11,11 @@ import java.util.Collections;
 @SpringBootTest
 public class HongoneApplicationTests {
 
-	@Test
-	public void contextLoads() {
-
-
-
-	}
+//	@Test
+//	public void contextLoads() {
+//
+//
+//
+//	}
 
 }
