@@ -30,8 +30,9 @@ public class HoWebsiteMessageController {
     private SmsUtils smsUtils;
 
 
+    // http://192.168.0.149:8081/pc/website/message/list
     @RequestMapping("/list")
-    public JsonResult list(@RequestBody Map<String,String> params){
+    public JsonResult list(){
 
         logger.info("===message.list======");
         logger.info("-----------");
@@ -39,10 +40,10 @@ public class HoWebsiteMessageController {
         JsonResult jsonResult=new JsonResult();
 
 
-        Page page= websiteMessageService.list();
+       // Page page= websiteMessageService.list();
 
         jsonResult.globalSuccess();
-        jsonResult.getData().put("page",page);
+        //jsonResult.getData().put("page",page);
 
         return jsonResult;
     }
